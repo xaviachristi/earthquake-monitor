@@ -2,7 +2,7 @@
 name: Improvement
 about: Template for creating an improvement.
 title: "[IMPROVEMENT] <idea-name>"
-labels: ''
+labels: improvement
 assignees: ''
 
 ---
