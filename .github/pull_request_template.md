@@ -13,6 +13,7 @@ Closes: # (issue)
 
 - [ ] Bug fix (change which fixes an issue)
 - [ ] New feature (change which adds functionality)
+- [ ] Refactoring (code improvement without functional changes)
 
 # Checklist:
 
@@ -22,6 +23,7 @@ Closes: # (issue)
 - [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
 - [ ] New and existing unit tests pass locally with my changes
+- [ ] My code has a pylint score over 8.
 
 # Mentions
 @xaviachristi
