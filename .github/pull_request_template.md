@@ -23,7 +23,11 @@ Closes: # (issue)
 - [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
 - [ ] New and existing unit tests pass locally with my changes
-- [ ] My code has a pylint score over 8.
+- [ ] My code has a pylint score over 8
+
+# Additional Details
+
+<!-- Please include any additional details for PR could include screenshots of changes. -->
 
 # Mentions
 @xaviachristi

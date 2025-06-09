@@ -2,12 +2,12 @@
 name: Task
 about: Template for creating a work task.
 title: "[TASK] <ticket-name>"
-labels: ''
+labels: feature
 assignees: ''
 
 ---
 
-<!-- Short summary of task -->
+<!-- Short summary of task. -->
 
 ## Details
 <!-- A clear and concise bullet point description of what the task is. -->

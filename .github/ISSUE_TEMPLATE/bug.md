@@ -2,7 +2,7 @@
 name: Bug
 about: Template for creating a bug.
 title: "[BUG] <bug-title>"
-labels: ''
+labels: bug
 assignees: ''
 
 ---
