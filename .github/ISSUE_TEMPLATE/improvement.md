@@ -1,7 +1,7 @@
 ---
-name: Idea
-about: Template for creating an idea.
-title: "[IDEA] <idea-name>"
+name: Improvement
+about: Template for creating an improvement.
+title: "[IMPROVEMENT] <idea-name>"
 labels: ''
 assignees: ''
 

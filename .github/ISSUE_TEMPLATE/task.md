@@ -1,7 +1,7 @@
 ---
-name: Feature
-about: Template for creating a work ticket.
-title: "[FEATURE] <ticket-name>"
+name: Task
+about: Template for creating a work task.
+title: "[TASK] <ticket-name>"
 labels: ''
 assignees: ''
 
