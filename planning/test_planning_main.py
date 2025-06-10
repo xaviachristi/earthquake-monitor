@@ -1,6 +1,6 @@
 """Placeholder test file to test workflows."""
 
-from main import get_true
+from planning_main import get_true
 
 
 def test_get_true():
