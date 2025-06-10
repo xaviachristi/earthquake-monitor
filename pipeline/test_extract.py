@@ -13,7 +13,5 @@ class TestConvertCatalogToDataFrame:
         assert isinstance(convert_catalog_to_dataframe(test_cat), pd.DataFrame)
 
     def test_convert_catalog_to_dataframe_returns_dataframe_with_correct_data(self):
-        pass
-
-    def test_convert_catalog_to_dataframe_returns_dataframe_with_correct_data(self):
-        pass
+        test_cat = obspy.core.event.catalog._create_example_catalog()
+        assert "mag" in convert_catalog_to_dataframe(test_cat).columns
