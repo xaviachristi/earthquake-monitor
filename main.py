@@ -1,7 +1,8 @@
+"""Place holder main file to test workflows."""
 
 
 def get_true() -> bool:
-
+    """Returns True."""
     return True
 
 
