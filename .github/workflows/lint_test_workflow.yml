@@ -15,7 +15,6 @@ jobs:
     name: "Lint code"
     runs-on: ubuntu-latest
     steps:
-    steps:
       - name: Install language and dependencies 
         uses: actions/checkout@v4
         uses: actions/setup-python@v5
