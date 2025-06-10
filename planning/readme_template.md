@@ -9,7 +9,13 @@
 - <!-- Include commands for CLI. -->
 - <!-- Include variations for operating system e.g. Mac, Windows, Linux. -->
 
-# `.env file`
+<!-- Example for python directories.-->
+- Create a venv
+    - `python -m venv .venv`
+- Install dependencies
+    - `pip install -r requirements.txt`
+
+## `.env file`
 - <!-- Example env file below. -->
 ```txt
 DB_HOST=<DB_IP_ADDRESS>
@@ -26,22 +32,15 @@ S3_BUCKET=<NAME_OF_BUCKET_TO_SEND_QUERY_RESULTS_TO>
 GLUE_CATALOG_NAME=<NAME_OF_CATALOG_TO_QUERY>
 ```
 
-# Python
-
-- Create a venv
-    - `python -m venv .venv`
-- Install dependencies
-    - `pip install -r requirements.txt`
-
-## Scripts
+# Scripts
 
 <!-- List of sections for each file that is a script in this directory. -->
 
-## Modules
+# Modules
 
 <!-- List of sections for each file that is a module in this directory. -->
 
-## Testing
+# Testing
 
 - All the python utilty modules have associated test files in the format `test_<module_name>.py`
 - <!-- Include the conftest line if it has been used. -->
