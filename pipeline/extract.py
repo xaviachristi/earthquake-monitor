@@ -7,7 +7,6 @@ import logging
 
 import pandas as pd
 import obspy
-import obsplus
 
 
 logger = logging.getLogger(__name__)
