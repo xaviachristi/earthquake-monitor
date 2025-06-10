@@ -3,7 +3,7 @@
 - <!-- Purpose of directory. -->
 - All commands in this document should be ran from this directory `~/<path-to-directory>`
 
-# Installation
+# Setup
 
 - <!-- Neccessary installation instructions. -->
 - <!-- Include commands for CLI. -->
