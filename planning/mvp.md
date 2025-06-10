@@ -2,16 +2,22 @@
 
 - This document details the minimum viable product for the earthquake monitoring project
 
-## Solution Characteristics
+## Solution Contents
+- Pipeline from API to cloud hosted storage
+- Dashboard that integrates with storage
+- Alert system
+- Report generation
+- Sibscription service
 
+## Solution Characteristics
 - Solution hosted in the cloud
 
 ## Pipeline
 - Extract, transform and load module
 - Load module must output data that can be used by notifications service
 - Pipeline script
-- Lambderised
-- Continually ran
+- Containerised
+- Ran on continous schedule
 
 ## API
 - API for querying historical earthquake data
