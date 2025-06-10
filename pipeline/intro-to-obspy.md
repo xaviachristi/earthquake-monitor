@@ -13,6 +13,38 @@
 - The [ObsPlus](https://niosh-mining.github.io/obsplus/versions/latest/index.html) library provides ObsPy support for Pandas dataframes.
 - ObsPlus has an `obsplus.picks_to_df()` function which can construct summary dataframes from objects including the obspy `catalog`.
 
+## Example snippets (taken from documentation)
+
+Example for `read_events()`
+```
+import obspy
+cat = obspy.read_events("/path/to/file") # Also accepts URLs.
+```
+
+Example for `picks_to_df()`
+```
+import obsplus
+crandall = obsplus.load_dataset("crandall_test")
+cat = crandall.event_client.get_events()
+ev_df = obsplus.events_to_df(cat)
+```
+Produces a DataFrame that includes these headings:
+```
+- time
+- latitude
+- longitude
+- depth
+- magnitude
+- event_description
+- associated_phase_count
+- azimuthal_gap
+- event_id
+- horizontal_uncertainty
+- standard_error
+- used_phase_count
+- ...
+
+
 ## Additional Notes
 
 - Reading seismograms is not currently in scope.
