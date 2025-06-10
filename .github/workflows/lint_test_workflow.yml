@@ -1,4 +1,11 @@
+permissions:
+  contents: read
+
+name: Code Quality
 on:
+  push:
+    branches:
+      - 35-task-setup-github-actions
   pull_request:
     branches:
       - main
@@ -8,14 +15,13 @@ jobs:
     name: "Lint code"
     runs-on: ubuntu-latest
     steps:
-      - name: "Get code"
+    steps:
+      - name: Install language and dependencies 
         uses: actions/checkout@v4
-      - name: "Install python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
-      - name: "Install requirements"
         run: pip install -r requirements.txt
       - name: "Lint code"
         run: pylint --fail-under=8 **.py
@@ -23,14 +29,12 @@ jobs:
     name: "Test code"
     runs-on: ubuntu-latest
     steps:
-      - name: "Get code"
+      - name: Install language and dependencies 
         uses: actions/checkout@v4
-      - name: "Install python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
-      - name: "Install requirements"
         run: pip install -r requirements.txt
       - name: "Run tests"
         run: pytest
