@@ -1,7 +1,4 @@
 on:
-  push:
-    branches:
-      - 35-task-setup-github-actions
   pull_request:
     branches:
       - main
