@@ -15,23 +15,29 @@ jobs:
     name: "Lint code"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: "Get code"
+        uses: actions/checkout@v4
+      - name: "Install python"
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
-      - run: pip install -r requirements.txt
+      - name: "Install requirements"
+        run: pip install -r requirements.txt
       - name: "Lint code"
         run: pylint --fail-under=8 **.py
   test:
     name: "Test code"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: "Get code"
+        uses: actions/checkout@v4
+      - name: "Install python"
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
-      - run: pip install -r requirements.txt
+      - name: "Install requirements"
+        run: pip install -r requirements.txt
       - name: "Run tests"
         run: pytest
