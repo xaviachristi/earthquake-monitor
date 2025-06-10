@@ -6,8 +6,7 @@ This document describes what the data should look like at every stage of the pip
 
 ### INPUT
 
-- Takes from USGS API.
-- Endpoint: 
+- Takes data/input from USGS API.
 
 ### OUTPUT
 
@@ -137,4 +136,4 @@ pd.DataFrame({
 - See example above.
 
 ### OUTPUT
-- Upload data to RDS instance
+- Upload data to RDS instance.
