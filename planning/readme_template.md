@@ -1,4 +1,4 @@
-# Pipeline
+# <!-- Capitalised directory name -->
 
 - <!-- Purpose of directory. -->
 - All commands in this document should be ran from this directory `~/<path-to-directory>`
