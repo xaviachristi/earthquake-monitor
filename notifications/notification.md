@@ -19,4 +19,4 @@ There was an [_earthquake / aftershock_] of magnitude [_magnitude value_] in the
 
 ### Earthquake Alert!
 
-There was an [_earthquake / aftershock_] of magnitude [_magnitude value_] in the area of [_state_] in the region of [_region_] at [_time of earthquake_]. There is expected potential for a tsunami. Precise latitude and longitude location of earthquake: [_latitude value, longitude value_].
+There was an [_earthquake / aftershock_] of magnitude [_magnitude value_] in the area of [_state_] in the region of [_region_] at [_time of earthquake_]. There is potential for a tsunami. Precise latitude and longitude location of earthquake: [_latitude value, longitude value_].
