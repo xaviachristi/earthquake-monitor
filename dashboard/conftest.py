@@ -1,3 +1,4 @@
+# pylint: skip-file
 """Test fixtures for dashboard tests."""
 
 from pytest import fixture
