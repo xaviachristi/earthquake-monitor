@@ -9,7 +9,7 @@
     - How to avoid repeated data?
 
 
-### Thought Process
+### Thought Process (to be removed/tidied when pipeline is complete)
 
 - Tried to use ObsPy and ObsPlus to get data from the API and convert it to a dataframe.
 
@@ -33,16 +33,3 @@
     - `pd.read_json()` --`pd.DataFrame`--> `transform.py`.
 
 - Converting the ObsPy catalog to JSON is fine, but getting that JSON into a dataframe is difficult, as the data has a complex structure.
-
-
-Is this missing any data we need?
-
-- magnitude there
-- time there
-- updated there
-- latitude/longitude/depth(?) in geometry.coordinates
-- url there
-- tsunami there
-
-- Convert into dataframe.
-- No need to obspy?
