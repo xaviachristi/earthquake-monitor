@@ -46,7 +46,7 @@ This document details the minimum viable product for the earthquake monitoring p
 ## Subscriptions
 - Subscription service for receiving alerts for earthquakes
 - Needs multiple topics in AWS
-- One topic per interest area (magnitude, location in name)
+- One topic per interest area (magnitude, location)
 - Used to determine what email adresses recieve alerts from what topics
 - Alerts are potentially triggered every minute
 
