@@ -10,7 +10,6 @@ from report import get_report
 def serve_page():
     """Serve Reports page."""
     title("Reports")
-    sidebar.header("Reports")
     col1, col2 = columns([0.3, 0.7])
     show_report = False
     pdf_bytes = b""

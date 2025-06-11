@@ -20,6 +20,7 @@ basicConfig(
 @cache_resource
 def get_state_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per state."""
+    logger.info("Creating treemap...")
     fig = treemap(
         data_frame=data,
         path=[Constant("all"), 'State Name'],

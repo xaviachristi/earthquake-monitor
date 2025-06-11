@@ -10,9 +10,7 @@ from subscription import make_subscription
 def serve_page():
     """Serve Subscribe page."""
     title("Subscribe")
-    sidebar.header("Subscription Form")
     col1, col2 = columns([0.43, 0.7])
-
     with col1:
         first_name = text_input("First Name", placeholder="John")
         last_name = text_input("Last Name", placeholder="Smith")

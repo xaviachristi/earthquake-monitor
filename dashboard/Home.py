@@ -32,12 +32,15 @@ def serve_dash():
             Users can also view our reports section which contains a record of daily summary reports of earthquake activity.
             """
         )
-    earthquakes = get_data()
-    if earthquakes:
-        st.markdown("#Earthquake Quantity by State")
-        state_counts = get_counts_by_state(earthquakes)
-        fig = get_state_treemap(state_counts)
-        fig.show()
+    try:
+        earthquakes = get_data()
+        if earthquakes:
+            st.markdown("#Earthquake Quantity by State")
+            state_counts = get_counts_by_state(earthquakes)
+            fig = get_state_treemap(state_counts)
+            fig.show()
+    except:
+        st.error("Cannot return data from database.")
 
 
 if __name__ == "__main__":

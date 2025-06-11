@@ -8,7 +8,6 @@ from subscription import view_subscription, delete_subscription
 def serve_page():
     """Serve GDPR page"""
     title("GDPR")
-    sidebar.header("GDPR")
     markdown(
         """
         Our project team will collect your data through the subscription form.
