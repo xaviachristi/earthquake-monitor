@@ -1,3 +1,7 @@
 pylint
 pytest
 streamlit
+python-dotenv
+psycopg[binary]
+altair[all]
+plotly
