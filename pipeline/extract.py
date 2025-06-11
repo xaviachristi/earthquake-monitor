@@ -1,6 +1,6 @@
 """
-Connects to the USGS earthquake API and converts the information
-into a Pandas DataFrame.
+Connects to the USGS earthquake API and extracts the
+information into a Pandas DataFrame.
 """
 
 import logging
