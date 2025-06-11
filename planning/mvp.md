@@ -11,15 +11,14 @@ This document details the minimum viable product for the earthquake monitoring p
 - Subscription service
 
 ## Solution Characteristics
-- Solution hosted in the cloud
+- Solution hosted on the cloud
 
 ## Pipeline
 - Extract, transform and load modules
-- Load module must output data that can be used by notifications service
+- Load module must output data that can be used by the notifications service
 - Pipeline script
 - Containerised
-- Ran on continous schedule
-- Pipeline runs every minute.
+- Ran on continous schedule every minute
 
 ## API
 - API for querying historical earthquake data
@@ -45,7 +44,7 @@ This document details the minimum viable product for the earthquake monitoring p
 - Displayed in Dashboard
 
 ## Subscriptions
-- Subscription service for receiving alerts for earth
+- Subscription service for receiving alerts for earthquakes
 - Needs multiple topics in AWS
 - One topic per interest area (magnitude, location in name)
 - Used to determine what email adresses recieve alerts from what topics
