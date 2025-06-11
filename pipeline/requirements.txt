@@ -4,4 +4,3 @@ pytest-cov
 pylint
 pandas
 obspy
-obsplus
