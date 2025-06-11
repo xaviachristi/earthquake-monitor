@@ -6,6 +6,7 @@ import pandas as pd
 
 
 class TestConvertCatalogToDataFrame:
+    """A class that groups together tests for convert_catalog_to_dataframe()."""
 
     def test_convert_catalog_to_dataframe_returns_dataframe(self, example_catalog):
         """Checks the function returns a dataframe."""
