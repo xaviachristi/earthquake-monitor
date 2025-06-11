@@ -39,7 +39,7 @@ def get_data() -> DataFrame:
         with con.cursor() as curs:
             curs.execute("""SELECT * FROM earthquake_details
                          JOIN "state" USING (state_id) 
-                         JOIN "region" USING (state_id);""")
+                         JOIN "region" USING (region_id);""")
             quakes = curs.fetchall()
     return DataFrame.from_dict(quakes)
 
