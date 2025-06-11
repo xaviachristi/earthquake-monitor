@@ -42,24 +42,30 @@ Advantages & Disadvantages:
     - latitude              - {"events":["origins":[{"latitude":HERE}]]}            - 
     - longitude             - {"events":["origins":[{"longitude":HERE}]]}           - 
     - time                  - {"events":["origins":[{"time":HERE}]]}                - 
-    - updated               -          
-    - depth                 - {"events":["origins":[{"depth":HERE}]]}
-    - url                   - {"events":["resource_id":HERE]}
-    - felt                  - 
-    - tsunami               - 
-    - cdi                   - 
-    - mmi                   - 
-    - nst                   - 
-    - sig                   - 
-    - net                   - 
-    - dmin                  - 
-    - alert                 - 
-    - location_source       - 
-    - magnitude_type        - 
-    - state                 - 
-    - TYPE                  - 
-    - DELETED?              - 
-    - REVIEWED?             - 
+    - updated               - Potentially creation_info.creation_time?
+    - depth                 - {"events":["origins":[{"depth":HERE}]]}               - 
+    - url                   - {"events":["resource_id":HERE]}                       - 
+    - felt                  - ?
+    - tsunami               - ?
+    - cdi                   - What is?
+    - mmi                   - What is?
+    - nst                   - What is?
+    - sig                   - What is?
+    - net                   - What is?
+    - dmin                  - What is?
+    - alert                 - ?
+    - location_source       - What is?
+    - magnitude_type        - What is?
+    - state                 - They won't all be in the US?
+    - TYPE                  - {"events":["event_type":HERE]}                        - 
+    - DELETED?              - ?
+    - REVIEWED?             - {"events":["origins":[{"evaluation_mode":HERE}]]}     - 
+
+    Will I have to join additional information from resource_id (I think Ruy mentioned this)?
+    Do we *need* all these columns? What are they used for?
+    For the MVP I suggest magnitude, long/lat/depth, time, url
+    We could keep other columns as optional and fill them in later or remove them?
+    I think it's nice data to have but is going to take a long time to join it from the resource_id.
 
 """
 
