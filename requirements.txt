@@ -1,0 +1,6 @@
+pytest
+pytest-icdiff
+pytest-cov
+pylint
+pandas
+obspy

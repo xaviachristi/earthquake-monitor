@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 from obspy import Catalog
 import obspy.clients.fdsn
-import obspy.io.json
 
 
 logger = logging.getLogger(__name__)
@@ -66,16 +65,8 @@ def convert_catalog_to_dataframe(catalog_to_convert: Catalog,
 
 
 if __name__ == "__main__":
-
-    api = "USGS"
-
-    start_time = datetime.now() - timedelta(weeks=2)
-    end_time = datetime.now()
-
     try:
-        res = access_api(api, start_time, end_time)
-        earthquakes = convert_catalog_to_dataframe(res)
-        logger.info(earthquakes)
-
+        logger.info(convert_catalog_to_dataframe(
+            access_api("USGS", datetime.now() - timedelta(weeks=2), datetime.now())))
     except obspy.clients.fdsn.header.FDSNNoDataException:
         logger.info("No information for the time period.")
