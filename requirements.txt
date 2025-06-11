@@ -4,3 +4,9 @@ pytest-cov
 pylint
 pandas
 obspy
+streamlit
+python-dotenv
+psycopg[binary]
+altair[all]
+plotly
+streamlit-pdf-viewer
