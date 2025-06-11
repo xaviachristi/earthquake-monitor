@@ -1,16 +1,15 @@
 """Module for Home page of dashboard."""
 
-from logging import getLogger, basicConfig
-
 from dotenv import load_dotenv
+import streamlit as st
+
 from data import get_data, get_counts_by_state
 from charts import get_state_treemap
-import streamlit as st
 
 
 def serve_dash():
     """Serve streamlit dashboard."""
-    st.set_page_config(page_title="Home", layout="wide")
+    load_dotenv()
     st.title("Home")
     col1, col2 = st.columns(2)
     with col1:
@@ -42,12 +41,4 @@ def serve_dash():
 
 
 if __name__ == "__main__":
-    load_dotenv()
     serve_dash()
-    logger = getLogger(__name__)
-
-    basicConfig(
-        level="WARNING",
-        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-        datefmt="%Y-%m-%dT%H:%M:%S"
-    )

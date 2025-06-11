@@ -20,10 +20,11 @@ basicConfig(
 
 def get_connection() -> Connection:
     """Return db connection using environment."""
+    logger.info("Getting DB connection...")
     return connect(
         host=ENV["DB_HOST"],
         user=ENV["DB_USER"],
-        database=ENV["DB_NAME"],
+        dbname=ENV["DB_NAME"],
         port=int(ENV["DB_PORT"]),
         password=ENV["DB_PASSWORD"],
         row_factory=rows.dict_row
@@ -33,12 +34,12 @@ def get_connection() -> Connection:
 @cache_data
 def get_data() -> DataFrame:
     """Return all data for dashboard from RDS."""
+    logger.info("Getting results from DB...")
     with get_connection() as con:
         with con.cursor() as curs:
             curs.execute("""SELECT * FROM earthquake_details
-                         JOIN 'state' USING (state_id) 
-                         JOIN 'region' USING (state_id)
-                         JOIN 'event' USING (event_id);""")
+                         JOIN "state" USING (state_id) 
+                         JOIN "region" USING (state_id);""")
             quakes = curs.fetchall()
     return DataFrame.from_dict(quakes)
 
@@ -46,6 +47,7 @@ def get_data() -> DataFrame:
 @cache_data
 def get_counts_by_state(data: DataFrame) -> DataFrame:
     """Return dataframes of value counts for each state."""
+    logger.info("Grouping DataFrame by state...")
     return data["state_name"].value_counts().rename_axis("State Name").reset_index(name="Earthquake Count")
 
 

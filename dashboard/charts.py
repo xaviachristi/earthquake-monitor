@@ -2,7 +2,7 @@
 
 from logging import getLogger, basicConfig
 
-from streamlit import cache
+from streamlit import cache_resource
 from pandas import DataFrame
 from altair import Chart
 from plotly.express import treemap, Constant
@@ -17,7 +17,7 @@ basicConfig(
 )
 
 
-@cache
+@cache_resource
 def get_state_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per state."""
     fig = treemap(

@@ -1,14 +1,12 @@
 """Module for serving GDPR page."""
 
+from streamlit import (title, sidebar, markdown, 
+                       columns, button)
+
 from subscription import view_subscription, delete_subscription
-
-from streamlit import (set_page_config, title, sidebar,
-                       markdown, columns, button)
-
 
 def serve_page():
     """Serve GDPR page"""
-    set_page_config(page_title="Best trucks", layout="wide")
     title("GDPR")
     sidebar.header("GDPR")
     markdown(

@@ -5,3 +5,4 @@ python-dotenv
 psycopg[binary]
 altair[all]
 plotly
+streamlit-pdf-viewer
