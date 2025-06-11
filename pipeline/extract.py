@@ -52,6 +52,19 @@ def read_json_to_dataframe(filename: str) -> pd.DataFrame:
     return df
 
 
+def convert_catalog_to_dataframe(catalog_to_convert: Catalog,
+                                 file_name: str = "temp_earthquake_data.json"
+                                 ) -> pd.DataFrame:
+    """
+    Takes an ObsPy Catalog and converts it into a Pandas DataFrame.
+    Requires it to be written as a temporary JSON file.
+    """
+
+    write_catalog_as_json(file_name, catalog_to_convert)
+    earthquake_data = read_json_to_dataframe(file_name)
+    return earthquake_data
+
+
 def extract(api: str, start_time: datetime, end_time: datetime) -> pd.DataFrame:
     """Calls the specified API and returns a DataFrame of the information."""
 
