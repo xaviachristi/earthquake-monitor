@@ -37,17 +37,37 @@ Advantages & Disadvantages:
 
     I need the location for either method, so I'm going to start by doing this.
 
-    Required columns:
-    
+    Required columns:       Location in raw JSON:                                   Location in DataFrame:
+    - magnitude             - {"events":[{"magnitudes":[("mag":HERE)]}]}            - 
+    - latitude              - {"events":["origins":[{"latitude":HERE}]]}            - 
+    - longitude             - {"events":["origins":[{"longitude":HERE}]]}           - 
+    - time                  - {"events":["origins":[{"time":HERE}]]}                - 
+    - updated               -          
+    - depth                 - {"events":["origins":[{"depth":HERE}]]}
+    - url                   - {"events":["resource_id":HERE]}
+    - felt                  - 
+    - tsunami               - 
+    - cdi                   - 
+    - mmi                   - 
+    - nst                   - 
+    - sig                   - 
+    - net                   - 
+    - dmin                  - 
+    - alert                 - 
+    - location_source       - 
+    - magnitude_type        - 
+    - state                 - 
+    - TYPE                  - 
+    - DELETED?              - 
+    - REVIEWED?             - 
+
 """
 
-import logging
 import json
+import logging
 from datetime import datetime, timedelta
-
-import pandas as pd
-
 from extract import extract # For testing during development.
+import pandas as pd
 
 
 logger = logging.getLogger(__name__)
@@ -84,6 +104,7 @@ def cleanse_earthquake_data(flattened_earthquake_data: pd.DataFrame
     """
     pass
 
+
 def create_dataframe_expected_for_load(clean_earthquake_date: pd.DataFrame
                                        ) -> pd.DataFrame:
     """
@@ -91,6 +112,7 @@ def create_dataframe_expected_for_load(clean_earthquake_date: pd.DataFrame
     using the cleaned earthquake data.
     """
     pass
+
 
 def transform(dataframe_from_extract: pd.DataFrame) -> pd.DataFrame:
     """Cleans and reorganises the earthquake data from extract.py."""
@@ -107,7 +129,6 @@ if __name__ == "__main__":
     with open(filename, encoding="utf-8") as f:
         data = json.load(f)
         df = pd.json_normalize(data["events"], max_level=3)
-
 
     # Checking that there's not an agreed upon format.
     # df = pd.read_json(filename, orient="split")
