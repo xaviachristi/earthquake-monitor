@@ -8,15 +8,6 @@ from charts import get_state_treemap
 import streamlit as st
 
 
-logger = getLogger(__name__)
-
-basicConfig(
-    level="WARNING",
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S"
-)
-
-
 def serve_dash():
     """Serve streamlit dashboard."""
     st.set_page_config(page_title="Home", layout="wide")
@@ -53,3 +44,10 @@ def serve_dash():
 if __name__ == "__main__":
     load_dotenv()
     serve_dash()
+    logger = getLogger(__name__)
+
+    basicConfig(
+        level="WARNING",
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S"
+    )
