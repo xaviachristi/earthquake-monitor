@@ -4,7 +4,6 @@ from logging import getLogger, basicConfig
 
 from streamlit import cache_resource
 from pandas import DataFrame
-from altair import Chart
 from plotly.express import treemap, Constant
 
 
@@ -26,5 +25,5 @@ def get_state_treemap(data: DataFrame) -> treemap:
         path=[Constant("all"), 'State Name'],
         values="Earthquake Count")
     fig.update_traces(root_color="lightgrey")
-    fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
+    fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
     return fig

@@ -17,19 +17,26 @@ def serve_dash():
             """
             This Dashboard presents historic earthquake data provided by USGS.
             There are two pages holding their respectively labelled data.
-            On each page, there are filters on the top of the page to help you change the data you are viewing.
-            There are another two pages for subscribing for alerts and viewing historic summary reports.
+            On each page, there are filters on the top of the page to help 
+            you change the data you are viewing.
+            There are another two pages for subscribing for alerts and 
+            viewing historic summary reports.
             \n**👈 Select a page from the sidebar** to see data insights.
             """
         )
     with col2:
         st.markdown(
             """
-            This project aims to provide access to historical earthquake data gathered by the United States Geological Survey.
-            USGS has an API that outputs data for up to the previous month of earthquakes recorded.
-            Our aim is to extract the most valuable data from that and preserve it over time for our users.
-            Our users can also subscribe to alert notifcations for earthquake events by region and/or magintude of quake.
-            Users can also view our reports section which contains a record of daily summary reports of earthquake activity.
+            This project aims to provide access to historical earthquake data 
+            gathered by the United States Geological Survey.
+            USGS has an API that outputs data for up to the 
+            previous month of earthquakes recorded.
+            Our aim is to extract the most valuable data from that 
+            and preserve it over time for our users.
+            Our users can also subscribe to alert notifcations for 
+            earthquake events by region and/or magintude of quake.
+            Users can also view our reports section which contains a record 
+            of daily summary reports of earthquake activity.
             """
         )
     try:
@@ -39,8 +46,8 @@ def serve_dash():
             state_counts = get_counts_by_state(earthquakes)
             fig = get_state_treemap(state_counts)
             fig.show()
-    except:
-        st.error("Cannot return data from database.")
+    except Exception as err:
+        st.error(f"Cannot return data from database: {err}")
 
 
 if __name__ == "__main__":

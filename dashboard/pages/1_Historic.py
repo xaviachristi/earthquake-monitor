@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from streamlit import (title, sidebar, markdown,
+from streamlit import (title, markdown,
                        columns, selectbox, slider,
                        date_input)
 
@@ -15,7 +15,7 @@ def serve_page():
     try:
         data = get_data()
         regions = data["region_name"].unique()
-    except:
+    except Exception:
         data = None
         regions = ["Alabama", "Kentucky"]
     col1, col2, col3, col4 = columns([0.25, 0.15, 0.15, 0.4])
@@ -33,12 +33,16 @@ def serve_page():
     with col4:
         magnitude = slider(label="Filter by Minimum Magnitude.",
                            min_value=0, max_value=10, value=5)
-    markdown("Placeholder for rline chart fo earthquake count over time.")
+    markdown("Placeholder for line chart of earthquake count over time.")
     col1, col2 = columns(2)
     with col1:
-        markdown("Placeholder for recent earthquake details.")
+        markdown("Placeholder for bar chart of earthquake number by magnitude.")
+        markdown(
+            "Placeholder for metric on average magnitude of event for this time frame.")
     with col2:
-        markdown("Placeholder for geographical map of recent events.")
+        markdown("Placeholder for geographical map of all events.")
+        markdown(
+            "Placeholder for metric on total number of events for this time frame.")
 
 
 if __name__ == "__main__":

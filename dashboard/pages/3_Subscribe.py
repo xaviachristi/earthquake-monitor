@@ -1,6 +1,6 @@
 """Module for displaying subscribe page."""
 
-from streamlit import (title, sidebar, markdown, button,
+from streamlit import (title, markdown, button,
                        columns, text_input, number_input,
                        slider)
 

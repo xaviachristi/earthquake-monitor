@@ -1,6 +1,6 @@
 """Module for displaying reports page."""
 
-from streamlit import (title, sidebar, html, button,
+from streamlit import (title, html, button,
                        columns, download_button, date_input)
 from streamlit_pdf_viewer import pdf_viewer
 

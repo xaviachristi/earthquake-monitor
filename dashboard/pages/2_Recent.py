@@ -1,6 +1,6 @@
 """Module for displaying recent data page."""
 
-from streamlit import (title, sidebar, markdown,
+from streamlit import (title, markdown,
                        columns, selectbox, slider)
 
 from data import get_data

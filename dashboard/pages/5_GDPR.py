@@ -1,9 +1,10 @@
 """Module for serving GDPR page."""
 
-from streamlit import (title, sidebar, markdown, 
+from streamlit import (title, markdown,
                        columns, button)
 
 from subscription import view_subscription, delete_subscription
+
 
 def serve_page():
     """Serve GDPR page"""
