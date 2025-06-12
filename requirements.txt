@@ -11,3 +11,5 @@ altair[all]
 plotly
 streamlit-pdf-viewer
 boto3
+aiohttp
+geopy

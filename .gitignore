@@ -196,5 +196,9 @@ cython_debug/
 # Json files in the pipeline/ directory
 *.json
 
+<<<<<<< HEAD
 # Mac dependant files
+=======
+# DS Store
+>>>>>>> feat-create-transform-module
 .DS_Store
