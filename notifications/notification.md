@@ -14,7 +14,7 @@
 
 #### Earthquake Alert!
 
-There was an earthquake of magnitude [_magnitude value_] in [_state_], [_region_] at [_time of earthquake_].
+There was an earthquake of magnitude [_magnitude value_] in the area of [_state_], [_region_] at [_time of earthquake_].
 Precise latitude and longitude location of earthquake: [_latitude value, longitude value_].
 
 
@@ -22,7 +22,7 @@ Precise latitude and longitude location of earthquake: [_latitude value, longitu
 
 #### Earthquake Alert!
 
-There was an earthquake of magnitude [_magnitude value_] in [_state_], [_region_] at [_time of earthquake_].
+There was an earthquake of magnitude [_magnitude value_] in the area of [_state_], [_region_] at [_time of earthquake_].
 There is potential for a tsunami.
 Precise latitude and longitude location of earthquake: [_latitude value, longitude value_].
 

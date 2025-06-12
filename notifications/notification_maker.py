@@ -51,6 +51,15 @@ def validate_types(data: dict) -> bool:
     return True
 
 
+def get_location_message(data: dict) -> str:
+    """Returns a string for the location depending on if
+    it is within the USA or not."""
+    if data["state_name"] == "Not in the USA":
+        return data["region_name"]
+    else:
+        return f"the area of {data["state_name"]}, {data["region_name"]}"
+
+
 def make_message(data: dict) -> str:
     """Turns a dictionary of values into a string 
     of HTML that makes up the alert message."""
@@ -59,7 +68,7 @@ def make_message(data: dict) -> str:
                  <body>
                  <h1>Earthquake Alert!</h1>"""
     body = f"""<p>There was an earthquake of magnitude {data["magnitude"]} in
-    the area of {data["state_name"]} in the region of {data["region_name"]} at {data["time"]}.</p>
+     {get_location_message(data)} at {data["time"]}.</p>
     """
     if data["tsunami"]:
         body += """<p>There is potential for a tsunami.</p>"""
