@@ -25,7 +25,7 @@ def get_connection() -> Connection:
         host=ENV["DB_HOST"],
         user=ENV["DB_USER"],
         dbname=ENV["DB_NAME"],
-        port=int(ENV["DB_PORT"]),
+        port=ENV["DB_PORT"],
         password=ENV["DB_PASSWORD"],
         row_factory=rows.dict_row
     )
