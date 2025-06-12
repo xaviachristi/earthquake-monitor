@@ -97,3 +97,19 @@ def example_diff():
             "state_name": "Nevada", "region_name": "West Coast"
         }
     ])
+
+
+@fixture
+def example_topic():
+    """Expected topic arn containing dictionary."""
+    return DataFrame([
+        {
+            "topic_arn": "arn:aws:sns:eu-west-2:129033205317:c17-quake-4-12-22-100",
+            "magnitude": 4.0, "latitude": 11.0, "longitude": 21.0,
+            "time": "2024-02-01", "updated": "2024-02-02", "depth": 10.0, "url": "another.com",
+            "felt": 2, "tsunami": 1, "cdi": 3.0, "mmi": 2.5, "nst": 5,
+            "sig": 100, "net": "us", "dmin": 0.1, "alert": "green",
+            "location_source": "us", "magnitude_type": "mb",
+            "state_name": "Nevada", "region_name": "West Coast"
+        }
+    ])

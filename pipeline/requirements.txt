@@ -6,3 +6,4 @@ pandas
 obspy
 psycopg[binary]
 python-dotenv
+boto3
