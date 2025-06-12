@@ -195,3 +195,6 @@ cython_debug/
 
 # Json files in the pipeline/ directory
 *.json
+
+# Mac dependant files
+.DS_Store
