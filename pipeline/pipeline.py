@@ -148,13 +148,24 @@ def run_pipeline(start: datetime = datetime.now() - timedelta(minutes=1),
         "Found environment: %s, %s", ENV["DB_USER"], ENV["DB_HOST"], ENV["DB_NAME"])
 
     logger.info("Extracting data from API...")
-    raw = extract("USGS", start, end)
+    raw = extract("USGS", "temp_earthquake_data.json", start, end)
+    if not raw:
+        logger.warning("No data returned from API.")
+        return None
 
     logger.info("Transforming data...")
     transformed = transform(raw)
+    if transformed.empty:
+        logger.warning("Failed to transform data returned from API.")
+        return None
+    logger.info("Transformed data into: %s", transformed)
 
     logger.info("Loading data to RDS...")
     uploaded = load(transformed)
+    if uploaded.empty:
+        logger.warning("No data uploaded to RDS.")
+        return None
+    logger.info("Loaded data into RDS: %s", uploaded)
 
     return uploaded
 
@@ -170,10 +181,12 @@ def lambda_handler(event, context):
     """
     try:
         logger.info("Running ETL pipeline...")
-        data = run_pipeline()
+        data = run_pipeline(datetime.now() - timedelta(minutes=1),
+                            datetime.now())
 
-        logger.info("Creating alert dictionary...")
-        topics = get_topic_dictionaries(data)
+        if data:
+            logger.info("Creating alert dictionary...")
+            topics = get_topic_dictionaries(data)
 
         return {
             "statusCode": 200,
@@ -185,58 +198,6 @@ def lambda_handler(event, context):
 
 
 if __name__ == "__main__":
-    london_tz = timezone("Europe/London")
-    sample_df = DataFrame([
-        {
-            "earthquake_id": 1,
-            "magnitude": 5,
-            "latitude": 11.5,
-            "longitude": 22.0,
-            "time": london_tz.localize(datetime.strptime("2024-02-01", "%Y-%m-%d")),
-            "updated": london_tz.localize(datetime.strptime("2024-02-02", "%Y-%m-%d")),
-            "depth": 5.0,
-            "url": "example.com/1",
-            "felt": 1,
-            "tsunami": False,
-            "cdi": 3.1,
-            "mmi": 2.3,
-            "nst": 1,
-            "sig": 1,
-            "net": "us",
-            "dmin": 0.1,
-            "alert": "green",
-            "location_source": "us",
-            "magnitude_type": "Mb",
-            "state_name": "California",
-            "region_name": "West Coast",
-            "state_id": 12,
-            "region_id": 4
-        },
-        {
-            "earthquake_id": 2,
-            "magnitude": 3.7,
-            "latitude": 11.0,
-            "longitude": 21.0,
-            "time": london_tz.localize(datetime.strptime("2024-02-01", "%Y-%m-%d")),
-            "updated": london_tz.localize(datetime.strptime("2024-02-02", "%Y-%m-%d")),
-            "depth": 7.0,
-            "url": "example.com/2",
-            "felt": 0,
-            "tsunami": True,
-            "cdi": 2.8,
-            "mmi": 2.1,
-            "nst": 2,
-            "sig": 2,
-            "net": "us",
-            "dmin": 0.2,
-            "alert": "yellow",
-            "location_source": "us",
-            "magnitude_type": "Mb",
-            "state_name": "Nevada",
-            "region_name": "Southwest",
-            "state_id": 13,
-            "region_id": 4
-        }
-    ])
     load_dotenv()
-    run_pipeline()
+    run_pipeline(datetime.now() - timedelta(hours=9),
+                 datetime.now() - timedelta(hours=8))

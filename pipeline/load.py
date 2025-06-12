@@ -35,7 +35,7 @@ def get_current_db(conn: Connection) -> DataFrame:
     """Return all records currently in database."""
     with conn.cursor() as curs:
         curs.execute("""SELECT * FROM earthquake
-                        JOIN "state" USING (state_id) 
+                        JOIN "state" USING (state_id)
                         JOIN "region" USING (region_id);""")
         quakes = DataFrame(curs.fetchall())
     if quakes.empty:
@@ -64,20 +64,30 @@ def preprocess_df(df: DataFrame) -> DataFrame:
     df['cdi'] = df['cdi'].round(1)
     df['mmi'] = df['mmi'].round(1)
     df['dmin'] = df['dmin'].round(3)
+    df["tsunami"] = df["tsunami"].apply(lambda x: bool(x))
+    df["magnitude_type"] = df["magnitude_type"].str.title()
 
     return df
 
 
 def get_diff(df1: DataFrame, df2: DataFrame) -> DataFrame:
     """Return records that only exist in first DataFrame."""
+    london_tz = timezone("Europe/London")
+    df1["time"] = df1["time"].apply(
+        lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
+    df1["updated"] = df1["updated"].apply(
+        lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
     df1 = preprocess_df(df1)
     df2 = preprocess_df(df2)
 
-    df1 = df1.drop(columns=["earthquake_id", "state_id", "region_id"])
-    df2 = df2.drop(columns=["earthquake_id"])
+    df1 = df1.drop(columns=["earthquake_id", "location_source"])
+    df2 = df2.drop(columns=["earthquake_id", "state_id",
+                   "region_id", "location_source"], errors="ignore")
 
     df1 = df1.reset_index(drop=True)
     df2 = df2.reset_index(drop=True)
+
+    logger.info("df1: %s, df2: %s", df1, df2)
 
     df_diff = df1.merge(df2, how='left', indicator=True)
     return df_diff[df_diff['_merge'] == 'left_only'].drop(columns=['_merge'])
@@ -85,9 +95,10 @@ def get_diff(df1: DataFrame, df2: DataFrame) -> DataFrame:
 
 def get_region_id(conn: Connection, region: str) -> int | None:
     """Return id of region if it is in the database."""
+    logger.info("Checking if region, %s, is in database...", region)
     with conn.cursor() as curs:
         curs.execute("""SELECT * FROM region
-                     WHERE region_name = %s;""",
+                     WHERE region_name ILIKE %s;""",
                      (region,))
         result = curs.fetchone()
     if result:
@@ -98,9 +109,10 @@ def get_region_id(conn: Connection, region: str) -> int | None:
 
 def get_state_id(conn: Connection, state: str) -> int | None:
     """Return id of state if it is in the database."""
+    logger.info("Checking if state, %s, is in database...", state)
     with conn.cursor() as curs:
         curs.execute("""SELECT * FROM "state"
-                     WHERE state_name = %s;""",
+                     WHERE state_name ILIKE %s;""",
                      (state,))
         result = curs.fetchone()
     if result:
@@ -113,10 +125,9 @@ def upload_row_to_db(conn: Connection, row: dict):
     """Upload row as a dictionary to the database."""
     logger.debug("Uploading row: %s", row)
 
-    logger.info("Checking if region is in database...")
     region_id = get_region_id(conn, row["region_name"])
 
-    if not region_id:
+    if region_id is None:
         logger.info("Uploading region data...")
         with conn.cursor() as curs:
             curs.execute("""INSERT INTO region(region_name)
@@ -125,10 +136,9 @@ def upload_row_to_db(conn: Connection, row: dict):
                          (row["region_name"],))
             region_id = curs.fetchone()["region_id"]
 
-    logger.info("Checking if state is in database...")
     state_id = get_state_id(conn, row["state_name"])
 
-    if not state_id:
+    if state_id is None:
         logger.info("Uploading state data...")
         with conn.cursor() as curs:
             curs.execute("""INSERT INTO state(state_name, region_id)
@@ -142,11 +152,11 @@ def upload_row_to_db(conn: Connection, row: dict):
         curs.execute("""INSERT INTO earthquake(magnitude,
                      latitude, longitude, "time", updated, depth,
                      "url", felt, tsunami, cdi, mmi, nst,
-                     sig, net, dmin, alert, location_source,
+                     sig, net, dmin, alert,
                      magnitude_type, state_id)
                      VALUES (%s, %s, %s, %s, %s, %s,
                      %s, %s, %s, %s, %s, %s, %s, %s,
-                     %s, %s, %s, %s, %s);""",
+                     %s, %s, %s, %s);""",
                      (
                          row["magnitude"],
                          row["latitude"],
@@ -164,7 +174,6 @@ def upload_row_to_db(conn: Connection, row: dict):
                          row["net"],
                          row["dmin"],
                          row["alert"],
-                         row["location_source"],
                          row["magnitude_type"],
                          state_id
                      ))

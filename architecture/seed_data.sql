@@ -1,88 +1,88 @@
-INSERT INTO region (region_id, region_name) VALUES
-(1, 'West Coast'),
-(2, 'Pacific Northwest'),
-(3, 'Southwest'),
-(4, 'Rocky Mountains'),
-(5, 'Midwest'),
-(6, 'Southeast'),
-(7, 'Northeast'),
-(8, 'Alaska'),
-(9, 'Hawaii'),
-(10, 'Puerto Rico'),
-(11, 'Other/Offshore');
+INSERT INTO region (region_name) VALUES
+('West Coast'),
+('Pacific Northwest'),
+('Southwest'),
+('Rocky Mountains'),
+('Midwest'),
+('Southeast'),
+('Northeast'),
+('Alaska'),
+('Hawaii'),
+('Puerto Rico'),
+('Other/Offshore');
 
 
-INSERT INTO state (state_id, state_name, region_id) VALUES
+INSERT INTO state (state_name, region_id) VALUES
 -- West Coast
-(1, 'California', 1),
-(2, 'Oregon', 1),
-(3, 'Washington', 1),
+('California', 1),
+('Oregon', 1),
+('Washington', 1),
 
 -- Pacific Northwest
-(4, 'Idaho', 2),
+('Idaho', 2),
 
 -- Southwest
-(5, 'Nevada', 3),
-(6, 'Arizona', 3),
-(7, 'New Mexico', 3),
-(8, 'Texas', 3),
-(9, 'Oklahoma', 3),
-(10, 'Utah', 3),
+('Nevada', 3),
+('Arizona', 3),
+('New Mexico', 3),
+('Texas', 3),
+('Oklahoma', 3),
+('Utah', 3),
 
 -- Rocky Mountains
-(11, 'Montana', 4),
-(12, 'Colorado', 4),
-(13, 'Wyoming', 4),
+('Montana', 4),
+('Colorado', 4),
+('Wyoming', 4),
 
 -- Midwest
-(14, 'North Dakota', 5),
-(15, 'South Dakota', 5),
-(16, 'Nebraska', 5),
-(17, 'Kansas', 5),
-(18, 'Minnesota', 5),
-(19, 'Iowa', 5),
-(20, 'Missouri', 5),
-(21, 'Wisconsin', 5),
-(22, 'Illinois', 5),
-(23, 'Indiana', 5),
-(24, 'Michigan', 5),
-(25, 'Ohio', 5),
+('North Dakota', 5),
+('South Dakota', 5),
+('Nebraska', 5),
+('Kansas', 5),
+('Minnesota', 5),
+('Iowa', 5),
+('Missouri', 5),
+('Wisconsin', 5),
+('Illinois', 5),
+('Indiana', 5),
+('Michigan', 5),
+('Ohio', 5),
 
 -- Southeast
-(26, 'Arkansas', 6),
-(27, 'Louisiana', 6),
-(28, 'Kentucky', 6),
-(29, 'Tennessee', 6),
-(30, 'Mississippi', 6),
-(31, 'Alabama', 6),
-(32, 'Georgia', 6),
-(33, 'Florida', 6),
-(34, 'South Carolina', 6),
-(35, 'North Carolina', 6),
-(36, 'Virginia', 6),
-(37, 'West Virginia', 6),
+('Arkansas', 6),
+('Louisiana', 6),
+('Kentucky', 6),
+('Tennessee', 6),
+('Mississippi', 6),
+('Alabama', 6),
+('Georgia', 6),
+('Florida', 6),
+('South Carolina', 6),
+('North Carolina', 6),
+('Virginia', 6),
+('West Virginia', 6),
 
 -- Northeast
-(38, 'Maryland', 7),
-(39, 'Delaware', 7),
-(40, 'Pennsylvania', 7),
-(41, 'New Jersey', 7),
-(42, 'New York', 7),
-(43, 'Connecticut', 7),
-(44, 'Rhode Island', 7),
-(45, 'Massachusetts', 7),
-(46, 'Vermont', 7),
-(47, 'New Hampshire', 7),
-(48, 'Maine', 7),
+('Maryland', 7),
+('Delaware', 7),
+('Pennsylvania', 7),
+('New Jersey', 7),
+('New York', 7),
+('Connecticut', 7),
+('Rhode Island', 7),
+('Massachusetts', 7),
+('Vermont', 7),
+('New Hampshire', 7),
+('Maine', 7),
 
 -- Alaska
-(49, 'Alaska', 8),
+('Alaska', 8),
 
 -- Hawaii
-(50, 'Hawaii', 9),
+('Hawaii', 9),
 
 -- Puerto Rico
-(51, 'Puerto Rico', 10),
+('Puerto Rico', 10),
 
 -- Other/Offshore
-(52, 'District of Columbia', 7);
+('District of Columbia', 11);
