@@ -139,3 +139,5 @@ if __name__ == "__main__":
 
     extract("USGS", "temp_earthquake_data.json",
             datetime.now() - timedelta(days=1), datetime.now())
+
+    # New API query needs: reviewstatus=reviewed and eventtype=earthquake

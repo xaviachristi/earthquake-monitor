@@ -2,83 +2,15 @@
 Transforms a dataframe into a format appropriate for loading into the database.
 """
 
-"""
-Initial plan:
-    Flow of logic:
-    1. Flatten out the nested data.
-    2. Clean the data.
-    3. Create a new dataframe with the correct columns and assign the
-    cleaned and flattened data to it.
-
-    The reason for flattening the data out is to make steps 2 and 3
-    simpler and more consistent.
-
-Alternative plan:
-    1. Use pd.json_normalize() with a specified structure to pull the
-       data straight into the format.
-    2. Drop rows similar to initial plan.
-    3. Drop and rename columns.
-
-Advantages & Disadvantages:
-    - JSON Normalise might be slow but so might flattening everything.
-    - I already have function signatures for the initial plan.
-    - JSON normalise might require the data to be in a JSON format.
-    - JSON normalise feels like the 'proper' way of doing it.
-    - Writing the code for flattening may take a while
-        - There are example scripts I could base it off online.
-    - JSON normalise is already being run in extract.py.
-        - If I was to go with the alternative plan, I think  it would make
-          more sense to adapt that script.
-    - Flattening all the data will create A LOT of columns.
-
-    If I had a list of all the columns I need (ERD + those used for filtering)
-    and where they are (look at the JSON),
-    I could use this to build arguments for pd.json_normalize().
-        Does pd.json_normalize() require every key:value be mapped to a column? I doubt it?
-    But I would have to experiment with pd.json_normalize() first.
-
-    I need the location of the data for both methods, so I'm going to start by doing this.
-
-    Required columns:       Location in raw JSON:                                   Location in DataFrame:
-                                                                                    (Not written properly as they're lists of dicts)
-    - magnitude             - {"events":[{"magnitudes":[("mag":HERE)]}]}            - df["magnitudes"["mag"]]
-    - latitude              - {"events":["origins":[{"latitude":HERE}]]}            - df["origins"["latitude"]]
-    - longitude             - {"events":["origins":[{"longitude":HERE}]]}           - df["origins"["longitude"]]
-    - time                  - {"events":["origins":[{"time":HERE}]]}                - df["origins"["time"]]
-    - updated               - Potentially creation_info.creation_time?
-    - depth                 - {"events":["origins":[{"depth":HERE}]]}               - df["origins"["depth"]]
-    - url                   - {"events":["resource_id":HERE]}                       - df["resource_id"]
-    - felt                  - ?
-    - tsunami               - ?
-    - cdi                   - What is?
-    - mmi                   - What is?
-    - nst                   - What is?
-    - sig                   - What is?
-    - net                   - What is?
-    - dmin                  - What is?
-    - alert                 - ?
-    - location_source       - What is?
-    - magnitude_type        - What is?
-    - state                 - They won't all be in the US (uncertain)? They won't all be in a state (certain).
-    - TYPE                  - {"events":["event_type":HERE]}                        - df["event_type"]
-    - DELETED?              - ?
-    - REVIEWED?             - {"events":["origins":[{"evaluation_mode":HERE}]]}     - df["origins"]["evaluation_mode"]
-
-    Will I have to join additional information from resource_id (I think Ruy mentioned this)?
-    Do we *need* all these columns? What are they used for?
-    For the MVP I suggest magnitude, long/lat/depth, time, url.
-    We could keep other columns as optional and fill them in later or we could remove them?
-    I think it's nice data to have but is going to take a long time to join it from the resource_id.
-
-"""
-
-
 import logging
+from json import loads, load
 from datetime import datetime, timedelta
-from json import loads
 
 import pandas as pd
 from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+
+from extract import extract # TODO remove this
 
 
 logger = logging.getLogger(__name__)
@@ -89,25 +21,41 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
 
+
 def is_event_clean(event: dict) -> bool:
     """Checks if we want an entry in the database."""
-    if event["properties"]["status"] != "reviewed":
+    logger.debug("Performing is_event_clean() check.")
+    if event["properties"]["status"] != "reviewed" \
+    or event["properties"]["type"] != "earthquake":
+        logger.info("Unclean event found. ID: %s", event["properties"]["ids"])
         return False
+
+    return True
 
 
 def clean_earthquake_data(earthquake_data: list[dict]) -> list[dict]:
     """Removes entries that we don't want in the database."""
-    pass
+    logger.info("Removing unwanted entries.")
+
+    clean_events = []
+    for entry in earthquake_data:
+        if is_event_clean(entry):
+            clean_events.append(entry)
+    return clean_events
 
 
 def get_address(latitude: float, longitude: float) -> str:
     """Calls GeoPy to convert coords into an address."""
 
-    logger.info("Finding position %s, %s.", latitude, longitude)
-
+    logger.info("Finding address for %s, %s.", latitude, longitude)
     geolocator = Nominatim(user_agent="earthquake_monitor")
+    geocode = RateLimiter(geolocator.reverse, min_delay_seconds=1)
+    address = geocode(f"{latitude}, {longitude}")
 
-    return geolocator.reverse(f"{latitude}, {longitude}")[0].split(", ")
+    if address:
+        return geocode(f"{latitude}, {longitude}")[0].split(", ")
+
+    return ["No Country"]
 
 
 def grab_state(address: list[str])-> str:
@@ -249,20 +197,23 @@ def create_dataframe_expected_for_load() -> pd.DataFrame:
 
 def transform(data_from_extract: list[dict]) -> pd.DataFrame:
     """Cleans and reorganises the earthquake data from extract.py."""
-    pass
+
+    earthquakes = clean_earthquake_data(data_from_extract)
+
+    df = create_dataframe_expected_for_load()
+
+    for i in range(len(earthquakes)):
+
+        df.loc[i] = make_row_for_dataframe(earthquakes[i])
+
+    return df
 
 
 if __name__ == "__main__":
-    single_event = loads("""{"type": "Feature","properties":{"mag":0.53,"place":"10 km SSW of Idyllwild, CA","time":1749655031680,"updated":1749675581157,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/ci41182664","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":4,"net":"ci","code":"41182664","ids":",ci41182664,","sources":",ci,","types":",nearby-cities,origin,phase-data,scitech-link,","nst":15,"dmin":0.06854,"rms":0.13,"gap":115,"magType":"ml","type":"earthquake","title":"M 0.5 - 10 km SSW of Idyllwild, CA","products":{"nearby-cities":[{"indexid":5431596,"indexTime":1749675579811,"id":"urn:usgs-product:ci:nearby-cities:ci41182664:1749675578440","type":"nearby-cities","code":"ci41182664","source":"ci","updateTime":1749675578440,"status":"UPDATE","properties":{"eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21"},"preferredWeight":7,"contents":{"nearby-cities.json":{"contentType":"application/json","lastModified":1749675578000,"length":596,"url":"https://earthquake.usgs.gov/realtime/product/nearby-cities/ci41182664/ci/1749675578440/nearby-cities.json"}}}],"origin":[{"indexid":5431595,"indexTime":1749675578850,"id":"urn:usgs-product:ci:origin:ci41182664:1749675577830","type":"origin","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":3423,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/quakeml.xml"}}}],"phase-data":[{"indexid":5431597,"indexTime":1749675580880,"id":"urn:usgs-product:ci:phase-data:ci41182664:1749675577830","type":"phase-data","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":100216,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/quakeml.xml"}}}],"scitech-link":[{"indexid":5431598,"indexTime":1749675582101,"id":"urn:usgs-product:ci:scitech-link:ci41182664-waveform_ci:1749675581157","type":"scitech-link","code":"ci41182664-waveform_ci","source":"ci","updateTime":1749675581157,"status":"UPDATE","properties":{"addon-code":"Waveform_CI","addon-type":"LinkURL","eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21","text":"Waveforms","url":"https://scedc.caltech.edu/review_eventfiles/makePublicView.html?evid=41182664","version":"01"},"preferredWeight":7,"contents":[]}]}},"geometry":{"type":"Point","coordinates":[-116.771,33.6663333,15.81]},"id":"ci41182664"}""")
-    row = make_row_for_dataframe(single_event)
+    # single_event = loads("""{"type": "Feature","properties":{"mag":0.53,"place":"10 km SSW of Idyllwild, CA","time":1749655031680,"updated":1749675581157,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/ci41182664","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":4,"net":"ci","code":"41182664","ids":",ci41182664,","sources":",ci,","types":",nearby-cities,origin,phase-data,scitech-link,","nst":15,"dmin":0.06854,"rms":0.13,"gap":115,"magType":"ml","type":"earthquake","title":"M 0.5 - 10 km SSW of Idyllwild, CA","products":{"nearby-cities":[{"indexid":5431596,"indexTime":1749675579811,"id":"urn:usgs-product:ci:nearby-cities:ci41182664:1749675578440","type":"nearby-cities","code":"ci41182664","source":"ci","updateTime":1749675578440,"status":"UPDATE","properties":{"eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21"},"preferredWeight":7,"contents":{"nearby-cities.json":{"contentType":"application/json","lastModified":1749675578000,"length":596,"url":"https://earthquake.usgs.gov/realtime/product/nearby-cities/ci41182664/ci/1749675578440/nearby-cities.json"}}}],"origin":[{"indexid":5431595,"indexTime":1749675578850,"id":"urn:usgs-product:ci:origin:ci41182664:1749675577830","type":"origin","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":3423,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/quakeml.xml"}}}],"phase-data":[{"indexid":5431597,"indexTime":1749675580880,"id":"urn:usgs-product:ci:phase-data:ci41182664:1749675577830","type":"phase-data","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":100216,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/quakeml.xml"}}}],"scitech-link":[{"indexid":5431598,"indexTime":1749675582101,"id":"urn:usgs-product:ci:scitech-link:ci41182664-waveform_ci:1749675581157","type":"scitech-link","code":"ci41182664-waveform_ci","source":"ci","updateTime":1749675581157,"status":"UPDATE","properties":{"addon-code":"Waveform_CI","addon-type":"LinkURL","eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21","text":"Waveforms","url":"https://scedc.caltech.edu/review_eventfiles/makePublicView.html?evid=41182664","version":"01"},"preferredWeight":7,"contents":[]}]}},"geometry":{"type":"Point","coordinates":[-116.771,33.6663333,15.81]},"id":"ci41182664"}""")
+    with open("test_data_for_transform.json", "r") as f:
+        events = load(f)
 
-    df = create_dataframe_expected_for_load()
-    df.loc[0] = row
+    df = transform(events)
     print(df)
     print(df.info())
-
-    # Possible test cases for 
-    # print(get_state_from_pos(33.6663333, -116.771))
-    # print(get_state_from_pos(38.875807, -77.0309))
-    # print(get_state_from_pos(38.98367794543014, -77.05994602599287))
-    pass
