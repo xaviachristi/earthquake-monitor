@@ -84,53 +84,95 @@ from geopy.geocoders import Nominatim
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
-    level="DEBUG",
+    level="INFO",
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
 
+def is_event_clean(event: dict) -> bool:
+    """Checks if we want an entry in the database."""
+    if event["properties"]["status"] != "reviewed":
+        return False
 
-# TODO Make a function similar to make_row_for_dataframe() that checks if we want the data
-# Could this be handled as a filter in the API query?
 
-def get_pos(latitude: float, longitude: float) -> str:
+def clean_earthquake_data(earthquake_data: list[dict]) -> list[dict]:
+    """Removes entries that we don't want in the database."""
+    pass
+
+
+def get_address(latitude: float, longitude: float) -> str:
     """Calls GeoPy to convert coords into an address."""
 
     logger.info("Finding position %s, %s.", latitude, longitude)
 
     geolocator = Nominatim(user_agent="earthquake_monitor")
 
-    return geolocator.reverse(f"{latitude}, {longitude}")
+    return geolocator.reverse(f"{latitude}, {longitude}")[0].split(", ")
 
 
-def grab_state(address: str)-> str:
+def grab_state(address: list[str])-> str:
     """Finds a state in an address."""
-
-    state_loc_end = address.rfind(",")
-    state_loc_start = address[:state_loc_end].rfind(",")+2
-    state = address[state_loc_start:state_loc_end]
-    if state.replace(" ", "").isnumeric(): # Sometimes it's a ZIP code.
-        state = grab_state(address[:state_loc_start])
-    return state
+    if not address[-2].isnumeric():
+        return address[-2]
+    return address[-3]
 
 
-def get_state_from_pos(latitude: float, longitude: float) -> str:
-    """Uses geopy to get the state that an earthquake occurred in."""
+def get_region_from_state(state_name: str) -> str:
+    """Looks up the a state name to find which region it is in."""
+    return {"california": "West Coast",
+            "oregon": "West Coast",
+            "washington'": "West Coast",
+            
+            "idaho": "Pacific Northwest",
 
-    full_location = get_pos(latitude, longitude)
-    logger.debug("Full location: %s", full_location)
+            "montana": "Rocky Mountains",
+            "colorado": "Rocky Mountains",
+            "wyoming": "Rocky Mountains",
 
-    if full_location[0][-13:] == "United States":
-        state = grab_state(full_location[0])
-        return state
-    # If end = united states, get state, else return not in US
-    return "Not in the USA."
+            "north dakota": "Midwest",
+            "south dakota": "Midwest",
+            "nebraska": "Midwest",
+            "kansas": "Midwest",
+            "minnesota": "Midwest",
+            "iowa": "Midwest",
+            "missouri": "Midwest",
+            "wisconsin": "Midwest",
+            "illinois": "Midwest",
+            "indiana": "Midwest",
+            "michigan": "Midwest",
+            "ohio": "Midwest",
 
+            "arkansas": "Southeast",
+            "louisiana": "Southeast",
+            "kentucky": "Southeast",
+            "tennessee": "Southeast",
+            "mississippi": "Southeast",
+            "alabama": "Southeast",
+            "georgia": "Southeast",
+            "florida": "Southeast",
+            "south carolina": "Southeast",
+            "north carolina": "Southeast",
+            "virginia": "Southeast",
+            "west virginia": "Southeast",
 
-def map_state_name_to_expected(api_state_name: str) -> str:
-    """Maps the state names the API uses to the ones we are using."""
-    return api_state_name
+            "maryland": "Northeast",
+            "delaware": "Northeast",
+            "pennsylvania": "Northeast",
+            "new jersey": "Northeast",
+            "new york": "Northeast",
+            "connecticut": "Northeast",
+            "rhode island": "Northeast",
+            "massachusetts": "Northeast",
+            "vermont": "Northeast",
+            "new hampshire": "Northeast",
+            "maine": "Northeast",
+            "district of columbia": "Northeast",
 
+            "alaska": "Alaska",
+            "hawaii": "Hawaii",
+            "puerto rico": "Puerto Rico"
+
+    }[state_name.lower()]
 
 
 def make_row_for_dataframe(event: dict) -> list:
@@ -140,6 +182,7 @@ def make_row_for_dataframe(event: dict) -> list:
     """
 
     df_row = []
+
     # earthquake_id - creates a list incase there are multiple IDs.
     df_row.append(list(filter(None, event["properties"]["ids"].split(","))))
     # magnitude.
@@ -177,25 +220,17 @@ def make_row_for_dataframe(event: dict) -> list:
     # location_source
     df_row.append(list(filter(None, event["properties"]["sources"].split(","))))
     # magnitude_type
-    df_row.append(event["properties"]["title"])
-    # state_name - This could come in the form of either initials or full?  CA or Alaska
-    # might depend on the state? I think CA is fairly consistent
-
-    # I think this can be solved by mapping what comes in to what we need.
-    # It feels a shame to loose country information. Should I pass this through in region
-
-    # df_row.append(event[""])
-
-    # COMPLICATION! naming scheme of xkm DIR of City, State may include a state
-    #               other than the state where it happened!
-    # Solution: GeoPy
-
-    # country name as region with state being non-US
-
-    # region_name - I think region is unnecessary because of how it's built in the database.
-    # df_row.append(event[""])
-
-    #  Map states to region
+    df_row.append(event["properties"]["magType"])
+    # state_name - default: "Not in the USA".
+    # region_name - if not in the USA, country name.
+    address = get_address(df_row[2], df_row[3])
+    if address[-1] == "United States":
+        state = grab_state(address)
+        df_row.append(state)
+        df_row.append(get_region_from_state(state))
+    else:
+        df_row.append("Not in the USA")
+        df_row.append(address[-1])
 
     return df_row
 
@@ -218,15 +253,16 @@ def transform(data_from_extract: list[dict]) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    # single_event = loads("""{"type": "Feature","properties":{"mag":0.53,"place":"10 km SSW of Idyllwild, CA","time":1749655031680,"updated":1749675581157,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/ci41182664","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":4,"net":"ci","code":"41182664","ids":",ci41182664,","sources":",ci,","types":",nearby-cities,origin,phase-data,scitech-link,","nst":15,"dmin":0.06854,"rms":0.13,"gap":115,"magType":"ml","type":"earthquake","title":"M 0.5 - 10 km SSW of Idyllwild, CA","products":{"nearby-cities":[{"indexid":5431596,"indexTime":1749675579811,"id":"urn:usgs-product:ci:nearby-cities:ci41182664:1749675578440","type":"nearby-cities","code":"ci41182664","source":"ci","updateTime":1749675578440,"status":"UPDATE","properties":{"eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21"},"preferredWeight":7,"contents":{"nearby-cities.json":{"contentType":"application/json","lastModified":1749675578000,"length":596,"url":"https://earthquake.usgs.gov/realtime/product/nearby-cities/ci41182664/ci/1749675578440/nearby-cities.json"}}}],"origin":[{"indexid":5431595,"indexTime":1749675578850,"id":"urn:usgs-product:ci:origin:ci41182664:1749675577830","type":"origin","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":3423,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/quakeml.xml"}}}],"phase-data":[{"indexid":5431597,"indexTime":1749675580880,"id":"urn:usgs-product:ci:phase-data:ci41182664:1749675577830","type":"phase-data","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":100216,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/quakeml.xml"}}}],"scitech-link":[{"indexid":5431598,"indexTime":1749675582101,"id":"urn:usgs-product:ci:scitech-link:ci41182664-waveform_ci:1749675581157","type":"scitech-link","code":"ci41182664-waveform_ci","source":"ci","updateTime":1749675581157,"status":"UPDATE","properties":{"addon-code":"Waveform_CI","addon-type":"LinkURL","eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21","text":"Waveforms","url":"https://scedc.caltech.edu/review_eventfiles/makePublicView.html?evid=41182664","version":"01"},"preferredWeight":7,"contents":[]}]}},"geometry":{"type":"Point","coordinates":[-116.771,33.6663333,15.81]},"id":"ci41182664"}""")
-    # row = make_row_for_dataframe(single_event)
-    # row.append(["Texas", "California"])
-    # row.append(["Southwest", "West Coast"])
-    # df = create_dataframe_expected_for_load()
-    # df.loc[0] = row
-    # print(df)
-    # print(df.info)
-    print(get_state_from_pos(33.6663333, -116.771))
-    print(get_state_from_pos(38.875807, -77.0309))
-    print(get_state_from_pos(38.98367794543014, -77.05994602599287))
-    
+    single_event = loads("""{"type": "Feature","properties":{"mag":0.53,"place":"10 km SSW of Idyllwild, CA","time":1749655031680,"updated":1749675581157,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/ci41182664","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":4,"net":"ci","code":"41182664","ids":",ci41182664,","sources":",ci,","types":",nearby-cities,origin,phase-data,scitech-link,","nst":15,"dmin":0.06854,"rms":0.13,"gap":115,"magType":"ml","type":"earthquake","title":"M 0.5 - 10 km SSW of Idyllwild, CA","products":{"nearby-cities":[{"indexid":5431596,"indexTime":1749675579811,"id":"urn:usgs-product:ci:nearby-cities:ci41182664:1749675578440","type":"nearby-cities","code":"ci41182664","source":"ci","updateTime":1749675578440,"status":"UPDATE","properties":{"eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21"},"preferredWeight":7,"contents":{"nearby-cities.json":{"contentType":"application/json","lastModified":1749675578000,"length":596,"url":"https://earthquake.usgs.gov/realtime/product/nearby-cities/ci41182664/ci/1749675578440/nearby-cities.json"}}}],"origin":[{"indexid":5431595,"indexTime":1749675578850,"id":"urn:usgs-product:ci:origin:ci41182664:1749675577830","type":"origin","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":3423,"url":"https://earthquake.usgs.gov/realtime/product/origin/ci41182664/ci/1749675577830/quakeml.xml"}}}],"phase-data":[{"indexid":5431597,"indexTime":1749675580880,"id":"urn:usgs-product:ci:phase-data:ci41182664:1749675577830","type":"phase-data","code":"ci41182664","source":"ci","updateTime":1749675577830,"status":"UPDATE","properties":{"azimuthal-gap":"115","depth":"15.81","depth-type":"from location","error-ellipse-azimuth":"357","error-ellipse-intermediate":"768","error-ellipse-major":"1248","error-ellipse-minor":"552","error-ellipse-plunge":"75","error-ellipse-rotation":"10","evaluation-status":"final","event-type":"earthquake","eventParametersPublicID":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","eventsource":"ci","eventsourcecode":"41182664","eventtime":"2025-06-11T15:17:11.680Z","horizontal-error":"0.31","latitude":"33.6663333","longitude":"-116.771","magnitude":"0.53","magnitude-azimuthal-gap":"123.5","magnitude-error":"0.206","magnitude-num-stations-used":"7","magnitude-source":"CI","magnitude-type":"ml","minimum-distance":"0.06854","num-phases-used":"28","num-stations-used":"15","origin-source":"CI","pdl-client-version":"Version 2.7.10 2021-06-21","quakeml-magnitude-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?magnitudeid=109412373","quakeml-origin-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?originid=105898557","quakeml-publicid":"quakeml:service.scedc.caltech.edu/fdsnws/event/1/query?eventid=41182664","review-status":"reviewed","standard-error":"0.13","title":"10 km SSW of Idyllwild, CA","version":"6","vertical-error":"0.51"},"preferredWeight":157,"contents":{"contents.xml":{"contentType":"application/xml","lastModified":1749675578000,"length":195,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/contents.xml"},"quakeml.xml":{"contentType":"application/xml","lastModified":1749675577000,"length":100216,"url":"https://earthquake.usgs.gov/realtime/product/phase-data/ci41182664/ci/1749675577830/quakeml.xml"}}}],"scitech-link":[{"indexid":5431598,"indexTime":1749675582101,"id":"urn:usgs-product:ci:scitech-link:ci41182664-waveform_ci:1749675581157","type":"scitech-link","code":"ci41182664-waveform_ci","source":"ci","updateTime":1749675581157,"status":"UPDATE","properties":{"addon-code":"Waveform_CI","addon-type":"LinkURL","eventsource":"ci","eventsourcecode":"41182664","pdl-client-version":"Version 2.7.10 2021-06-21","text":"Waveforms","url":"https://scedc.caltech.edu/review_eventfiles/makePublicView.html?evid=41182664","version":"01"},"preferredWeight":7,"contents":[]}]}},"geometry":{"type":"Point","coordinates":[-116.771,33.6663333,15.81]},"id":"ci41182664"}""")
+    row = make_row_for_dataframe(single_event)
+
+    df = create_dataframe_expected_for_load()
+    df.loc[0] = row
+    print(df)
+    print(df.info())
+
+    # Possible test cases for 
+    # print(get_state_from_pos(33.6663333, -116.771))
+    # print(get_state_from_pos(38.875807, -77.0309))
+    # print(get_state_from_pos(38.98367794543014, -77.05994602599287))
+    pass
