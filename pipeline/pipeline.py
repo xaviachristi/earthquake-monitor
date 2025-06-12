@@ -57,6 +57,8 @@ def is_point_in_circle(point_lat, point_lon, center_lat, center_lon, radius_km):
     """
     distance = get_haversine_distance(
         point_lat, point_lon, center_lat, center_lon)
+    logger.info("For point %s, %s and centre %s, %s distance is %s...",
+                point_lat, point_lon, center_lat, center_lon, distance)
     return distance <= radius_km
 
 
@@ -72,10 +74,12 @@ def get_applicable_topics(topics: list[dict], row: dict) -> list[dict]:
         centre_long = t["longitude"]
         centre_radius = t["radius"]
         if target_mag >= min_mag:
+            logger.info("Found topic with matching magnitude...")
             if is_point_in_circle(target_lat, target_long, centre_lat,
                                   centre_long, centre_radius):
+                logger.info("Found topic with matching location...")
                 subscribed_topics.append({
-                    "topic_arn": row["topic_arn"],
+                    "topic_arn": t["topic_arn"],
                     "magnitude": target_mag,
                     "state_name": row["state_name"],
                     "region_name": row["region_name"],
@@ -185,9 +189,9 @@ if __name__ == "__main__":
     sample_df = DataFrame([
         {
             "earthquake_id": 1,
-            "magnitude": 2.5,
-            "latitude": 10.0,
-            "longitude": 20.0,
+            "magnitude": 5,
+            "latitude": 11.5,
+            "longitude": 22.0,
             "time": london_tz.localize(datetime.strptime("2024-02-01", "%Y-%m-%d")),
             "updated": london_tz.localize(datetime.strptime("2024-02-02", "%Y-%m-%d")),
             "depth": 5.0,
