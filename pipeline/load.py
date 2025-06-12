@@ -25,7 +25,7 @@ def get_connection() -> Connection:
         host=ENV["DB_HOST"],
         user=ENV["DB_USER"],
         dbname=ENV["DB_NAME"],
-        port=int(ENV["DB_PORT"]),
+        port=ENV["DB_PORT"],
         password=ENV["DB_PASSWORD"],
         row_factory=rows.dict_row
     )
@@ -196,11 +196,11 @@ def load(quakes: DataFrame) -> DataFrame:
     new_quakes = get_diff(quakes, old_quakes)
     if not new_quakes.empty:
         logger.debug("Found new earthquake data: \n%s", new_quakes.head())
+
+        logger.info("Uploading new data to database...")
+        upload_df_to_db(db_conn, new_quakes)
     else:
         logger.debug("No new earthquake data found.")
-
-    logger.info("Uploading new data to database...")
-    upload_df_to_db(db_conn, new_quakes)
 
     logger.info("Load run successful.")
     return new_quakes
