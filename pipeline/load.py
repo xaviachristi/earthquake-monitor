@@ -196,11 +196,11 @@ def load(quakes: DataFrame) -> DataFrame:
     new_quakes = get_diff(quakes, old_quakes)
     if not new_quakes.empty:
         logger.debug("Found new earthquake data: \n%s", new_quakes.head())
+
+        logger.info("Uploading new data to database...")
+        upload_df_to_db(db_conn, new_quakes)
     else:
         logger.debug("No new earthquake data found.")
-
-    logger.info("Uploading new data to database...")
-    upload_df_to_db(db_conn, new_quakes)
 
     logger.info("Load run successful.")
     return new_quakes
