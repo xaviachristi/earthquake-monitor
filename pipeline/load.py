@@ -50,7 +50,7 @@ def get_diff(df1: DataFrame, df2: DataFrame) -> DataFrame:
 def get_region_id(conn: Connection, region: str) -> int | None:
     """Return id of region if it is in the database."""
     with conn.cursor() as curs:
-        curs.execute("""SELECT * FROM region 
+        curs.execute("""SELECT * FROM region
                      WHERE region_name = %s;""",
                      (region,))
         result = curs.fetchone()
@@ -62,7 +62,7 @@ def get_region_id(conn: Connection, region: str) -> int | None:
 def get_state_id(conn: Connection, state: str) -> int | None:
     """Return id of state if it is in the database."""
     with conn.cursor() as curs:
-        curs.execute("""SELECT * FROM "state" 
+        curs.execute("""SELECT * FROM "state"
                      WHERE state_name = %s;""",
                      (state,))
         result = curs.fetchone()
@@ -162,5 +162,14 @@ def load_quakes(quakes: DataFrame) -> DataFrame:
 
 
 if __name__ == "__main__":
+    sample_df = DataFrame({
+        "earthquake_id": 1, "magnitude": 2.5, "latitude": 10.0, "longitude": 20.0,
+        "time": "2024-01-01", "updated": "2024-01-02", "depth": 5.0, "url": "example.com",
+        "felt": 1, "tsunami": 0, "cdi": 3.1, "mmi": 2.3, "nst": 1,
+        "sig": 1, "net": "us", "dmin": 0.1, "alert": "green",
+        "location_source": "us", "magnitude_type": "mb",
+        "state_name": "California", "region_name": "West Coast",
+        "state_id": 12, "region_id": 4
+    })
     load_dotenv()
-    load_quakes()
+    load_quakes(sample_df)
