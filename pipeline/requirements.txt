@@ -4,3 +4,5 @@ pytest-cov
 pylint
 pandas
 obspy
+psycopg[binary]
+python-dotenv
