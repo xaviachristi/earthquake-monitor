@@ -10,8 +10,8 @@ from data import get_data
 
 
 def serve_page():
-    """Serve Realtime page."""
-    title("Historic")
+    """Serve Historical page."""
+    title("Historical")
     try:
         data = get_data()
         regions = data["region_name"].unique()

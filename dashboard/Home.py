@@ -15,25 +15,26 @@ def serve_dash():
     with col1:
         st.markdown(
             """
-            This Dashboard presents historic earthquake data provided by USGS.
+            This Dashboard presents historic earthquake data provided
+            by United States Geological Survey (USGS).
             There are two pages holding their respectively labelled data.
             On each page, there are filters on the top of the page to help 
             you change the data you are viewing.
-            There are another two pages for subscribing for alerts and 
-            viewing historic summary reports.
-            \n**👈 Select a page from the sidebar** to see data insights.
+            There are two pages - one for subscribing to alerts, 
+            and another for viewing historical summary reports.
+            \n**👈 Select a page from the sidebar** to view data insights.
             """
         )
     with col2:
         st.markdown(
             """
             This project aims to provide access to historical earthquake data 
-            gathered by the United States Geological Survey.
+            gathered by the USGS.
             USGS has an API that outputs data for up to the 
             previous month of earthquakes recorded.
             Our aim is to extract the most valuable data from that 
             and preserve it over time for our users.
-            Our users can also subscribe to alert notifcations for 
+            Our users can also subscribe to alert notifications for 
             earthquake events by region and/or magintude of quake.
             Users can also view our reports section which contains a record 
             of daily summary reports of earthquake activity.

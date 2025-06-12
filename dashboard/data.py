@@ -19,7 +19,7 @@ basicConfig(
 
 
 def get_connection() -> Connection:
-    """Return db connection using environment."""
+    """Return a db connection using environment variables."""
     logger.info("Getting DB connection...")
     return connect(
         host=ENV["DB_HOST"],
@@ -33,7 +33,7 @@ def get_connection() -> Connection:
 
 @cache_data
 def get_data() -> DataFrame:
-    """Return all data for dashboard from RDS."""
+    """Return all data for dashboard from the RDS."""
     logger.info("Getting results from DB...")
     with get_connection() as con:
         with con.cursor() as curs:

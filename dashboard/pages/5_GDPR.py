@@ -7,14 +7,14 @@ from subscription import view_subscription, delete_subscription
 
 
 def serve_page():
-    """Serve GDPR page"""
+    """Serve GDPR page."""
     title("GDPR")
     markdown(
         """
         Our project team will collect your data through the subscription form.
         By submitting the subscription form you are giving your consent for the following:
-        - Store your personal data in our database.
-        - Store preference information and personal information.
+        - Storing your personal data in our database.
+        - Storing preference information and personal information.
         - Personal information will include email address and full name.
         We will use this data to provide you tailored alerts on earthquake activity you are interested.
         """

@@ -1,4 +1,4 @@
-"""Module for displaying recent data page."""
+"""Module for displaying the recent data page."""
 
 from streamlit import (title, markdown,
                        columns, selectbox, slider)
@@ -7,8 +7,8 @@ from data import get_data
 
 
 def serve_page():
-    """Serve Realtime page."""
-    title("Realtime")
+    """Serve the recent page."""
+    title("Recent")
     try:
         data = get_data()
         regions = data["region_name"].unique()
@@ -25,7 +25,7 @@ def serve_page():
     with col3:
         magnitude = slider(label="Filter by Minimum Magnitude.",
                            min_value=0, max_value=10, value=5)
-    markdown("Placeholder for rline chart fo earthquake count over time.")
+    markdown("Placeholder for line chart of earthquake count over time.")
     col1, col2 = columns(2)
     with col1:
         markdown("Placeholder for recent earthquake details.")

@@ -16,7 +16,7 @@ def serve_page():
 
     with col1:
         select_date = date_input(
-            label="Select date for report.", value="today")
+            label="Select report date.", value="today")
         show_report = button("View Report")
         if show_report:
             pdf_bytes = get_report(select_date)

@@ -1,4 +1,4 @@
-"""Module for displaying subscribe page."""
+"""Module for displaying the subscribe page."""
 
 from streamlit import (title, markdown, button,
                        columns, text_input, number_input,
@@ -33,7 +33,7 @@ def serve_page():
                  As a user you can subscribe to events based on point location
                  and radius in km from that point and/or by magnitude of the event.
                  A user could, for example, target a 100km radius
-                 around their house for 4 or greater magnitude events.
+                 around their house for events of magnitude 4 or greater.
                  """)
 
 
