@@ -23,7 +23,7 @@ CREATE TABLE state (
 );
 
 CREATE TABLE earthquake (
-    earthquake_id BIGINT PRIMARY KEY,
+    earthquake_id BIGINT GENERATED ALWAYS AS IDENTITY,
     magnitude DECIMAL(3,1) NOT NULL,
     latitude DECIMAL(9,6),
     longitude DECIMAL(9,6),
