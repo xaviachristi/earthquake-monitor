@@ -14,9 +14,9 @@ logging.basicConfig(
 )
 
 
-def data_validation(data: dict) -> bool:
-    """Validates that the required information for a message is available."""
-    ...
+def get_sns_client() -> client:
+    sns = client("sns")
+    return sns
 
 
 def validate_topic(data: dict) -> bool:
@@ -35,14 +35,14 @@ def validate_magnitude(data: dict) -> bool:
 
 def validate_state(data: dict) -> bool:
     """Validates that the data contains a state key."""
-    if data.get("state") and isinstance(data["state"], str):
+    if data.get("state_name") and isinstance(data["state_name"], str):
         return True
     return False
 
 
 def validate_region(data: dict) -> bool:
     """Validates that the data contains a region key."""
-    if data.get("region") and isinstance(data["region"], str):
+    if data.get("region_name") and isinstance(data["region_name"], str):
         return True
     return False
 
@@ -75,7 +75,12 @@ def validate_longitude(data: dict) -> bool:
     return False
 
 
-def message_parser(data: dict) -> str:
+def validate_data(data: dict) -> bool:
+    """Validates that the required information for a message is available."""
+    ...
+
+
+def make_message(data: dict) -> str:
     """Turns a dictionary of values into a string 
     of HTML that makes up the alert message."""
     heading = """<!DOCTYPE html>
@@ -83,7 +88,7 @@ def message_parser(data: dict) -> str:
                  <body>
                  <h1> Earthquake Alert! </h1>"""
     body = f"""<p> There was an earthquake of magnitude {data["magnitude"]} in
-    the area of {data["state"]} in the region of {data["region"]} at {data["time"]}. </p>
+    the area of {data["state_name"]} in the region of {data["region_name"]} at {data["time"]}. </p>
     """
 
     if data["tsunami"]:
@@ -95,3 +100,18 @@ def message_parser(data: dict) -> str:
       </html>
       """
     return heading+body
+
+
+def publish_email(data: dict, sns: client) -> None:
+    """Sends the email to SNS."""
+    try:
+        message = make_message(data)
+        topic = data["topic"]
+        subject = "Earthquake Alert"
+        response = sns.publish(
+            TopicArn=topic, Subject=subject, Message=message)
+        message_id = response["MessageId"]
+        logger.info("Published message %s to topic %s.",
+                    message_id, topic)
+    except sns.ClientError:
+        logger.exception("Couldn't publish message to topic %s.", topic)
