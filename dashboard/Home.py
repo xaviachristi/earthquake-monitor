@@ -16,7 +16,7 @@ def serve_dash():
         st.markdown(
             """
             This Dashboard presents historic earthquake data provided
-            by United States Geological Survey (USGS).
+            by the United States Geological Survey (USGS).
             There are two pages holding their respectively labelled data.
             On each page, there are filters on the top of the page to help 
             you change the data you are viewing.
