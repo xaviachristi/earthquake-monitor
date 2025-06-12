@@ -68,7 +68,7 @@ def make_message(data: dict) -> str:
                  <body>
                  <h1>Earthquake Alert!</h1>"""
     body = f"""<p>There was an earthquake of magnitude {data["magnitude"]} in
-     {get_location_message(data)} at {data["time"]}.</p>
+     {get_location_message(data)} at {datetime.strftime(data["time"], "%d/%m/%Y, %H:%M:%S")}.</p>
     """
     if data["tsunami"]:
         body += """<p>There is potential for a tsunami.</p>"""
