@@ -11,11 +11,28 @@ from load import (get_current_db, get_diff, upload_df_to_db)
 class TestGetCurrentDB:
     """A class that groups together tests for get_current_db()."""
 
-    def test_get_current_db_returns_dataframe(self, example_dict):
+    def test_get_current_db_returns_dataframe(self, mock_conn, example_dict):
         """Checks the function returns a dataframe."""
+        mock_cursor = MagicMock()
+        mock_cursor.fetchall.return_value = example_dict
+        mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
 
-    def test_get_current_db_returns_expected_columns(self, example_dict):
-        """Checks the function has a all expected column."""
+        df = get_current_db(mock_conn)
+        assert isinstance(df, DataFrame)
+
+    def test_get_current_db_returns_expected_columns(self, mock_conn, example_dict):
+        """Checks the function has all expected columns."""
+        mock_cursor = MagicMock()
+        mock_cursor.fetchall.return_value = [example_dict]
+        mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+        df = get_current_db(mock_conn)
+        expected_cols = {
+            "earthquake_id", "magnitude", "latitude", "longitude", "time", "updated", "depth",
+            "url", "felt", "tsunami", "cdi", "mmi", "nst", "sig", "net", "dmin",
+            "alert", "location_source", "magnitude_type", "state_name", "region_name"
+        }
+        assert set(df.columns) == expected_cols
 
 
 class TestGetDiff:
