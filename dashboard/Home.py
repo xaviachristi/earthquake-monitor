@@ -35,7 +35,7 @@ def serve_dash():
             Our aim is to extract the most valuable data from that 
             and preserve it over time for our users.
             Our users can also subscribe to alert notifications for 
-            earthquake events by region and/or magintude of quake.
+            earthquake events by region and/or magnitude of quake.
             Users can also view our reports section which contains a record 
             of daily summary reports of earthquake activity.
             """
