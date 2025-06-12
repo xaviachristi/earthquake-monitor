@@ -17,6 +17,7 @@ logging.basicConfig(
 
 
 def get_sns_client() -> client:
+    """Makes a SNS client."""
     sns = client("sns", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
                  aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
     return sns
@@ -35,8 +36,9 @@ def validate_keys(data: dict) -> bool:
 
 def validate_types(data: dict) -> bool:
     """Validates that the required information for a message is available."""
-    expected_data = [("topic_arn", str), ("magnitude", float), ("state_name", str), ("region_name", str),
-                     ("time", datetime), ("tsunami", bool), ("latitude", float), ("longitude", float)]
+    expected_data = [("topic_arn", str), ("magnitude", float), ("state_name", str),
+                     ("region_name", str), ("time", datetime), ("tsunami", bool),
+                     ("latitude", float), ("longitude", float)]
     for name, expected_type in expected_data:
         if not isinstance(data[name], expected_type):
             # TODO: Add log
@@ -91,3 +93,10 @@ def send_emails(passed_data: dict) -> None:
             ...
         else:
             publish_email(data, sns_client)
+
+
+if __name__ == "__main__":
+
+    example_data = {"topics": [{None: None}]}
+    load_dotenv()
+    send_emails(example_data)
