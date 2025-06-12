@@ -1,7 +1,6 @@
 """Script for running full ETL pipeline as AWS lambda."""
 
 from datetime import datetime, timedelta
-from pytz import timezone
 from logging import getLogger, basicConfig
 from os import environ as ENV
 from math import radians, cos, sin, sqrt, atan2
@@ -142,7 +141,7 @@ def get_topic_dictionaries(data: DataFrame) -> list[dict]:
 
 
 def run_pipeline(start: datetime = datetime.now() - timedelta(minutes=1),
-                 end: datetime = datetime.now()) -> list[dict]:
+                 end: datetime = datetime.now()) -> DataFrame:
     """Run ETL pipeline."""
     logger.info(
         "Found environment: %s, %s", ENV["DB_USER"], ENV["DB_HOST"], ENV["DB_NAME"])
@@ -181,13 +180,17 @@ def lambda_handler(event, context):
     """
     try:
         logger.info("Running ETL pipeline...")
+        # data = run_pipeline(datetime.now() - timedelta(hours=1),
+        #                    datetime.now())
         data = run_pipeline(datetime.now() - timedelta(hours=1),
                             datetime.now())
+
         topics = None
 
-        if data is not None or not data.empty:
-            logger.info("Creating alert dictionary...")
-            topics = get_topic_dictionaries(data)
+        if data is not None:
+            if not data.empty:
+                logger.info("Creating alert dictionary...")
+                topics = get_topic_dictionaries(data)
 
         return {
             "statusCode": 200,

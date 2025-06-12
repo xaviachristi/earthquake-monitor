@@ -5,8 +5,7 @@ import logging
 from datetime import datetime, timedelta
 
 import pandas as pd
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
+from opencage.geocoder import OpenCageGeocode
 
 from extract import extract
 
@@ -42,18 +41,27 @@ def clean_earthquake_data(earthquake_data: list[dict]) -> list[dict]:
     return clean_events
 
 
-def get_address(latitude: float, longitude: float) -> str:
-    """Calls GeoPy to convert coords into an address."""
-
-    logger.info("Finding address for %s, %s.", latitude, longitude)
-    geolocator = Nominatim(user_agent="earthquake_monitor")
-    geocode = RateLimiter(geolocator.reverse, min_delay_seconds=1)
-    address = geocode(f"{latitude}, {longitude}")
-
-    if address:
-        return geocode(f"{latitude}, {longitude}")[0].split(", ")
-
-    return ["No Country"]
+def get_address(latitude: float, longitude: float) -> list[str]:
+    """Uses OpenCage to convert coordinates into an address."""
+    logger.info("Finding address for %s, %s using OpenCage.",
+                latitude, longitude)
+    try:
+        geocoder = OpenCageGeocode(key="62bd7d167134455e9393faca73d7e1e4")
+        results = geocoder.reverse_geocode(
+            latitude, longitude, no_annotations=1, limit=1)
+        if results and len(results):
+            components = results[0]["components"]
+            country = components.get("country", "No Country")
+            state = components.get("state", "Unknown State")
+            return [state, country]
+        else:
+            logger.warning("No results from OpenCage for %s, %s",
+                           latitude, longitude)
+            return ["Unknown", "No Country"]
+    except Exception as e:
+        logger.error("OpenCage error for coords (%s, %s): %s",
+                     latitude, longitude, e)
+        return ["Unknown", "No Country"]
 
 
 def grab_state(address: list[str]) -> str:
