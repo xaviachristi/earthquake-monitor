@@ -79,8 +79,7 @@ def example_df2():
             "felt": 1, "tsunami": 0, "cdi": 3.1, "mmi": 2.3, "nst": 1,
             "sig": 1, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
-            "state_name": "California", "region_name": "West Coast",
-            "state_id": 12, "region_id": 4
+            "state_name": "California", "region_name": "West Coast"
         }
     ])
 
@@ -95,7 +94,6 @@ def example_diff():
             "felt": 2, "tsunami": 1, "cdi": 3.0, "mmi": 2.5, "nst": 5,
             "sig": 100, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
-            "state_name": "Nevada", "region_name": "West Coast",
-            "state_id": 13, "region_id": 4
+            "state_name": "Nevada", "region_name": "West Coast"
         }
     ])
