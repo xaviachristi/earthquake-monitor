@@ -142,7 +142,7 @@ def upload_df_to_db(conn: Connection, data: DataFrame):
                          row.get("earthquake_id", "<unknown>"), e)
 
 
-def load_quakes(quakes: DataFrame) -> DataFrame:
+def load(quakes: DataFrame) -> DataFrame:
     """Return earthquakes that have been uploaded to the database."""
     logger.info("Getting database connection...")
     db_conn = get_connection()
@@ -172,4 +172,4 @@ if __name__ == "__main__":
         "state_id": 12, "region_id": 4
     })
     load_dotenv()
-    load_quakes(sample_df)
+    load(sample_df)
