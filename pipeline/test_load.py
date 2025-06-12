@@ -1,7 +1,7 @@
 # pylint: skip-file
 """Unit tests for the functions in load.py."""
 
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal

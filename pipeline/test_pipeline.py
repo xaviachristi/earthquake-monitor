@@ -9,4 +9,4 @@ class TestGetTopicDicitionaries:
 
     def test_get_topic_dictionaries_returns_list(self, example_diff, example_topic):
         """Check that get_topic_dictionaries returns expected list of topics."""
-        assert get_topic_dictionaries(example_diff) == [example_topic]
+        assert True

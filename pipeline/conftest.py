@@ -1,6 +1,8 @@
 """Fixtures for tests in this directory."""
 
 from unittest.mock import MagicMock
+from pytz import timezone
+from datetime import datetime
 
 from pytest import fixture
 from pandas import DataFrame
@@ -53,7 +55,7 @@ def example_df():
     return DataFrame([
         {
             "earthquake_id": 1, "magnitude": 2.5, "latitude": 10.0, "longitude": 20.0,
-            "time": "2024-01-01", "updated": "2024-01-02", "depth": 5.0, "url": "example.com",
+            "time": 1749753475, "updated": 1749753475, "depth": 5.0, "url": "example.com",
             "felt": 1, "tsunami": 0, "cdi": 3.1, "mmi": 2.3, "nst": 1,
             "sig": 1, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
@@ -61,7 +63,7 @@ def example_df():
         },
         {
             "earthquake_id": 2, "magnitude": 4.0, "latitude": 11.0, "longitude": 21.0,
-            "time": "2024-02-01", "updated": "2024-02-02", "depth": 10.0, "url": "another.com",
+            "time": 1749753475, "updated": 1749753475, "depth": 10.0, "url": "another.com",
             "felt": 2, "tsunami": 1, "cdi": 3.0, "mmi": 2.5, "nst": 5,
             "sig": 100, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
@@ -73,10 +75,13 @@ def example_df():
 @fixture
 def example_df2():
     """Second example dataframe with one duplicate entry from example_df."""
+    london_tz = timezone("Europe/London")
     return DataFrame([
         {
             "earthquake_id": 1, "magnitude": 2.5, "latitude": 10.0, "longitude": 20.0,
-            "time": "2024-01-01", "updated": "2024-01-02", "depth": 5.0, "url": "example.com",
+            "time": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "updated": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "depth": 5.0, "url": "example.com",
             "felt": 1, "tsunami": 0, "cdi": 3.1, "mmi": 2.3, "nst": 1,
             "sig": 1, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
@@ -89,14 +94,17 @@ def example_df2():
 @fixture
 def example_diff():
     """Expected difference between example_df and example_df2 (only the unique row)."""
+    london_tz = timezone("Europe/London")
     return DataFrame([
         {
             "magnitude": 4.0, "latitude": 11.0, "longitude": 21.0,
-            "time": "2024-02-01", "updated": "2024-02-02", "depth": 10.0, "url": "another.com",
-            "felt": 2, "tsunami": 1, "cdi": 3.0, "mmi": 2.5, "nst": 5,
+            "time": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "updated": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "depth": 10.0, "url": "another.com",
+            "felt": 2, "tsunami": True, "cdi": 3.0, "mmi": 2.5, "nst": 5,
             "sig": 100, "net": "us", "dmin": 0.1, "alert": "green",
-            "location_source": "us", "magnitude_type": "mb",
-            "state_name": "Nevada", "region_name": "West Coast"
+            "magnitude_type": "Mb", "state_name": "Nevada",
+            "region_name": "West Coast"
         }
     ])
 
