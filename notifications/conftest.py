@@ -1,7 +1,8 @@
 # pylint: skip-file
 
-from pytest import fixture
 from datetime import datetime
+
+from pytest import fixture
 
 
 @fixture(name="sample_data")
