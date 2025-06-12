@@ -1,9 +1,6 @@
-pytest
-pytest-icdiff
-pytest-cov
 pylint
-pandas
-obspy
+pytest
+pytest-cov
 streamlit
 python-dotenv
 psycopg[binary]
