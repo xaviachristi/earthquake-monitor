@@ -10,3 +10,4 @@ psycopg[binary]
 altair[all]
 plotly
 streamlit-pdf-viewer
+boto3
