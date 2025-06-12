@@ -4,3 +4,4 @@ pytest-cov
 pylint
 pandas
 obspy
+aiohttp

@@ -20,31 +20,34 @@ Alternative plan:
     3. Drop and rename columns.
 
 Advantages & Disadvantages:
-    JSON Normalise might be slow but so might flattening everything.
-    I already have function signatures for the initial plan.
-    JSON normalise might require the data to be in a JSON format.
-    JSON normalise feels like the 'proper' way of doing it.
-    Writing the code for flattening may take a while
-        There are example scripts I could base it off online.
-    JSON normalise is already being run in extract.py.
-        If I was to go with the alternative plan, I think  it would make
-        more sense to adapt that script.
-    Flattening the data will create A LOT of columns.
+    - JSON Normalise might be slow but so might flattening everything.
+    - I already have function signatures for the initial plan.
+    - JSON normalise might require the data to be in a JSON format.
+    - JSON normalise feels like the 'proper' way of doing it.
+    - Writing the code for flattening may take a while
+        - There are example scripts I could base it off online.
+    - JSON normalise is already being run in extract.py.
+        - If I was to go with the alternative plan, I think  it would make
+          more sense to adapt that script.
+    - Flattening all the data will create A LOT of columns.
 
     If I had a list of all the columns I need (ERD + those used for filtering)
-    and where they are (look at the JSON).
+    and where they are (look at the JSON),
     I could use this to build arguments for pd.json_normalize().
+        Does pd.json_normalize() require every key:value be mapped to a column? I doubt it?
+    But I would have to experiment with pd.json_normalize() first.
 
-    I need the location for either method, so I'm going to start by doing this.
+    I need the location of the data for both methods, so I'm going to start by doing this.
 
     Required columns:       Location in raw JSON:                                   Location in DataFrame:
-    - magnitude             - {"events":[{"magnitudes":[("mag":HERE)]}]}            - 
-    - latitude              - {"events":["origins":[{"latitude":HERE}]]}            - 
-    - longitude             - {"events":["origins":[{"longitude":HERE}]]}           - 
-    - time                  - {"events":["origins":[{"time":HERE}]]}                - 
+                                                                                    (Not written properly as they're lists of dicts)
+    - magnitude             - {"events":[{"magnitudes":[("mag":HERE)]}]}            - df["magnitudes"["mag"]]
+    - latitude              - {"events":["origins":[{"latitude":HERE}]]}            - df["origins"["latitude"]]
+    - longitude             - {"events":["origins":[{"longitude":HERE}]]}           - df["origins"["longitude"]]
+    - time                  - {"events":["origins":[{"time":HERE}]]}                - df["origins"["time"]]
     - updated               - Potentially creation_info.creation_time?
-    - depth                 - {"events":["origins":[{"depth":HERE}]]}               - 
-    - url                   - {"events":["resource_id":HERE]}                       - 
+    - depth                 - {"events":["origins":[{"depth":HERE}]]}               - df["origins"["depth"]]
+    - url                   - {"events":["resource_id":HERE]}                       - df["resource_id"]
     - felt                  - ?
     - tsunami               - ?
     - cdi                   - What is?
@@ -56,15 +59,15 @@ Advantages & Disadvantages:
     - alert                 - ?
     - location_source       - What is?
     - magnitude_type        - What is?
-    - state                 - They won't all be in the US?
-    - TYPE                  - {"events":["event_type":HERE]}                        - 
+    - state                 - They won't all be in the US (uncertain)? They won't all be in a state (certain).
+    - TYPE                  - {"events":["event_type":HERE]}                        - df["event_type"]
     - DELETED?              - ?
-    - REVIEWED?             - {"events":["origins":[{"evaluation_mode":HERE}]]}     - 
+    - REVIEWED?             - {"events":["origins":[{"evaluation_mode":HERE}]]}     - df["origins"]["evaluation_mode"]
 
     Will I have to join additional information from resource_id (I think Ruy mentioned this)?
     Do we *need* all these columns? What are they used for?
-    For the MVP I suggest magnitude, long/lat/depth, time, url
-    We could keep other columns as optional and fill them in later or remove them?
+    For the MVP I suggest magnitude, long/lat/depth, time, url.
+    We could keep other columns as optional and fill them in later or we could remove them?
     I think it's nice data to have but is going to take a long time to join it from the resource_id.
 
 """
@@ -72,8 +75,9 @@ Advantages & Disadvantages:
 import json
 import logging
 from datetime import datetime, timedelta
-from extract import extract # For testing during development.
 import pandas as pd
+
+from extract import extract, read_json_to_dataframe # For testing during development.
 
 
 logger = logging.getLogger(__name__)
@@ -83,32 +87,6 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
-
-
-def flatten_nested_dictionary(nested_dictionary: pd.Series
-                              ) -> pd.DataFrame:
-    """
-    Takes a column that has nested JSON dictionaries inside and converts them
-    into unique columns.
-    """
-    """
-    Initial thoughts: might be recursive (if multiple nested dictionaries).
-    Should use the original column's name as a prefix.
-    Might be able to use json_normalize() for this.
-    """
-    pass
-
-
-def cleanse_earthquake_data(flattened_earthquake_data: pd.DataFrame
-                            ) -> pd.DataFrame:
-    """
-    Drops rows that are not suitable for our database.
-    This includes row that have:
-    - non-earthquake type (i.e. quarrying readings)
-    - not been reviewed
-    - been marked as deleted
-    """
-    pass
 
 
 def create_dataframe_expected_for_load(clean_earthquake_date: pd.DataFrame
@@ -125,19 +103,42 @@ def transform(dataframe_from_extract: pd.DataFrame) -> pd.DataFrame:
     pass
 
 
+def flatten_data(y):
+    out = {}
+
+    def flatten(x, name=''):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + '_')
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + str(i) + '_')
+                i += 1
+        else:
+            out[name[:-1]] = x
+
+    flatten(y)
+    return out
+
+
 if __name__ == "__main__":
     # extract("USGS", datetime.now() - timedelta(weeks=2), datetime.now())
 
-    filename = "temp_earthquake_data.json"
+    file_name = "temp_earthquake_data.json"
 
-    logger.info("Reading catalog JSON.")
-
-    with open(filename, encoding="utf-8") as f:
-        data = json.load(f)
-        df = pd.json_normalize(data["events"], max_level=3)
-
-    # Checking that there's not an agreed upon format.
-    # df = pd.read_json(filename, orient="split")
+    df = read_json_to_dataframe(file_name)
 
     print(df)
-    logger.debug("Dataframe information:\n%s", df.info())
+    print(df.info)
+
+    print("Flat!")
+
+    with open(file_name, encoding="utf-8") as f:
+        data = json.load(f)
+        # This should be .apply/.map then json_normalize
+        flattened_data = flatten_data(data["events"])
+        df = pd.DataFrame([flattened_data])
+
+    print(df)
+    print(df.info)
