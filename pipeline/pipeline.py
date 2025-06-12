@@ -239,4 +239,4 @@ if __name__ == "__main__":
         }
     ])
     load_dotenv()
-    logger.info("Topics: %s", get_topic_dictionaries(sample_df))
+    run_pipeline()
