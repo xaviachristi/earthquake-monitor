@@ -195,3 +195,6 @@ cython_debug/
 
 # Json files in the pipeline/ directory
 *.json
+
+# DS Store
+.DS_Store
