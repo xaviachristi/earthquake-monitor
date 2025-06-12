@@ -2,26 +2,31 @@
 Connects to the USGS earthquake API and extracts the
 information into a Pandas DataFrame.
 """
-"""
-Important note [to add as an 'improvement' ticket]:
-ObsPy is probably unnecessary for this script now.
-Its API call could be handled without importing
-a big library, most of which we will not use.
-"""
-
-
 import logging
 import json
 from datetime import datetime, timedelta
 import re
 import asyncio
 
-import pandas as pd
 from obspy import Catalog
 from obspy.clients.fdsn import Client
 from obspy.clients.fdsn.header import FDSNNoDataException
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ContentTypeError
+
+"""
+Important note [to add as an 'improvement' ticket]:
+ObsPy is probably unnecessary for this script now.
+Its API call could be handled without importing
+a big library, most of which we will not use.
+Example API query:
+https://earthquake.usgs.gov/fdsnws/event/1/query?
+format=geojson&reviewstatus=reviewed&eventtype=earthquake
+
+This may change how the detailed URLs are gathered, or if that
+step is necessary.
+"""
+
 
 
 logger = logging.getLogger(__name__)
@@ -124,7 +129,7 @@ def extract(api: str, temp_file_name:str,
     except FDSNNoDataException:
         logger.info("No information for the time period.")
         return False
-    
+
     write_catalog_as_json(temp_file_name, res)
     summary_json = read_json(temp_file_name)
     ids = get_event_ids_from_json_list(summary_json["events"])
