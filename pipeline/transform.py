@@ -77,8 +77,6 @@ import logging
 from datetime import datetime, timedelta
 import pandas as pd
 
-from extract import extract, read_json_to_dataframe # For testing during development.
-
 
 logger = logging.getLogger(__name__)
 
@@ -89,16 +87,70 @@ logging.basicConfig(
 )
 
 
-def create_dataframe_expected_for_load(clean_earthquake_date: pd.DataFrame
-                                       ) -> pd.DataFrame:
+def make_row_for_dataframe(event: dict) -> list:
     """
-    Creates a dataframe with the columns expected for the load script,
-    using the cleaned earthquake data.
+    Returns a list containing all the information needed for the dataframe
+    which load requires.
     """
-    pass
+    df_row = []
+    # earthquake_id - creates a list incase there are multiple IDs.
+    df_row.append(list(filter(None, event["properties"]["ids"].split(","))))
+    # magnitude - 
+    df_row.append(event[""])
+    # "latitude",
+    df_row.append(event[""])
+    # "longitude",
+    df_row.append(event[""])
+    # "time",
+    df_row.append(event[""])
+    # "updated",
+    df_row.append(event[""])
+    # "depth",
+    df_row.append(event[""])
+    # "url",
+    df_row.append(event[""])
+    # "felt",
+    df_row.append(event[""])
+    # "tsunami",
+    df_row.append(event[""])
+    # "cdi",
+    df_row.append(event[""])
+    # "mmi",
+    df_row.append(event[""])
+    # "nst",
+    df_row.append(event[""])
+    # "sig",
+    df_row.append(event[""])
+    # "net",
+    df_row.append(event[""])
+    # "dmin",
+    df_row.append(event[""])
+    # "alert",
+    df_row.append(event[""])
+    # "location_source",
+    df_row.append(event[""])
+    # "magnitude_type",
+    df_row.append(event[""])
+    # "state_name",
+    df_row.append(event[""])
+    # "region_name"
+    df_row.append(event[""])
+    return df_row
 
 
-def transform(dataframe_from_extract: pd.DataFrame) -> pd.DataFrame:
+def create_dataframe_expected_for_load() -> pd.DataFrame:
+    """
+    Creates a dataframe with the columns expected for the load script.
+    """
+    return pd.DataFrame(columns=["earthquake_id", "magnitude", "latitude",
+                        "longitude", "time", "updated", "depth", "url",
+                        "felt", "tsunami", "cdi", "mmi", "nst", "sig",
+                        "net", "dmin", "alert", "location_source", 
+                        "magnitude_type", "state_name", "region_name"
+                        ])
+
+
+def transform(data_from_extract: list[dict]) -> pd.DataFrame:
     """Cleans and reorganises the earthquake data from extract.py."""
     pass
 
@@ -125,20 +177,21 @@ def flatten_data(y):
 if __name__ == "__main__":
     # extract("USGS", datetime.now() - timedelta(weeks=2), datetime.now())
 
-    file_name = "temp_earthquake_data.json"
+    # file_name = "temp_earthquake_data.json"
 
-    df = read_json_to_dataframe(file_name)
+    # df = read_json_to_dataframe(file_name)
 
-    print(df)
-    print(df.info)
+    # print(df)
+    # print(df.info)
 
-    print("Flat!")
+    # print("Flat!")
 
-    with open(file_name, encoding="utf-8") as f:
-        data = json.load(f)
-        # This should be .apply/.map then json_normalize
-        flattened_data = flatten_data(data["events"])
-        df = pd.DataFrame([flattened_data])
+    # with open(file_name, encoding="utf-8") as f:
+    #     data = json.load(f)
+    #     # This should be .apply/.map then json_normalize
+    #     flattened_data = flatten_data(data["events"])
+    #     df = pd.DataFrame([flattened_data])
 
-    print(df)
-    print(df.info)
+    # print(df)
+    # print(df.info)
+    pass
