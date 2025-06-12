@@ -95,46 +95,46 @@ def make_row_for_dataframe(event: dict) -> list:
     df_row = []
     # earthquake_id - creates a list incase there are multiple IDs.
     df_row.append(list(filter(None, event["properties"]["ids"].split(","))))
-    # magnitude - 
-    df_row.append(event[""])
-    # "latitude",
-    df_row.append(event[""])
-    # "longitude",
-    df_row.append(event[""])
-    # "time",
-    df_row.append(event[""])
-    # "updated",
-    df_row.append(event[""])
-    # "depth",
-    df_row.append(event[""])
-    # "url",
-    df_row.append(event[""])
-    # "felt",
-    df_row.append(event[""])
-    # "tsunami",
-    df_row.append(event[""])
-    # "cdi",
-    df_row.append(event[""])
-    # "mmi",
-    df_row.append(event[""])
-    # "nst",
-    df_row.append(event[""])
-    # "sig",
-    df_row.append(event[""])
-    # "net",
-    df_row.append(event[""])
-    # "dmin",
-    df_row.append(event[""])
-    # "alert",
-    df_row.append(event[""])
-    # "location_source",
-    df_row.append(event[""])
-    # "magnitude_type",
-    df_row.append(event[""])
-    # "state_name",
-    df_row.append(event[""])
-    # "region_name"
-    df_row.append(event[""])
+    # magnitude.
+    df_row.append(event["properties"]["mag"])
+    # latitude - origin is a list, hence the [0].
+    df_row.append(event["properties"]["products"]["origin"][0]["properties"]["latitude"])
+    # longitude.
+    df_row.append(event["properties"]["products"]["origin"][0]["properties"]["longitude"])
+    # time.
+    df_row.append(event["properties"]["time"])
+    # updated.
+    df_row.append(event["properties"]["updated"])
+    # depth.
+    df_row.append(event["properties"]["products"]["origin"][0]["properties"]["depth"])
+    # url.
+    df_row.append(event["properties"]["url"])
+    # felt.
+    df_row.append(event["properties"]["felt"])
+    # tsunami.
+    df_row.append(event["properties"]["tsunami"])
+    # cdi
+    df_row.append(event["properties"]["cdi"])
+    # mmi
+    df_row.append(event["properties"]["mmi"])
+    # nst
+    df_row.append(event["properties"]["nst"])
+    # sig
+    df_row.append(event["properties"]["sig"])
+    # net
+    df_row.append(event["properties"]["net"])
+    # dmin
+    df_row.append(event["properties"]["dmin"])
+    # alert
+    df_row.append(event["properties"]["alert"])
+    # location_source
+    df_row.append(list(filter(None, event["properties"]["sources"].split(","))))
+    # magnitude_type
+    df_row.append(event["properties"]["magType"])
+    # state_name
+    # df_row.append(event[""])
+    # # "region_name"
+    # df_row.append(event[""])
     return df_row
 
 
