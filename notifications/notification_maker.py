@@ -29,8 +29,9 @@ def validate_keys(data: dict) -> bool:
             "tsunami", "latitude", "longitude"]
     for key in keys:
         if key not in data:
-            # TODO: Add log
+            logger.error("Unable to validate %s key in data:\n %s", key, data)
             return False
+    logger.info("Successfully validated keys for topic %s.", data["topic_arn"])
     return True
 
 
@@ -41,8 +42,12 @@ def validate_types(data: dict) -> bool:
                      ("latitude", float), ("longitude", float)]
     for name, expected_type in expected_data:
         if not isinstance(data[name], expected_type):
-            # TODO: Add log
+            logger.error(
+                "Unable to validate %s datatype for the %s key in data:\n %s",
+                expected_type, name, data)
             return False
+    logger.info("Successfully validated value types for topic %s.",
+                data["topic_arn"])
     return True
 
 
@@ -63,6 +68,7 @@ def make_message(data: dict) -> str:
       </body>
       </html>
       """
+    logger.info("Message successfully created.")
     return heading+body
 
 
@@ -70,7 +76,7 @@ def publish_email(data: dict, sns: client) -> None:
     """Sends the email to SNS."""
     try:
         message = make_message(data)
-        topic = data["topic"]
+        topic = data["topic_arn"]
         subject = "Earthquake Alert"
         response = sns.publish(
             TopicArn=topic, Subject=subject, Message=message)
@@ -81,22 +87,18 @@ def publish_email(data: dict, sns: client) -> None:
         logger.exception("Couldn't publish message to topic %s.", topic)
 
 
-def send_emails(passed_data: dict) -> None:
+def send_emails(passed_data: list[dict]) -> None:
     """Goes through all the topics generated."""
-    sns_client = get_sns_client()
-    for data in passed_data["topics"]:
-        if not validate_keys(data):
-            # TODO: Add logging
-            ...
-        elif not validate_types(data):
-            # TODO: Add logging
-            ...
-        else:
-            publish_email(data, sns_client)
+    sns = get_sns_client()
+    for data in passed_data:
+        if validate_keys(data) and validate_types(data):
+            publish_email(data, sns)
+    logger.info("Successfully sent all emails.")
 
 
 if __name__ == "__main__":
 
-    example_data = {"topics": [{None: None}]}
     load_dotenv()
-    send_emails(example_data)
+    # Code to test alerts being sent
+    sns_client = get_sns_client()
+    res = sns_client.create_topic(Name="c17-marios-example")
