@@ -1,29 +1,35 @@
 """Unit tests for the functions in load.py."""
 
-from load import
+from unittest.mock import MagicMock, call
 
 from pandas import DataFrame
+from pandas.testing import assert_frame_equal
+
+from load import (get_current_db, get_diff, upload_df_to_db)
 
 
-class TestConvertCatalogToDataFrame:
-    """A class that groups together tests for convert_catalog_to_dataframe()."""
+class TestGetCurrentDB:
+    """A class that groups together tests for get_current_db()."""
 
-    def test_convert_catalog_to_dataframe_returns_dataframe(self, example_catalog):
+    def test_get_current_db_returns_dataframe(self, example_dict):
         """Checks the function returns a dataframe."""
-        assert isinstance(convert_catalog_to_dataframe(
-            example_catalog), DataFrame)
 
-    def test_convert_catalog_to_dataframe_has_magnitudes_column(self, example_catalog):
-        """Checks the function has a 'magnitudes' column."""
-        assert "magnitudes" in convert_catalog_to_dataframe(
-            example_catalog).columns
+    def test_get_current_db_returns_expected_columns(self, example_dict):
+        """Checks the function has a all expected column."""
 
-    def test_convert_catalog_to_dataframe_has_event_type_column(self, example_catalog):
-        """Checks the function has an 'event_type' column."""
-        assert "event_type" in convert_catalog_to_dataframe(
-            example_catalog).columns
 
-    def test_convert_catalog_to_dataframe_has_origins_column(self, example_catalog):
-        """Checks the function has an 'origins' column."""
-        assert "origins" in convert_catalog_to_dataframe(
-            example_catalog).columns
+class TestGetDiff:
+    """A class that groups together tests for get_diff()."""
+
+    def test_get_diff_returns_dataframe(self, example_df, example_df2):
+        """Checks the function returns a dataframe."""
+
+    def test_get_diff_returns_expected_diff(self, example_df, example_df2):
+        """Checks the function returns expected difference between two dataframes."""
+
+
+class TestUploadDFToDB:
+    """A class that groups together tests for upload_df_to_db."""
+
+    def test_get_upload_df_to_db_expected_calls(self, example_df):
+        """Check that upload_df_to_db has expected calls to upload row to db."""
