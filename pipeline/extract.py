@@ -28,7 +28,6 @@ step is necessary.
 """
 
 
-
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
@@ -72,7 +71,8 @@ def get_event_ids_from_json_list(event_summaries: list[dict]) -> list[str]:
     logger.info("Searching for event IDs.")
     event_ids = []
     for event in event_summaries:
-        event_ids.append(re.search(r"(?<=eventid=)\w+", event["resource_id"]).group(0))
+        event_ids.append(re.search(r"(?<=eventid=)\w+",
+                         event["resource_id"]).group(0))
     return event_ids
 
 
@@ -119,7 +119,7 @@ async def make_many_api_calls(urls: list[str]) -> list[dict]:
     return responses
 
 
-def extract(api: str, temp_file_name:str,
+def extract(api: str, temp_file_name: str,
             start_time: datetime, end_time: datetime) -> list[dict]:
     """Calls the specified API and returns a list of detailed information."""
 
@@ -142,7 +142,7 @@ def extract(api: str, temp_file_name:str,
 if __name__ == "__main__":
     # extract("USGS", datetime.now() - timedelta(weeks=2), datetime.now())
 
-    extract("USGS", "temp_earthquake_data.json",
+    extract("USGS", "/tmp/temp_earthquake_data.json",
             datetime.now() - timedelta(days=1), datetime.now())
 
     # New API query needs: reviewstatus=reviewed and eventtype=earthquake

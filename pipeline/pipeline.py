@@ -149,7 +149,7 @@ def run_pipeline(start: datetime = datetime.now() - timedelta(minutes=1),
 
     logger.info("Extracting data from API...")
     raw = extract("USGS", "temp_earthquake_data.json", start, end)
-    if not raw:
+    if raw is False or not raw or len(raw) == 0:
         logger.warning("No data returned from API.")
         return None
 
@@ -185,7 +185,7 @@ def lambda_handler(event, context):
                             datetime.now())
         topics = None
 
-        if data:
+        if data is not None or not data.empty:
             logger.info("Creating alert dictionary...")
             topics = get_topic_dictionaries(data)
 
@@ -194,8 +194,8 @@ def lambda_handler(event, context):
             "message": topics
         }
     except Exception as e:
-        logger.error("Error running pipeline lambda: %s", str(e))
-        raise RuntimeError("Python pipeline failed to execute: %s", e)
+        logger.error("Error running pipeline lambda", exc_info=True)
+        raise RuntimeError(f"Python pipeline failed to execute: {e}") from e
 
 
 if __name__ == "__main__":
