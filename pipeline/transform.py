@@ -69,9 +69,16 @@ def get_region_from_state(state_name: str) -> str:
     """Looks up the a state name to find which region it is in."""
     return {"california": "West Coast",
             "oregon": "West Coast",
-            "washington'": "West Coast",
+            "washington": "West Coast",
             
             "idaho": "Pacific Northwest",
+
+            "nevada": "Southwest",
+            "arizona": "Southwest",
+            "new mexico": "Southwest",
+            "texas": "Southwest",
+            "oklahoma": "Southwest",
+            "utah": "Southwest",
 
             "montana": "Rocky Mountains",
             "colorado": "Rocky Mountains",
