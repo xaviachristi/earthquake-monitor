@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 """Fixtures for tests in this directory."""
 from json import loads
 from unittest.mock import MagicMock
