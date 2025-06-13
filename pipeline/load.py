@@ -66,6 +66,8 @@ def preprocess_df(df: DataFrame) -> DataFrame:
     df['dmin'] = df['dmin'].round(3)
     df["tsunami"] = df["tsunami"].apply(lambda x: bool(x))
     df["magnitude_type"] = df["magnitude_type"].str.title()
+    df['felt'] = df['felt'].fillna(0)
+    df['felt'] = df['felt'].apply(lambda x: int(x))
 
     return df
 

@@ -144,7 +144,7 @@ def run_pipeline(start: datetime = datetime.now() - timedelta(minutes=1),
                  end: datetime = datetime.now()) -> DataFrame:
     """Run ETL pipeline."""
     logger.info(
-        "Found environment: %s, %s", ENV["DB_USER"], ENV["DB_HOST"], ENV["DB_NAME"])
+        "Found environment: %s, %s, %s", ENV["DB_USER"], ENV["DB_HOST"], ENV["DB_NAME"])
 
     logger.info("Extracting data from API...")
     raw = extract("USGS", "/tmp/temp_earthquake_data.json", start, end)
@@ -203,5 +203,5 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     load_dotenv()
-    run_pipeline(datetime.now() - timedelta(hours=9),
-                 datetime.now() - timedelta(hours=8))
+    run_pipeline(datetime.now() - timedelta(hours=2),
+                 datetime.now())
