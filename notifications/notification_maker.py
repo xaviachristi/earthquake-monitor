@@ -10,7 +10,7 @@ from boto3 import client
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
-    level="DEBUG",
+    level="WARNING",
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
@@ -109,4 +109,16 @@ if __name__ == "__main__":
     load_dotenv()
     # Code to test alerts being sent
     sns_client = get_sns_client()
-    res = sns_client.create_topic(Name="c17-marios-example")
+    res = sns_client.create_topic(Name="c17-quakes-example")
+    topic = res["TopicArn"]
+    email = ""
+    sub = sns_client.subscribe(TopicArn=topic,
+                               Protocol="email-json",
+                               Endpoint=email)
+    fake_data = [{"topic_arn": topic, "magnitude": 3.1, "state_name": "Not in the USA",
+                  "region_name": "Taiwan", "time": datetime.now(), "tsunami": False,
+                  "latitude": 30.101, "longitude": 50.123},
+                 {"topic_arn": topic, "magnitude": 3.1, "state_name": "state",
+                  "region_name": "region", "time": datetime.now(), "tsunami": True,
+                  "latitude": 30.101, "longitude": 50.123}]
+    send_emails(fake_data)
