@@ -3,7 +3,6 @@ pytest-icdiff
 pytest-cov
 pylint
 pandas
-obspy
 streamlit
 python-dotenv
 psycopg[binary]
@@ -12,6 +11,5 @@ plotly
 streamlit-pdf-viewer
 boto3
 aiohttp
-geopy
 opencage
 nbformat

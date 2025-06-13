@@ -74,6 +74,7 @@ INSERT INTO state (state_name, region_id) VALUES
 ('Vermont', 7),
 ('New Hampshire', 7),
 ('Maine', 7),
+('District of Columbia', 7),
 
 -- Alaska
 ('Alaska', 8),
@@ -82,7 +83,4 @@ INSERT INTO state (state_name, region_id) VALUES
 ('Hawaii', 9),
 
 -- Puerto Rico
-('Puerto Rico', 10),
-
--- Other/Offshore
-('District of Columbia', 11);
+('Puerto Rico', 10)
