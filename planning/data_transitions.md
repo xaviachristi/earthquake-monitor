@@ -116,15 +116,27 @@ pd.DataFrame({
 - Example Data:
 ```python
 pd.DataFrame({
-    "id": ["tx2025lfsd", "ci41180208"],
+    "earthquake_id": ["tx2025lfsd", "ci41180208"],
     "magnitude": [1.6, 2.46],
-    "time": [DateTime(<from 1749483214670>), DateTime(<from 1749483691255>)],
-    "updated": [DateTime(<from 1749483214670>), DateTime(<from 1749483691255>)],
-    "longitude": [-103.628, -118.2351667],
     "latitude": [31.891, 33.9676667],
+    "longitude": [-103.628, -118.2351667],
+    "time": pd.to_datetime([1749483214670, 1749483691255], unit='ms'),
+    "updated": pd.to_datetime([1749483214670, 1749483691255], unit='ms'),
     "depth": [5, 15.74],
-    "url": ["iamcool.com", "scaryspooky.net"]
-    "tsunami": [0, 0]
+    "url": ["iamcool.com", "scaryspooky.net"],
+    "felt": [None, None],
+    "tsunami": [False, False],
+    "cdi": [None, None],
+    "mmi": [None, None],
+    "nst": [None, None],
+    "sig": [None, None],
+    "net": ["tx", "ci"],
+    "dmin": [None, None],
+    "alert": [None, None],
+    "location_source": [None, None],
+    "magnitude_type": [None, None],
+    "state_name": ["Texas", "California"],
+    "region_name": ["Southwest", "West Coast"]
 })
 ```
 
@@ -137,3 +149,31 @@ pd.DataFrame({
 
 ### OUTPUT
 - Upload data to RDS instance.
+- Datatype: Dataframe.
+- Reduced to only items that were uploaded to the RDS.
+- Example Data:
+```python
+pd.DataFrame({
+    "earthquake_id": ["tx2025lfsd", "ci41180208"],
+    "magnitude": [1.6, 2.46],
+    "latitude": [31.891, 33.9676667],
+    "longitude": [-103.628, -118.2351667],
+    "time": pd.to_datetime([1749483214670, 1749483691255], unit='ms'),
+    "updated": pd.to_datetime([1749483214670, 1749483691255], unit='ms'),
+    "depth": [5, 15.74],
+    "url": ["iamcool.com", "scaryspooky.net"],
+    "felt": [None, None],
+    "tsunami": [False, False],
+    "cdi": [None, None],
+    "mmi": [None, None],
+    "nst": [None, None],
+    "sig": [None, None],
+    "net": ["tx", "ci"],
+    "dmin": [None, None],
+    "alert": [None, None],
+    "location_source": [None, None],
+    "magnitude_type": [None, None],
+    "state_name": ["Texas", "California"],
+    "region_name": ["Southwest", "West Coast"]
+})
+```

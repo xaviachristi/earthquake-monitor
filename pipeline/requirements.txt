@@ -6,3 +6,5 @@ pandas
 obspy
 aiohttp
 geopy
+psycopg[binary]
+python-dotenv
