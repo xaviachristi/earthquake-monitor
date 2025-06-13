@@ -12,18 +12,18 @@ CREATE TYPE magnitude_type AS ENUM ('Md', 'Ml', 'Ms', 'Mw', 'Me', 'Mi', 'Mb', 'M
 
 
 CREATE TABLE region (
-    region_id SMALLINT PRIMARY KEY,
+    region_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     region_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE state (
-    state_id SMALLINT PRIMARY KEY,
+    state_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     state_name VARCHAR(100) NOT NULL,
     region_id SMALLINT REFERENCES region(region_id)
 );
 
 CREATE TABLE earthquake (
-    earthquake_id BIGINT GENERATED ALWAYS AS IDENTITY,
+    earthquake_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     magnitude DECIMAL(3,1) NOT NULL,
     latitude DECIMAL(9,6),
     longitude DECIMAL(9,6),

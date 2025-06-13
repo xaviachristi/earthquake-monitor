@@ -42,11 +42,11 @@ def serve_dash():
         )
     try:
         earthquakes = get_data()
-        if earthquakes:
-            st.markdown("#Earthquake Quantity by State")
+        if not earthquakes.empty:
+            st.markdown("# Earthquake Quantity by State")
             state_counts = get_counts_by_state(earthquakes)
             fig = get_state_treemap(state_counts)
-            fig.show()
+            st.plotly_chart(fig)
     except Exception as err:
         st.error(f"Cannot return data from database: {err}")
 

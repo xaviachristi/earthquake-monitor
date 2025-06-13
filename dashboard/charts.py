@@ -22,7 +22,7 @@ def get_state_treemap(data: DataFrame) -> treemap:
     logger.info("Creating treemap...")
     fig = treemap(
         data_frame=data,
-        path=[Constant("all"), 'State Name'],
+        path=['State Name'],
         values="Earthquake Count")
     fig.update_traces(root_color="lightgrey")
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
