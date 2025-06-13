@@ -2,20 +2,12 @@
 
 """Fixtures for tests in this directory."""
 
-from obspy.core.event.catalog import _create_example_catalog
-import pytest
 from json import loads
 from pandas import DataFrame
 from pytest import fixture
 from datetime import datetime
 from pytz import timezone
 from unittest.mock import MagicMock
-
-
-@fixture
-def example_catalog():
-    """An example catalog for use with the ObsPy library."""
-    return _create_example_catalog()
 
 
 @fixture
