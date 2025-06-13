@@ -196,5 +196,8 @@ cython_debug/
 # Json files in the pipeline/ directory
 *.json
 
+# Mac dependant files
+.DS_Store
+
 # Sample html files from notification tests.
 fake_alert.html
