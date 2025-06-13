@@ -159,7 +159,7 @@ class TestMakeMessage:
         assert isinstance(make_message(sample_data), str)
         assert isinstance(make_message(sample_non_usa_data), str)
 
-    def test_make_message_contains_tsunami(self, sample_data, sample_non_usa_data):
+    def test_make_message_tsunami_true(self, sample_data, sample_non_usa_data):
         """Checks that tsunami information is included in the message
         if it is set to True."""
         sample_data["tsunami"] = True
@@ -167,7 +167,7 @@ class TestMakeMessage:
         assert "tsunami" in make_message(sample_data)
         assert "tsunami" in make_message(sample_non_usa_data)
 
-    def test_make_message_contains_tsunami(self, sample_data, sample_non_usa_data):
+    def test_make_message_tsunami_false(self, sample_data, sample_non_usa_data):
         """Checks that tsunami information isn't included in the message
         if it set to False."""
         assert "tsunami" not in make_message(sample_data)
