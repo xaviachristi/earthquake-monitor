@@ -10,7 +10,7 @@ from boto3 import client
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
-    level="WARNING",
+    level="DEBUG",
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
