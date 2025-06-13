@@ -21,7 +21,7 @@ logging.basicConfig(
 
 def is_event_clean(event: dict) -> bool:
     """Checks if we want an entry in the database."""
-    logger.debug("Performing is_event_clean() check.")
+    logger.info("Checking if event is clean.")
     if event["properties"]["status"] != "reviewed" \
             or event["properties"]["type"] != "earthquake":
         logger.info("Unclean event found. ID: %s", event["properties"]["ids"])
@@ -32,12 +32,17 @@ def is_event_clean(event: dict) -> bool:
 
 def clean_earthquake_data(earthquake_data: list[dict]) -> list[dict]:
     """Removes entries that we don't want in the database."""
-    logger.info("Removing unwanted entries.")
+    logger.info("Removing unwanted events.")
+    logger.info("Total events: %s.", len(earthquake_data))
 
     clean_events = []
     for entry in earthquake_data:
+        logger.debug("Event:\n%s", entry)
         if is_event_clean(entry):
+            logger.debug("Event is clean.")
             clean_events.append(entry)
+
+    logger.info("Clean events: %s.", len(clean_events))
     return clean_events
 
 
@@ -66,6 +71,7 @@ def get_address(latitude: float, longitude: float) -> list[str]:
 
 def grab_state(address: list[str]) -> str:
     """Finds a state in an address."""
+    logger.debug("Finding state inside address.")
     if not address[-2].isnumeric():
         return address[-2]
     return address[-3]
@@ -141,11 +147,12 @@ def make_row_for_dataframe(event: dict) -> list:
     Returns a list containing all the information needed for the dataframe
     which load requires.
     """
-
+    logger.info("Pulling relevant information out of the JSON data for one event.")
     df_row = []
 
     # earthquake_id - creates a list incase there are multiple IDs.
     df_row.append(list(filter(None, event["properties"]["ids"].split(","))))
+    logger.debug("Event ID: %s", df_row[0]) # Logged seperately to save repetition.
     # magnitude.
     df_row.append(event["properties"]["mag"])
     # latitude - origin is a list, hence the [0].
