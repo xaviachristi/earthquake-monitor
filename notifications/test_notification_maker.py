@@ -7,7 +7,75 @@ from notification_maker import (validate_keys, validate_types,
 
 class TestValidateKeys:
     """A class that groups together tests for validate_keys."""
-    ...
+
+    def test_validate_keys_valid(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns True if all keys exist."""
+        assert validate_keys(sample_data)
+        assert validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_topic(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the topic key
+        doesn't exist."""
+        sample_data.pop("topic_arn")
+        sample_non_usa_data.pop("topic_arn")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_magnitude(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the magnitude key
+        doesn't exist."""
+        sample_data.pop("magnitude")
+        sample_non_usa_data.pop("magnitude")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_state(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the state key
+        doesn't exist."""
+        sample_data.pop("state_name")
+        sample_non_usa_data.pop("state_name")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_region(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the region key
+        doesn't exist."""
+        sample_data.pop("region_name")
+        sample_non_usa_data.pop("region_name")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_time(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the time key
+        doesn't exist."""
+        sample_data.pop("time")
+        sample_non_usa_data.pop("time")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_tsunami(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the tsunami key
+        doesn't exist."""
+        sample_data.pop("tsunami")
+        sample_non_usa_data.pop("tsunami")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_latitude(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the latitude key
+        doesn't exist."""
+        sample_data.pop("latitude")
+        sample_non_usa_data.pop("latitude")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
+
+    def test_validate_keys_no_longitude(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the longitude key
+        doesn't exist."""
+        sample_data.pop("longitude")
+        sample_non_usa_data.pop("longitude")
+        assert not validate_keys(sample_data)
+        assert not validate_keys(sample_non_usa_data)
 
 
 class TestValidateTypes:
@@ -39,6 +107,46 @@ class TestValidateTypes:
         of the correct datatype."""
         sample_data["state_name"] = 1
         sample_non_usa_data["state_name"] = 2
+        assert not validate_types(sample_data)
+        assert not validate_types(sample_non_usa_data)
+
+    def test_validate_types_region_invalid(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the region isn't
+        of the correct datatype."""
+        sample_data["region_name"] = 1
+        sample_non_usa_data["region_name"] = 2
+        assert not validate_types(sample_data)
+        assert not validate_types(sample_non_usa_data)
+
+    def test_validate_types_time_invalid(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the time isn't
+        of the correct datatype."""
+        sample_data["time"] = 1
+        sample_non_usa_data["time"] = 2
+        assert not validate_types(sample_data)
+        assert not validate_types(sample_non_usa_data)
+
+    def test_validate_types_tsunami_invalid(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the tsunami isn't
+        of the correct datatype."""
+        sample_data["tsunami"] = 1
+        sample_non_usa_data["tsunami"] = 2
+        assert not validate_types(sample_data)
+        assert not validate_types(sample_non_usa_data)
+
+    def test_validate_types_latitude_invalid(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the latitude isn't
+        of the correct datatype."""
+        sample_data["latitude"] = 1
+        sample_non_usa_data["latitude"] = 2
+        assert not validate_types(sample_data)
+        assert not validate_types(sample_non_usa_data)
+
+    def test_validate_types_longitude_invalid(self, sample_data, sample_non_usa_data):
+        """Checks that the function returns False if the longitude isn't
+        of the correct datatype."""
+        sample_data["longitude"] = 1
+        sample_non_usa_data["longitude"] = 2
         assert not validate_types(sample_data)
         assert not validate_types(sample_non_usa_data)
 
