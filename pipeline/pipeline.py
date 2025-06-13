@@ -35,7 +35,7 @@ def get_haversine_distance(lat1, lon1, lat2, lon2):
     on the Earth (specified in decimal degrees).
     Returns distance in kilometers.
     """
-    R = 6371.0
+    r = 6371.0
 
     phi1 = radians(lat1)
     phi2 = radians(lat2)
@@ -45,7 +45,7 @@ def get_haversine_distance(lat1, lon1, lat2, lon2):
     a = sin(d_phi/2)**2 + cos(phi1) * cos(phi2) * sin(d_lambda/2)**2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-    distance = R * c
+    distance = r * c
     return distance
 
 
