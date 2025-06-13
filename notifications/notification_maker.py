@@ -27,7 +27,7 @@ def validate_keys(data: dict) -> bool:
     """Checks all the required keys are in the dictionary."""
     keys = ["topic_arn", "magnitude", "state_name", "region_name", "time",
             "tsunami", "latitude", "longitude"]
-    logger.info("Starting key validation for topic %s.", data["topic_arn"])
+    logger.info("Starting key validation for topic %s.", data.get("topic_arn"))
     for key in keys:
         if key not in data:
             logger.error("Unable to validate %s key in data:\n %s", key, data)
