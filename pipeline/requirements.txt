@@ -4,5 +4,7 @@ pytest-cov
 pylint
 pandas
 obspy
+aiohttp
+geopy
 psycopg[binary]
 python-dotenv
