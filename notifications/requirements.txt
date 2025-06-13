@@ -1,0 +1,6 @@
+pylint
+pytest
+pytest-icdiff
+pytest-cov
+boto3
+python-dotenv
