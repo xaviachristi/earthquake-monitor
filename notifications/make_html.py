@@ -13,6 +13,7 @@ def write_to_html(message: str) -> None:
 
 if __name__ == "__main__":
 
-    fake_data = {"topic_arn": "a", "magnitude": 3.1, "state_name": "Not in the USA", "region_name": "Taiwan",
-                 "time": datetime.now(), "tsunami": False, "latitude": 30.101, "longitude": 50.123}
+    fake_data = {"topic_arn": "a", "magnitude": 3.1, "state_name": "Not in the USA",
+                 "region_name": "Taiwan", "time": datetime.now(), "tsunami": False,
+                 "latitude": 30.101, "longitude": 50.123}
     write_to_html(make_message(fake_data))

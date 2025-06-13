@@ -56,8 +56,7 @@ def get_location_message(data: dict) -> str:
     it is within the USA or not."""
     if data["state_name"] == "Not in the USA":
         return data["region_name"]
-    else:
-        return f"the area of {data["state_name"]}, {data["region_name"]}"
+    return f"the area of {data["state_name"]}, {data["region_name"]}"
 
 
 def make_message(data: dict) -> str:
