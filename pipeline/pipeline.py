@@ -103,6 +103,8 @@ def get_topics(sns_client: client) -> list[dict]:
         next_token = response.get('NextToken', None)
         arns.extend(response.get('Topics'))
     for topic in arns:
+        # Convention is c17-quake-magnitude-latitude-longitude-range
+        # p means positive, m means minus
         topic_name = search(
             r'c17-quake-\d{1,2}-(m|p)\d{1,2}-(m|p)\d{1,2}-\d+', topic.get('TopicArn'))
         if topic_name:

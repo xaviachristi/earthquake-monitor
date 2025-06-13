@@ -3,10 +3,8 @@ pytest-icdiff
 pytest-cov
 pylint
 pandas
-obspy
 psycopg[binary]
 python-dotenv
 boto3
 aiohttp
-geopy
 opencage
