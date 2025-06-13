@@ -27,6 +27,7 @@ def validate_keys(data: dict) -> bool:
     """Checks all the required keys are in the dictionary."""
     keys = ["topic_arn", "magnitude", "state_name", "region_name", "time",
             "tsunami", "latitude", "longitude"]
+    logger.info("Starting key validation for topic %s.", data["topic_arn"])
     for key in keys:
         if key not in data:
             logger.error("Unable to validate %s key in data:\n %s", key, data)
@@ -40,6 +41,8 @@ def validate_types(data: dict) -> bool:
     expected_data = [("topic_arn", str), ("magnitude", float), ("state_name", str),
                      ("region_name", str), ("time", datetime), ("tsunami", bool),
                      ("latitude", float), ("longitude", float)]
+    logger.info("Starting datatype validation for topic %s.",
+                data["topic_arn"])
     for name, expected_type in expected_data:
         if not isinstance(data[name], expected_type):
             logger.error(
@@ -62,6 +65,7 @@ def get_location_message(data: dict) -> str:
 def make_message(data: dict) -> str:
     """Turns a dictionary of values into a string 
     of HTML that makes up the alert message."""
+    logger.info("Starting message creation for topic %s.", data["topic_arn"])
     heading = """<!DOCTYPE html>
                  <html>
                  <body>
@@ -82,6 +86,7 @@ def make_message(data: dict) -> str:
 
 def publish_email(data: dict, sns: client) -> None:
     """Sends the email to SNS."""
+    logger.info("Starting email publication for topic %s.", data["topic_arn"])
     try:
         message = make_message(data)
         topic = data["topic_arn"]
