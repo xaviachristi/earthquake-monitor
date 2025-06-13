@@ -57,6 +57,12 @@ def preprocess_df(df: DataFrame) -> DataFrame:
         if col in df.columns:
             df[col] = to_numeric(df[col], errors='coerce')
 
+    london_tz = timezone("Europe/London")
+    df["time"] = df["time"].apply(
+        lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
+    df["updated"] = df["updated"].apply(
+        lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
+
     df['latitude'] = df['latitude'].round(6)   # matches DECIMAL(9,6)
     df['longitude'] = df['longitude'].round(6)
     df['magnitude'] = df['magnitude'].round(1)  # matches DECIMAL(3,1)
@@ -74,25 +80,13 @@ def preprocess_df(df: DataFrame) -> DataFrame:
 
 def get_diff(df1: DataFrame, df2: DataFrame) -> DataFrame:
     """Return records that only exist in first DataFrame."""
-    london_tz = timezone("Europe/London")
-    df1["time"] = df1["time"].apply(
-        lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
-    df1["updated"] = df1["updated"].apply(
-        lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
     df1 = preprocess_df(df1)
-    df2 = preprocess_df(df2)
 
     df1 = df1.drop(columns=["earthquake_id", "location_source"])
-    df2 = df2.drop(columns=["earthquake_id", "state_id",
-                   "region_id", "location_source"], errors="ignore")
 
     df1 = df1.reset_index(drop=True)
-    df2 = df2.reset_index(drop=True)
 
-    logger.info("df1: %s, df2: %s", df1, df2)
-
-    df_diff = df1.merge(df2, how='left', indicator=True)
-    return df_diff[df_diff['_merge'] == 'left_only'].drop(columns=['_merge'])
+    return df1[~df1["url"].isin(df2["url"])]
 
 
 def get_region_id(conn: Connection, region: str) -> int | None:
