@@ -13,3 +13,5 @@ streamlit-pdf-viewer
 boto3
 aiohttp
 geopy
+opencage
+nbformat
