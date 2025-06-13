@@ -198,6 +198,3 @@ cython_debug/
 
 # Mac dependant files
 .DS_Store
-
-# Sample html files from notification tests.
-fake_alert.html
