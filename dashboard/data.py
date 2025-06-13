@@ -37,7 +37,7 @@ def get_data() -> DataFrame:
     logger.info("Getting results from DB...")
     with get_connection() as con:
         with con.cursor() as curs:
-            curs.execute("""SELECT * FROM earthquake_details
+            curs.execute("""SELECT * FROM earthquake
                          JOIN "state" USING (state_id) 
                          JOIN "region" USING (region_id);""")
             quakes = curs.fetchall()
