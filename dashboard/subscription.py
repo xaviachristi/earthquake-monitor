@@ -30,8 +30,8 @@ def view_subscription():
     """Display information about subscribed topic."""
 
 
-def make_subscription(first_name: str, last_name: str, email: str,
-                      latitude: float, longitude: float, radius: int, magnitude: float) -> None:
+def make_subscription(email: str, latitude: float, longitude: float,
+                      radius: int, magnitude: float) -> None:
     """Create a subscription to a topic for their preference.
     format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
     topic_name = "c17-quake"
