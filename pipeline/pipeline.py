@@ -184,7 +184,7 @@ def lambda_handler(event, context):
         logger.info("Running ETL pipeline...")
         # data = run_pipeline(datetime.now() - timedelta(hours=1),
         #                    datetime.now())
-        data = run_pipeline(datetime.now() - timedelta(minutes=20),
+        data = run_pipeline(datetime.now() - timedelta(hours=1),
                             datetime.now())
 
         topics = None
