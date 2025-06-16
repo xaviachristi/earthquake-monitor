@@ -3,7 +3,7 @@
 from datetime import date
 
 from pandas import DataFrame
-from streamlit import (title, markdown, multiselect,
+from streamlit import (metric, title, markdown, multiselect,
                        columns, selectbox, number_input,
                        date_input, altair_chart)
 
@@ -11,7 +11,11 @@ from data import (get_data, get_american_data,
                   get_mag_filtered_data,
                   get_date_filtered_data,
                   get_state_filtered_data)
-from charts import (get_earthquakes_over_time)
+from charts import (get_earthquakes_over_time,
+                    get_average_mag,
+                    get_earthquake_count_by_magnitude,
+                    get_geographical_map_of_events,
+                    get_total_number_of_earthquakes)
 
 
 def filter_data(data: DataFrame,
@@ -32,13 +36,13 @@ def display_charts(filtered_data: DataFrame):
     altair_chart(get_earthquakes_over_time(filtered_data))
     col1, col2 = columns(2)
     with col1:
-        markdown("Placeholder for bar chart of earthquake number by magnitude.")
-        markdown(
-            "Placeholder for metric on average magnitude of event for this time frame.")
+        altair_chart(get_earthquake_count_by_magnitude(filtered_data))
     with col2:
-        markdown("Placeholder for geographical map of all events.")
-        markdown(
-            "Placeholder for metric on total number of events for this time frame.")
+        metric(label="Total Number of Earthquakes",
+               value=get_total_number_of_earthquakes(filtered_data))
+        metric(label="Average Earthquake Magnitude",
+               value=get_average_mag(filtered_data))
+    altair_chart(get_geographical_map_of_events(filtered_data))
 
 
 def serve_page():

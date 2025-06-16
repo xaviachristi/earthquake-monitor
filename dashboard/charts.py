@@ -1,11 +1,12 @@
 """Module for serving visualisations needed for dashboard pages."""
 
+import json
 from logging import getLogger, basicConfig
 
 from streamlit import cache_resource
 from pandas import DataFrame
 from plotly.express import treemap
-from altair import Chart, X, Y, Color
+from altair import (Chart, X, Y, Color, Scale, topo_feature)
 
 
 logger = getLogger(__name__)
@@ -70,16 +71,63 @@ def get_earthquakes_over_time(data: DataFrame) -> Chart:
 
 
 def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
-    """Return chart of earthquake counts per magnitude earthquake."""
+    """Return bar chart of earthquake counts per rounded magnitude."""
+    data['rounded_mag'] = data['magnitude'].astype(int).round(1)
+    return Chart(data).mark_bar().encode(
+        x=X("rounded_mag:Q", title="Magnitude"),
+        y=Y("count():Q", title="Number of Earthquakes"),
+        tooltip=["rounded_mag", "count()"]
+    ).properties(
+        title="Earthquake Count by Magnitude"
+    )
 
 
-def get_average_mag(data: DataFrame) -> int:
-    """Return average magnitude of earthquake."""
+def get_average_mag(data: DataFrame) -> float:
+    """Return average magnitude of earthquakes."""
+    return round(data['magnitude'].mean(), 2)
 
 
-def get_total_number_of_earthquakes(data: DataFrame) -> Chart:
-    """Return chart of earthquake counts per magnitude earthquake."""
+def get_total_number_of_earthquakes(data: DataFrame) -> int:
+    return len(data)
 
 
 def get_geographical_map_of_events(data: DataFrame) -> Chart:
-    """Return chart of earthquake counts per magnitude earthquake."""
+    """Return a geographical map of earthquake events over the U.S."""
+    data['latitude'] = data['latitude'].astype(float)
+    data['longitude'] = data['longitude'].astype(float)
+    data['magnitude'] = data['magnitude'].astype(float)
+
+    world_map = topo_feature(
+        'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json', 'countries')
+
+    # Base map of world
+    base = Chart(world_map).mark_geoshape(
+        fill='lightgray',
+        stroke='white'
+    ).project(
+        type='mercator',
+        center=[-100, 40],
+        scale=200
+    ).properties(
+        width=900,
+        height=600
+    )
+
+    # Earthquake points
+    points = Chart(data).mark_circle(size=30).encode(
+        longitude='longitude:Q',
+        latitude='latitude:Q',
+        color=Color('magnitude:Q', scale=Scale(
+            scheme='yelloworangered'), title="Magnitude"),
+        tooltip=['time:T', 'latitude:Q', 'longitude:Q', 'magnitude:Q']
+    ).project(
+        type='mercator',
+        center=[-100, 40],
+        scale=200
+    ).properties(
+        width=900,
+        height=600
+    )
+
+    # Combine layers
+    return base + points
