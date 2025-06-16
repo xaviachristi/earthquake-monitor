@@ -137,7 +137,8 @@ def get_region_from_state(state_name: str) -> str:
 
             "alaska": "Alaska",
             "hawaii": "Hawaii",
-            "puerto rico": "Puerto Rico"
+            "puerto rico": "Puerto Rico",
+            "unknown state": "Unspecified United States"
 
             }[state_name.lower()]
 
@@ -147,12 +148,14 @@ def make_row_for_dataframe(event: dict) -> list:
     Returns a list containing all the information needed for the dataframe
     which load requires.
     """
-    logger.info("Pulling relevant information out of the JSON data for one event.")
+    logger.info(
+        "Pulling relevant information out of the JSON data for one event.")
     df_row = []
 
     # earthquake_id - creates a list incase there are multiple IDs.
     df_row.append(list(filter(None, event["properties"]["ids"].split(","))))
-    logger.debug("Event ID: %s", df_row[0]) # Logged seperately to save repetition.
+    # Logged seperately to save repetition.
+    logger.debug("Event ID: %s", df_row[0])
     # magnitude.
     df_row.append(event["properties"]["mag"])
     # latitude - origin is a list, hence the [0].

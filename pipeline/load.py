@@ -35,6 +35,7 @@ def get_current_db(conn: Connection) -> DataFrame:
     """Return all records currently in database."""
     with conn.cursor() as curs:
         curs.execute("""SELECT * FROM earthquake
+                        JOIN "state_region_interaction" USING(state_region_interaction_id)
                         JOIN "state" USING (state_id)
                         JOIN "region" USING (region_id);""")
         quakes = DataFrame(curs.fetchall())

@@ -205,5 +205,5 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     load_dotenv()
-    run_pipeline(datetime.now() - timedelta(minutes=20),
-                 datetime.now())
+    run_pipeline(datetime.now() - timedelta(days=4),
+                 datetime.now() - timedelta(hours=17))
