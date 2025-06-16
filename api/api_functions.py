@@ -107,8 +107,8 @@ def prepare_query_arguments(arguments: dict) -> str:
     Provides defaults and the correct formatting.
     """
 
-    # If lat/long + distance might need harversine?
     # lat/long/dist can raise a not-implemented error for now
+    # as they might need haversine distance
     # I'll do the easier API bits then circle back depending on time.
 
     provided_arguments = arguments.keys()

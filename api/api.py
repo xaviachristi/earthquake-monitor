@@ -47,7 +47,8 @@ from dotenv import load_dotenv
 from flask import Flask, current_app, request
 
 from api_functions import (validate_api_query_argument_names, prepare_query_arguments,
-                           )
+                           get_connection, get_query_template, format_sql_response_as_json,
+                           query_database)
 
 
 logger = getLogger(__name__)
@@ -58,19 +59,20 @@ basicConfig(
 )
 
 
-app = Flask(__name__)
+APP = Flask(__name__)
+
+CONN = get_connection()
 
 
-@app.get("/")
-@app.get("/home")
+@APP.get("/")
+@APP.get("/home")
 def index():
     """Returns documentation for the API."""
     logger.debug("Index accessed.")
     return current_app.send_static_file("documentation.html")
 
 
-
-@app.get("/earthquakes")
+@APP.get("/earthquakes")
 def get_earthquakes():
     """
     Returns earthquake information.
@@ -84,19 +86,25 @@ def get_earthquakes():
     earthquakes?region=____&lat=___&long=___&date=____&mag=___
     """
     args = request.args.to_dict()
+
     try:
         validate_api_query_argument_names(args)
-        convert_earthquake_args_to_sql(args)
-
     except ValueError as e:
         logger.info("Value error: %s", e)
+        return ... # Send appropriate error JSON.
     except TypeError as e:
         logger.info("Type error: %s", e)
-    
-    data = ... # Use psycopg to query DB.
+        return ...  # Send appropriate error JSON.
+
+    q = get_query_template()
+    sql_args = prepare_query_arguments(args)
+    # fillna being depreciated - easiest way to replace it?
+    return format_sql_response_as_json(
+        query_database(CONN, q, sql_args).fillna(0))
+
 
 if __name__ == "__main__":
     load_dotenv()
-    app.config['TESTING'] = True
-    app.config['DEBUG'] = True
-    app.run(debug=True, host="0.0.0.0", port=80)
+    APP.config['TESTING'] = True
+    APP.config['DEBUG'] = True
+    APP.run(debug=True, host="0.0.0.0", port=80)

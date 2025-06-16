@@ -13,6 +13,7 @@
     <div class="main-body">
     <h3>Explanation</h3>
     <h3>Example Query</h3>
+    <p>earthquakes?region=____&lat=___&long=___&date=____&mag=___</p>
     <h3>Parameters</h3>
     <div class="parameter-list"></div>
     <ul>
@@ -35,6 +36,14 @@
           <li>Specify a window of time to filter results.</li>
           <li>Default = now</li>
           <li>Format = "YYYY-MM-DDThh-mm-ss" UTC</li>
+        </ul>
+      <li>region</li>
+        <ul>
+          <li>Region</li>
+          <li><b>Not implemented.</b></li>
+          <li>Specify a region to filter results.</li>
+          <li>Default = none</li>
+          <li>Possible Values = ...</li>
         </ul>
       <li>lat</li>
         <ul>
@@ -64,52 +73,52 @@
     <h3>Example Response</h3>
     <div class="example-response"></div>
     <pre>
-      <code>
-  {"index":68,
-  "earthquake_id":455,
-  "magnitude":4.9,
-  "latitude":-49.8483,
-  "longitude":-113.3804,
-  "time":"2025-06-16T12:34:54.824Z",
-  "updated":"2025-06-16T13:45:41.040Z",
-  "depth":10.0,
-  "url":"https:\/\/earthquake.usgs.gov\/earthquakes\/eventpage\/us6000qkky",
-  "felt":0,
-  "tsunami":false,
-  "cdi":0,
-  "mmi":0,
-  "nst":54.0,
-  "sig":369,
-  "net":"us",
-  "dmin":27.855,
-  "alert":0,
-  "location_source":0,
-  "magnitude_type":"Mb",
-  "state_name":"Not in the USA",
-  "region_name":"No Country"
-  },
-  {"index":69,
-  "earthquake_id":465,
-  "magnitude":4.4,
-  "latitude":36.5269,
-  "longitude":70.2915,
-  "time":"2025-06-16T09:34:13.071Z",
-  "updated":"2025-06-16T10:33:01.040Z",
-  "depth":197.467,
-  "url":"https:\/\/earthquake.usgs.gov\/earthquakes\/eventpage\/us6000qkkm",
-  "felt":0,
-  "tsunami":false,
-  "cdi":0,
-  "mmi":0,
-  "nst":38.0,
-  "sig":298,
-  "net":"us",
-  "dmin":2.218,
-  "alert":0,
-  "location_source":0,
-  "magnitude_type":"Mb",
-  "state_name":"Not in the USA",
-  "region_name":"Afghanistan"}
+<code>{"index":68,
+"earthquake_id":455,
+"magnitude":4.9,
+"latitude":-49.8483,
+"longitude":-113.3804,
+"time":"2025-06-16T12:34:54.824Z",
+"updated":"2025-06-16T13:45:41.040Z",
+"depth":10.0,
+"url":"https:\/\/earthquake.usgs.gov\/earthquakes\/eventpage\/us6000qkky",
+"felt":0,
+"tsunami":false,
+"cdi":0,
+"mmi":0,
+"nst":54.0,
+"sig":369,
+"net":"us",
+"dmin":27.855,
+"alert":0,
+"location_source":0,
+"magnitude_type":"Mb",
+"state_name":"Not in the USA",
+"region_name":"No Country"
+},
+{"index":69,
+"earthquake_id":465,
+"magnitude":4.4,
+"latitude":36.5269,
+"longitude":70.2915,
+"time":"2025-06-16T09:34:13.071Z",
+"updated":"2025-06-16T10:33:01.040Z",
+"depth":197.467,
+"url":"https:\/\/earthquake.usgs.gov\/earthquakes\/eventpage\/us6000qkkm",
+"felt":0,
+"tsunami":false,
+"cdi":0,
+"mmi":0,
+"nst":38.0,
+"sig":298,
+"net":"us",
+"dmin":2.218,
+"alert":0,
+"location_source":0,
+"magnitude_type":"Mb",
+"state_name":"Not in the USA",
+"region_name":"Afghanistan"
+}
       </code>
   </pre>
   </div>
