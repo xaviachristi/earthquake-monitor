@@ -1,5 +1,6 @@
 """Module for handling data from the RDS."""
 
+from datetime import date
 from os import environ as ENV
 from logging import getLogger, basicConfig
 
@@ -31,7 +32,7 @@ def get_connection() -> Connection:
     )
 
 
-@cache_data
+@cache_data(ttl=600)
 def get_data() -> DataFrame:
     """Return all data for dashboard from the RDS."""
     logger.info("Getting results from DB...")
@@ -55,6 +56,37 @@ def get_counts_by_region(data: DataFrame) -> DataFrame:
     """Return dataframes of value counts for each region."""
     logger.info("Grouping DataFrame by region...")
     return data["region_name"].value_counts().rename_axis("Region Name").reset_index(name="Earthquake Count")
+
+
+def get_american_data(data: DataFrame) -> DataFrame:
+    """Return dataframe filtered fpr US data only."""
+    logger.info("Grouping DataFrame if from US...")
+    return data[data["state_name"] != "Not in the USA"]
+
+
+def get_international_data(data: DataFrame) -> DataFrame:
+    """Return dataframe filtered for international data only."""
+    logger.info("Grouping DataFrame if not from US...")
+    return data[data["state_name"] == "Not in the USA"]
+
+
+def get_mag_filtered_data(data: DataFrame, mag: int) -> DataFrame:
+    """Return magnitude filtered data with mag as a minimum magnitude."""
+    logger.info("Filtering data by magnitude now...")
+    return data[data["magnitude"] >= mag]
+
+
+def get_date_filtered_data(data: DataFrame, start: date, end: date) -> DataFrame:
+    """Return date filtered data with start and end date."""
+    logger.info("Filtering data by date now...")
+    mask = (data["time"].dt.date >= start) & (data["time"].dt.date <= end)
+    return data[mask]
+
+
+def get_state_filtered_data(data: DataFrame, states: list[str]) -> DataFrame:
+    """Return state filtered data with states as list of accepted names."""
+    logger.info("Filtering data by states now...")
+    return data[data["state_name"].isin(states)]
 
 
 if __name__ == "__main__":
