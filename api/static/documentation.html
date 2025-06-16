@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EqM API Docs</title>
+  </head>
+  <body>
+    <h3>Earthquake Monitor</h3>
+    <h1>API Documentation</h1>
+    <h3>Explanation</h3>
+    <h3>Example Query</h3>
+    <h3>Parameters</h3>
+    <ul>
+      <li>mag
+        <ul>
+        <li>Magnitude</li>
+        <li>Specify a minimum magnitude to filter results.</li>
+        <li>Default = 4.0</li>
+        </ul>
+      <li>start_time</li>
+        <ul>
+          <li>Start Time</li>
+          <li>Specify a window of time to filter results.</li>
+          <li>Default = 7 days ago</li>
+          <li>Format = "YYYY-MM-DDThh-mm-ss" UTC</li>
+        </ul>
+      <li>end_time</li>
+        <ul>
+          <li>End Time</li>
+          <li>Specify a window of time to filter results.</li>
+          <li>Default = now</li>
+          <li>Format = "YYYY-MM-DDThh-mm-ss" UTC</li>
+        </ul>
+      <li>lat</li>
+        <ul>
+          <li>Latitude</li>
+          <li><b>Not implemented.</b></li>
+          <li>Requires longitude.</li>
+          <li>Specify a location to filter results.</li>
+          <li>Default = none</li>
+        </ul>
+      <li>long</li>
+        <ul>
+          <li>Longitude</li>
+          <li><b>Not implemented.</b></li>
+          <li>Requires latitude.</li>
+          <li>Specify a location to filter results.</li>
+          <li>Default = none</li>
+        </ul>
+      <li>dist</li>
+        <ul>
+          <li>Distance</li>
+          <li><b>Not implemented.</b></li>
+          <li>Requires latitude and longitude.</li>
+          <li>Specify a distance from the point to filter results.</li>
+          <li>Default = 5km</li>
+        </ul>
+    </ul>
+  </body>
+</html>
