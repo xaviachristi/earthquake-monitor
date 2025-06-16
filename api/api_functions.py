@@ -151,7 +151,7 @@ def get_connection() -> Connection:
 def query_database(connection: Connection, query: str, parameters: dict) -> pd.DataFrame:
     """Sends a query to the database."""
     with connection.cursor() as curs:
-        curs.execute(q, parameters)
+        curs.execute(query, parameters)
         quakes = pd.DataFrame(curs.fetchall())
     if quakes.empty:
         quake_cols = [
@@ -161,12 +161,12 @@ def query_database(connection: Connection, query: str, parameters: dict) -> pd.D
             "state_id", "region_id"
         ]
         return pd.DataFrame(columns=quake_cols)
-    return quakes.drop(columns=["state_id", "region_id"])
+    return quakes.drop(columns=["state_id", "region_id", "state_region_interaction_id"])
 
 
-def format_sql_response_as_json():
+def format_sql_response_as_json(sql_response: pd.DataFrame) -> str:
     """Format the SQL response as the desired JSON."""
-    pass
+    return sql_response.to_json(orient="table")
 
 
 if __name__ == "__main__":
@@ -175,4 +175,5 @@ if __name__ == "__main__":
     received_args = {}
     q = get_query_template()
     sql_args = prepare_query_arguments(received_args)
-    print(query_database(conn, q, sql_args))
+    # fillna being depreciated - easiest way to replace it?
+    print(format_sql_response_as_json(query_database(conn, q, sql_args).fillna(0)))
