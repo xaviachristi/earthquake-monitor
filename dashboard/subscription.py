@@ -31,13 +31,35 @@ def view_subscription():
 
 
 def make_subscription(first_name: str, last_name: str, email: str,
-                      latitude: float, longitude: float, radius: int, magnitude: float):
+                      latitude: float, longitude: float, radius: int, magnitude: float) -> None:
     """Create a subscription to a topic for their preference.
     format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
     topic_name = "c17-quake"
+    topic_name = create_topic_name(
+        topic_name, latitude, longitude, radius, magnitude)
+    sns = get_sns_client()
+    topic_arn = create_topic(sns, topic_name)
+    sub_to_topic(sns, topic_arn, email)
 
-    # Format magnitude float?
-    # Format lat and lon float?
+
+def create_topic_name(topic_name: str, latitude: float, longitude: float,
+                      radius: int, magnitude: float) -> str:
+    """Creates a topic name based on the provided information."""
+    if magnitude:
+        magnitude = round(magnitude, 1)
+        topic_name += f"-{magnitude}"
+    if latitude and longitude and radius:
+        latitude = location_formatting(latitude)
+        longitude = location_formatting(longitude)
+        topic_name += f"-{latitude}-{longitude}-{radius}"
+    return topic_name
+
+
+def location_formatting(coordinate: float) -> str:
+    """Returns a formatted string of the latitude / longitude coordinate."""
+    if coordinate < 0:
+        return f"m{round(coordinate * -1, 4)}"
+    return f"p{round(coordinate, 4)}"
 
 
 def create_topic(sns: client, topic_name: str) -> str:
@@ -47,6 +69,6 @@ def create_topic(sns: client, topic_name: str) -> str:
 
 def sub_to_topic(sns: client, topic_arn: str, email: str) -> None:
     """Subscribes a user to a topic based on the TopicArn."""
-    sub = sns.subscribe(TopicArn=topic_arn,
-                        Protocol="email",
-                        Endpoint=email)
+    sns.subscribe(TopicArn=topic_arn,
+                  Protocol="email",
+                  Endpoint=email)
