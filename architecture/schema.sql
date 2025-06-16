@@ -18,7 +18,12 @@ CREATE TABLE region (
 
 CREATE TABLE state (
     state_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    state_name VARCHAR(100) NOT NULL,
+    state_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE state_region_interaction (
+    state_region_interaction_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    state_id SMALLINT REFERENCES state(state_id)
     region_id SMALLINT REFERENCES region(region_id)
 );
 
@@ -42,5 +47,5 @@ CREATE TABLE earthquake (
     alert alert_level,
     location_source location_source,
     magnitude_type magnitude_type,
-    state_id SMALLINT REFERENCES state(state_id)
+    state_region_interaction_id SMALLINT REFERENCES state_region_interaction(state_region_interaction_id)
 );

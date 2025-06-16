@@ -8,79 +8,155 @@ INSERT INTO region (region_name) VALUES
 ('Northeast'),
 ('Alaska'),
 ('Hawaii'),
-('Puerto Rico'),
-('Other/Offshore');
+('Puerto Rico');
 
 
-INSERT INTO state (state_name, region_id) VALUES
+INSERT INTO state (state_name) VALUES
 -- West Coast
-('California', 1),
-('Oregon', 1),
-('Washington', 1),
+('California'),
+('Oregon'),
+('Washington'),
 
 -- Pacific Northwest
-('Idaho', 2),
+('Idaho'),
 
 -- Southwest
-('Nevada', 3),
-('Arizona', 3),
-('New Mexico', 3),
-('Texas', 3),
-('Oklahoma', 3),
-('Utah', 3),
+('Nevada'),
+('Arizona'),
+('New Mexico'),
+('Texas'),
+('Oklahoma'),
+('Utah'),
 
 -- Rocky Mountains
-('Montana', 4),
-('Colorado', 4),
-('Wyoming', 4),
+('Montana'),
+('Colorado'),
+('Wyoming'),
 
 -- Midwest
-('North Dakota', 5),
-('South Dakota', 5),
-('Nebraska', 5),
-('Kansas', 5),
-('Minnesota', 5),
-('Iowa', 5),
-('Missouri', 5),
-('Wisconsin', 5),
-('Illinois', 5),
-('Indiana', 5),
-('Michigan', 5),
-('Ohio', 5),
+('North Dakota'),
+('South Dakota'),
+('Nebraska'),
+('Kansas'),
+('Minnesota'),
+('Iowa'),
+('Missouri'),
+('Wisconsin'),
+('Illinois'),
+('Indiana'),
+('Michigan'),
+('Ohio'),
 
 -- Southeast
-('Arkansas', 6),
-('Louisiana', 6),
-('Kentucky', 6),
-('Tennessee', 6),
-('Mississippi', 6),
-('Alabama', 6),
-('Georgia', 6),
-('Florida', 6),
-('South Carolina', 6),
-('North Carolina', 6),
-('Virginia', 6),
-('West Virginia', 6),
+('Arkansas'),
+('Louisiana'),
+('Kentucky'),
+('Tennessee'),
+('Mississippi'),
+('Alabama'),
+('Georgia'),
+('Florida'),
+('South Carolina'),
+('North Carolina'),
+('Virginia'),
+('West Virginia'),
 
 -- Northeast
-('Maryland', 7),
-('Delaware', 7),
-('Pennsylvania', 7),
-('New Jersey', 7),
-('New York', 7),
-('Connecticut', 7),
-('Rhode Island', 7),
-('Massachusetts', 7),
-('Vermont', 7),
-('New Hampshire', 7),
-('Maine', 7),
-('District of Columbia', 7),
+('Maryland'),
+('Delaware'),
+('Pennsylvania'),
+('New Jersey'),
+('New York'),
+('Connecticut'),
+('Rhode Island'),
+('Massachusetts'),
+('Vermont'),
+('New Hampshire', ),
+('Maine'),
+('District of Columbia'),
 
 -- Alaska
-('Alaska', 8),
+('Alaska'),
 
 -- Hawaii
-('Hawaii', 9),
+('Hawaii'),
 
 -- Puerto Rico
-('Puerto Rico', 10)
+('Puerto Rico'),
+
+-- Non US
+('Not in the USA');
+
+
+INSERT INTO state_region_interaction (state_id, region_id) VALUES
+-- West Coast
+(1, 1),
+(2, 1),
+(3, 1),
+
+-- Pacific Northwest
+(4, 2),
+
+-- Southwest
+(5, 3),
+(6, 3),
+(7, 3),
+(8, 3),
+(9, 3),
+(10, 3),
+
+-- Rocky Mountains
+(11, 4),
+(12, 4),
+(13, 4),
+
+-- Midwest
+(14, 5),
+(15, 5),
+(16, 5),
+(17, 5),
+(18, 5),
+(19, 5),
+(20, 5),
+(21, 5),
+(22, 5),
+(23, 5),
+(24, 5),
+(25, 5),
+
+-- Southeast
+(26, 6),
+(27, 6),
+(28, 6),
+(29, 6),
+(30, 6),
+(31, 6),
+(32, 6),
+(33, 6),
+(34, 6),
+(35, 6),
+(36, 6),
+(37, 6),
+
+-- Northeast
+(38, 7),
+(39, 7),
+(40, 7),
+(41, 7),
+(42, 7),
+(43, 7),
+(44, 7),
+(45, 7),
+(46, 7),
+(47, 7),
+(48, 7),
+(49, 7),
+
+-- Alaska
+(50, 8),
+
+-- Hawaii
+(51, 9),
+
+-- Puerto Rico
+(52, 10);
