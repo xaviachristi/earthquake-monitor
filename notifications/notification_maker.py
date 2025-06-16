@@ -116,9 +116,9 @@ if __name__ == "__main__":
     sns_client = get_sns_client()
     res = sns_client.create_topic(Name="c17-quakes-example")
     topic = res["TopicArn"]
-    email = ""
+    email = "quakinginmanhattan@hotmail.com"
     sub = sns_client.subscribe(TopicArn=topic,
-                               Protocol="email-json",
+                               Protocol="email",
                                Endpoint=email)
     fake_data = [{"topic_arn": topic, "magnitude": 3.1, "state_name": "Not in the USA",
                   "region_name": "Taiwan", "time": datetime.now(), "tsunami": False,
