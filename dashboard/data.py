@@ -89,6 +89,12 @@ def get_state_filtered_data(data: DataFrame, states: list[str]) -> DataFrame:
     return data[data["state_name"].isin(states)]
 
 
+def get_region_filtered_data(data: DataFrame, regions: list[str]) -> DataFrame:
+    """Return region filtered data with regions as list of accepted names."""
+    logger.info("Filtering data by regions now...")
+    return data[data["region_name"].isin(regions)]
+
+
 if __name__ == "__main__":
     load_dotenv()
     all_data = get_data()

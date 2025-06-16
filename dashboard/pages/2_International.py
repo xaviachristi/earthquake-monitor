@@ -7,33 +7,33 @@ from streamlit import (metric, title, multiselect,
                        columns, number_input,
                        date_input, altair_chart)
 
-from data import (get_data, get_american_data,
+from data import (get_data, get_international_data,
                   get_mag_filtered_data,
                   get_date_filtered_data,
-                  get_state_filtered_data)
-from charts import (get_earthquakes_over_time,
+                  get_region_filtered_data)
+from charts import (get_earthquakes_over_time_for_regions,
                     get_average_mag,
                     get_earthquake_count_by_magnitude,
-                    get_american_map_of_events,
+                    get_global_map_of_events,
                     get_total_number_of_earthquakes)
 
 
 def filter_data(data: DataFrame,
-                states: list[str],
+                regions: list[str],
                 magnitude: int,
                 start: date,
                 end: date):
     """Return filtered data."""
     data = get_mag_filtered_data(data, magnitude)
     data = get_date_filtered_data(data, start, end)
-    if states:
-        data = get_state_filtered_data(data, states)
+    if regions:
+        data = get_region_filtered_data(data, regions)
     return data
 
 
 def display_charts(filtered_data: DataFrame):
     """Display to dashboard charts from filtered data."""
-    altair_chart(get_earthquakes_over_time(filtered_data))
+    altair_chart(get_earthquakes_over_time_for_regions(filtered_data))
     col1, col2 = columns(2)
     with col1:
         altair_chart(get_earthquake_count_by_magnitude(filtered_data))
@@ -42,25 +42,25 @@ def display_charts(filtered_data: DataFrame):
                value=get_total_number_of_earthquakes(filtered_data))
         metric(label="Average Earthquake Magnitude",
                value=get_average_mag(filtered_data))
-    altair_chart(get_american_map_of_events(filtered_data))
+    altair_chart(get_global_map_of_events(filtered_data))
 
 
 def serve_page():
-    """Serve USA data page."""
-    title("USA")
+    """Serve International data page."""
+    title("International")
     data = get_data()
-    us_data = get_american_data(data)
-    states = us_data["state_name"].unique()
+    inter_data = get_international_data(data)
+    states = inter_data["region_name"].unique()
 
-    state = None
+    region = None
     magnitude = None
     start = None
     stop = None
 
     col1, col2 = columns([0.6, 0.4])
     with col1:
-        state = multiselect(label="Filter by State.",
-                            options=states)
+        region = multiselect(label="Filter by Country.",
+                             options=states)
     with col2:
         magnitude = number_input(
             "Minimum Magnitude", min_value=0.0, max_value=10.0,
@@ -74,7 +74,7 @@ def serve_page():
             stop = date_input(label="End Date.",
                               value="today",
                               max_value=date.today())
-    filtered_data = filter_data(us_data, state, magnitude, start, stop)
+    filtered_data = filter_data(inter_data, region, magnitude, start, stop)
     display_charts(filtered_data)
 
 
