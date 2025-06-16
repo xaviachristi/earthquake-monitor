@@ -3,8 +3,8 @@
 from dotenv import load_dotenv
 import streamlit as st
 
-from data import get_data, get_counts_by_state
-from charts import get_state_treemap
+from data import get_counts_by_region, get_data, get_counts_by_state
+from charts import get_state_treemap, get_region_treemap
 
 
 def serve_dash():
@@ -46,6 +46,11 @@ def serve_dash():
             st.markdown("# Earthquake Quantity by State")
             state_counts = get_counts_by_state(earthquakes)
             fig = get_state_treemap(state_counts)
+            st.plotly_chart(fig)
+
+            st.markdown("# Earthquake Quantity by Region")
+            state_counts = get_counts_by_region(earthquakes)
+            fig = get_region_treemap(state_counts)
             st.plotly_chart(fig)
     except Exception as err:
         st.error(f"Cannot return data from database: {err}")

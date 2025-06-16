@@ -23,7 +23,34 @@ def get_state_treemap(data: DataFrame) -> treemap:
     fig = treemap(
         data_frame=data,
         path=['State Name'],
-        values="Earthquake Count")
-    fig.update_traces(root_color="lightgrey")
+        values="Earthquake Count",
+        custom_data=['State Name', 'Earthquake Count'])
+    fig.update_traces(
+        root_color="lightgrey",
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>" +
+            "Earthquake Count: %{customdata[1]}<extra></extra>"
+        )
+    )
+    fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
+    return fig
+
+
+@cache_resource
+def get_region_treemap(data: DataFrame) -> treemap:
+    """Return treemap of counts of events per region."""
+    logger.info("Creating treemap...")
+    fig = treemap(
+        data_frame=data,
+        path=['Region Name'],
+        values="Earthquake Count",
+        custom_data=['Region Name', 'Earthquake Count'])
+    fig.update_traces(
+        root_color="lightgrey",
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>" +
+            "Earthquake Count: %{customdata[1]}<extra></extra>"
+        )
+    )
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
     return fig

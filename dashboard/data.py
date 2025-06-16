@@ -38,17 +38,23 @@ def get_data() -> DataFrame:
     with get_connection() as con:
         with con.cursor() as curs:
             curs.execute("""SELECT * FROM earthquake
+                         JOIN "state_region_interaction" USING(state_region_interaction_id)
                          JOIN "state" USING (state_id) 
                          JOIN "region" USING (region_id);""")
             quakes = curs.fetchall()
     return DataFrame.from_dict(quakes)
 
 
-@cache_data
 def get_counts_by_state(data: DataFrame) -> DataFrame:
     """Return dataframes of value counts for each state."""
     logger.info("Grouping DataFrame by state...")
     return data["state_name"].value_counts().rename_axis("State Name").reset_index(name="Earthquake Count")
+
+
+def get_counts_by_region(data: DataFrame) -> DataFrame:
+    """Return dataframes of value counts for each region."""
+    logger.info("Grouping DataFrame by region...")
+    return data["region_name"].value_counts().rename_axis("Region Name").reset_index(name="Earthquake Count")
 
 
 if __name__ == "__main__":
