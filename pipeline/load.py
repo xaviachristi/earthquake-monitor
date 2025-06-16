@@ -117,6 +117,22 @@ def get_state_id(conn: Connection, state: str) -> int | None:
     return None
 
 
+def get_state_region_id(conn: Connection, state: int, region: int) -> int | None:
+    """Return id of state region interaction if it is in the database."""
+    logger.info(
+        "Checking if state region interaction, %s and %s, is in database...", state, region)
+    with conn.cursor() as curs:
+        curs.execute("""SELECT * FROM "state_region_interaction"
+                     WHERE state_id = %s
+                     AND region_id = %s;""",
+                     (state, region))
+        result = curs.fetchone()
+    if result:
+        logger.debug("Found state region interaction: %s", result)
+        return result["state_region_interaction_id"]
+    return None
+
+
 def upload_row_to_db(conn: Connection, row: dict):
     """Upload row as a dictionary to the database."""
     logger.debug("Uploading row: %s", row)
@@ -143,13 +159,24 @@ def upload_row_to_db(conn: Connection, row: dict):
                          (row["state_name"], region_id))
             state_id = curs.fetchone()["state_id"]
 
+    state_region_id = get_state_region_id(conn, state_id, region_id)
+
+    if state_region_id is None:
+        logger.info("Uploading state region interaction...")
+        with conn.cursor() as curs:
+            curs.execute("""INSERT INTO state_region_interaction(state_id, region_id)
+                        VALUES (%s, %s)
+                        RETURNING state_region_interaction_id;""",
+                         (state_id, region_id))
+            state_region_id = curs.fetchone()["state_region_interaction_id"]
+
     logger.info("Uploading earthquake data...")
     with conn.cursor() as curs:
         curs.execute("""INSERT INTO earthquake(magnitude,
                      latitude, longitude, "time", updated, depth,
                      "url", felt, tsunami, cdi, mmi, nst,
                      sig, net, dmin, alert,
-                     magnitude_type, state_id)
+                     magnitude_type, state_region_interaction_id)
                      VALUES (%s, %s, %s, %s, %s, %s,
                      %s, %s, %s, %s, %s, %s, %s, %s,
                      %s, %s, %s, %s);""",
@@ -171,7 +198,7 @@ def upload_row_to_db(conn: Connection, row: dict):
                          row["dmin"],
                          row["alert"],
                          row["magnitude_type"],
-                         state_id
+                         state_region_id
                      ))
         conn.commit()
 
