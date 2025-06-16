@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS earthquake;
 DROP TABLE IF EXISTS state;
 DROP TABLE IF EXISTS region;
+DROP TABLE IF EXISTS state_region_interaction
 
 DROP TYPE IF EXISTS alert_level;
 DROP TYPE IF EXISTS location_source;
@@ -9,7 +10,6 @@ DROP TYPE IF EXISTS magnitude_type;
 CREATE TYPE alert_level AS ENUM ('green', 'yellow', 'orange', 'red');
 CREATE TYPE location_source AS ENUM ('ak', 'at', 'ci', 'hv', 'ld', 'mb', 'nc', 'nm', 'nn', 'pr', 'pt', 'se', 'us', 'uu', 'uw');
 CREATE TYPE magnitude_type AS ENUM ('Md', 'Ml', 'Ms', 'Mw', 'Me', 'Mi', 'Mb', 'MLg');
-
 
 CREATE TABLE region (
     region_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE state (
 
 CREATE TABLE state_region_interaction (
     state_region_interaction_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    state_id SMALLINT REFERENCES state(state_id)
+    state_id SMALLINT REFERENCES state(state_id),
     region_id SMALLINT REFERENCES region(region_id)
 );
 

@@ -71,7 +71,7 @@ INSERT INTO state (state_name) VALUES
 ('Rhode Island'),
 ('Massachusetts'),
 ('Vermont'),
-('New Hampshire', ),
+('New Hampshire'),
 ('Maine'),
 ('District of Columbia'),
 
