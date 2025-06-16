@@ -31,10 +31,14 @@ def get_connection() -> Connection:
     )
 
 
-def get_current_db(conn: Connection) -> DataFrame:
+def get_current_db() -> DataFrame:
     """Return all records currently in database."""
+    logger.info("Getting database connection...")
+    conn = get_connection()
+
     with conn.cursor() as curs:
         curs.execute("""SELECT * FROM earthquake
+                        JOIN "state_region_interaction" USING(state_region_interaction_id)
                         JOIN "state" USING (state_id)
                         JOIN "region" USING (region_id);""")
         quakes = DataFrame(curs.fetchall())
@@ -63,13 +67,13 @@ def preprocess_df(df: DataFrame) -> DataFrame:
     df["updated"] = df["updated"].apply(
         lambda ts: london_tz.localize(datetime.fromtimestamp(ts/1000)))
 
-    df['latitude'] = df['latitude'].round(6)   # matches DECIMAL(9,6)
-    df['longitude'] = df['longitude'].round(6)
-    df['magnitude'] = df['magnitude'].round(1)  # matches DECIMAL(3,1)
-    df['depth'] = df['depth'].round(2)         # matches DECIMAL(5,2)
-    df['cdi'] = df['cdi'].round(1)
-    df['mmi'] = df['mmi'].round(1)
-    df['dmin'] = df['dmin'].round(3)
+    df['latitude'] = df['latitude']
+    df['longitude'] = df['longitude']
+    df['magnitude'] = df['magnitude']
+    df['depth'] = df['depth']
+    df['cdi'] = df['cdi']
+    df['mmi'] = df['mmi']
+    df['dmin'] = df['dmin']
     df["tsunami"] = df["tsunami"].apply(lambda x: bool(x))
     df["magnitude_type"] = df["magnitude_type"].str.title()
     df['felt'] = df['felt'].fillna(0)
@@ -117,8 +121,28 @@ def get_state_id(conn: Connection, state: str) -> int | None:
     return None
 
 
-def upload_row_to_db(conn: Connection, row: dict):
+def get_state_region_id(conn: Connection, state: int, region: int) -> int | None:
+    """Return id of state region interaction if it is in the database."""
+    logger.info(
+        "Checking if state region interaction, %s and %s, is in database...", state, region)
+    with conn.cursor() as curs:
+        curs.execute("""SELECT * FROM "state_region_interaction"
+                     WHERE state_id = %s
+                     AND region_id = %s;""",
+                     (state, region))
+        result = curs.fetchone()
+    if result:
+        logger.debug("Found state region interaction: %s", result)
+        return result["state_region_interaction_id"]
+    return None
+
+
+def upload_row_to_db(row: dict):
     """Upload row as a dictionary to the database."""
+
+    logger.info("Getting database connection...")
+    conn = get_connection()
+
     logger.debug("Uploading row: %s", row)
 
     region_id = get_region_id(conn, row["region_name"])
@@ -143,13 +167,24 @@ def upload_row_to_db(conn: Connection, row: dict):
                          (row["state_name"], region_id))
             state_id = curs.fetchone()["state_id"]
 
+    state_region_id = get_state_region_id(conn, state_id, region_id)
+
+    if state_region_id is None:
+        logger.info("Uploading state region interaction...")
+        with conn.cursor() as curs:
+            curs.execute("""INSERT INTO state_region_interaction(state_id, region_id)
+                        VALUES (%s, %s)
+                        RETURNING state_region_interaction_id;""",
+                         (state_id, region_id))
+            state_region_id = curs.fetchone()["state_region_interaction_id"]
+
     logger.info("Uploading earthquake data...")
     with conn.cursor() as curs:
         curs.execute("""INSERT INTO earthquake(magnitude,
                      latitude, longitude, "time", updated, depth,
                      "url", felt, tsunami, cdi, mmi, nst,
                      sig, net, dmin, alert,
-                     magnitude_type, state_id)
+                     magnitude_type, state_region_interaction_id)
                      VALUES (%s, %s, %s, %s, %s, %s,
                      %s, %s, %s, %s, %s, %s, %s, %s,
                      %s, %s, %s, %s);""",
@@ -171,27 +206,24 @@ def upload_row_to_db(conn: Connection, row: dict):
                          row["dmin"],
                          row["alert"],
                          row["magnitude_type"],
-                         state_id
+                         state_region_id
                      ))
         conn.commit()
 
 
-def upload_df_to_db(conn: Connection, data: DataFrame):
+def upload_df_to_db(data: DataFrame):
     """Upload DataFrame to database."""
     for _, row in data.iterrows():
         try:
-            upload_row_to_db(conn, row.to_dict())
+            upload_row_to_db(row.to_dict())
         except (DatabaseError, KeyError, ValueError) as e:
             logger.error("Failed to upload row: %s", e)
 
 
 def load(quakes: DataFrame) -> DataFrame:
     """Return earthquakes that have been uploaded to the database."""
-    logger.info("Getting database connection...")
-    db_conn = get_connection()
-
     logger.info("Getting data already in database...")
-    old_quakes = get_current_db(db_conn)
+    old_quakes = get_current_db()
     if not old_quakes.empty:
         logger.debug("Found old earthquake data: \n%s", old_quakes.head())
     else:
@@ -203,7 +235,7 @@ def load(quakes: DataFrame) -> DataFrame:
         logger.debug("Found new earthquake data: \n%s", new_quakes.head())
 
         logger.info("Uploading new data to database...")
-        upload_df_to_db(db_conn, new_quakes)
+        upload_df_to_db(new_quakes)
     else:
         logger.debug("No new earthquake data found.")
 
