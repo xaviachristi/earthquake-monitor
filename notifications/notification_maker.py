@@ -32,7 +32,6 @@ def validate_keys(data: dict) -> bool:
         if key not in data:
             logger.error("Unable to validate %s key in data:\n %s", key, data)
             return False
-    logger.info("Successfully validated keys for topic %s.", data["topic_arn"])
     return True
 
 
@@ -49,8 +48,6 @@ def validate_types(data: dict) -> bool:
                 "Unable to validate %s datatype for the %s key in data:\n %s",
                 expected_type, name, data)
             return False
-    logger.info("Successfully validated value types for topic %s.",
-                data["topic_arn"])
     return True
 
 
@@ -80,7 +77,6 @@ def make_message(data: dict) -> str:
       </body>
       </html>
       """
-    logger.info("Message successfully created.")
     return heading+body
 
 
@@ -100,9 +96,8 @@ def publish_email(data: dict, sns: client) -> None:
         logger.exception("Couldn't publish message to topic %s.", topic)
 
 
-def send_emails(passed_data: list[dict]) -> None:
+def send_emails(passed_data: list[dict], sns: client) -> None:
     """Goes through all the topics generated."""
-    sns = get_sns_client()
     for data in passed_data:
         if validate_keys(data) and validate_types(data):
             publish_email(data, sns)
