@@ -38,14 +38,14 @@ def create_topic_name(topic_name: str, latitude: float, longitude: float,
         magnitude = round(magnitude, 1)
         topic_name += f"-{magnitude}"
     if latitude and longitude and radius:
-        latitude = location_formatting(latitude)
-        longitude = location_formatting(longitude)
+        latitude = format_coordinate(latitude)
+        longitude = format_coordinate(longitude)
         topic_name += f"-{latitude}-{longitude}-{radius}"
     logger.info("Topic name has been created.")
     return topic_name
 
 
-def location_formatting(coordinate: float) -> str:
+def format_coordinate(coordinate: float) -> str:
     """Returns a formatted string of the latitude / longitude coordinate."""
     logger.info("Formatting coordinate...")
     if coordinate < 0:
