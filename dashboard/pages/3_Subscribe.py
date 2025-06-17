@@ -22,7 +22,8 @@ def serve_page():
                                  180.0, max_value=180.0, value=0.0)
         radius = slider("Radius of Search / km", min_value=0, value=10)
         magnitude = number_input(
-            "Minimum Magnitude", min_value=0.0, max_value=10.0, value="min", format="%0.1f")
+            "Minimum Magnitude", min_value=0.0, max_value=10.0,
+            value="min", format="%0.1f", step=0.1)
         subscribe = button("Subscribe to Alerts")
         if subscribe:
             make_subscription(first_name, last_name, email,
