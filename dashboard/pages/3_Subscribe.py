@@ -18,7 +18,8 @@ def serve_page():
             "Latitude", min_value=-90.0, max_value=90.0, value=0.0)
         longitude = number_input("Longitude", min_value=-
                                  180.0, max_value=180.0, value=0.0)
-        radius = slider("Radius of Search / km", min_value=0, value=10)
+        radius = slider("Radius of Search / km", min_value=0,
+                        value=10, max_value=1000)
         magnitude = number_input(
             "Minimum Magnitude", min_value=0.0, max_value=10.0, value="min", format="%0.1f")
         subscribe = button("Subscribe to Alerts")
