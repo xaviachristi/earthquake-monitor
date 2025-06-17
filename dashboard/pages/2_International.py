@@ -35,12 +35,12 @@ def display_charts(filtered_data: DataFrame):
     """Display to dashboard charts from filtered data."""
     altair_chart(get_global_map_of_events(filtered_data))
     altair_chart(get_earthquakes_over_time_for_regions(filtered_data))
+    altair_chart(get_earthquake_count_by_magnitude(filtered_data))
     col1, col2 = columns(2)
     with col1:
-        altair_chart(get_earthquake_count_by_magnitude(filtered_data))
-    with col2:
         metric(label="Total Number of Earthquakes",
                value=get_total_number_of_earthquakes(filtered_data))
+    with col2:
         metric(label="Average Earthquake Magnitude",
                value=get_average_mag(filtered_data))
 
@@ -50,7 +50,7 @@ def serve_page():
     title("International")
     data = get_data()
     inter_data = get_international_data(data)
-    states = inter_data["region_name"].unique()
+    regions = inter_data["region_name"].unique()
 
     region = None
     magnitude = None
@@ -60,7 +60,7 @@ def serve_page():
     col1, col2 = columns([0.6, 0.4])
     with col1:
         region = multiselect(label="Filter by Country.",
-                             options=states)
+                             options=regions)
     with col2:
         magnitude = number_input(
             "Minimum Magnitude", min_value=0.0, max_value=10.0,

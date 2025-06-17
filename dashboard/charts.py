@@ -56,14 +56,16 @@ def get_region_treemap(data: DataFrame) -> treemap:
     return fig
 
 
-def get_earthquakes_over_time(data: DataFrame) -> Chart:
+def get_earthquakes_over_time_for_states(data: DataFrame) -> Chart:
     """Return chart of earthquake counts over time using Altair's internal aggregation."""
     return Chart(data).mark_line().encode(
         x=X("yearmonthdate(time):T", title="Date"),
         y=Y("count():Q", title="Number of Earthquakes"),
         color=Color("state_name:N", title="State")
     ).properties(
-        title="Earthquakes Over Time"
+        title="Earthquakes Over Time",
+        width=800,
+        height=400
     )
 
 
@@ -72,9 +74,11 @@ def get_earthquakes_over_time_for_regions(data: DataFrame) -> Chart:
     return Chart(data).mark_line().encode(
         x=X("yearmonthdate(time):T", title="Date"),
         y=Y("count():Q", title="Number of Earthquakes"),
-        color=Color("region_name:N", title="Region")
+        color=Color("region_name:N", title="Country")
     ).properties(
-        title="Earthquakes Over Time"
+        title="Earthquakes Over Time",
+        width=800,
+        height=500
     )
 
 

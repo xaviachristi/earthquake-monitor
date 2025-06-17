@@ -11,7 +11,7 @@ from data import (get_data, get_american_data,
                   get_mag_filtered_data,
                   get_date_filtered_data,
                   get_state_filtered_data)
-from charts import (get_earthquakes_over_time,
+from charts import (get_earthquakes_over_time_for_states,
                     get_average_mag,
                     get_earthquake_count_by_magnitude,
                     get_american_map_of_events,
@@ -34,13 +34,13 @@ def filter_data(data: DataFrame,
 def display_charts(filtered_data: DataFrame):
     """Display to dashboard charts from filtered data."""
     altair_chart(get_american_map_of_events(filtered_data))
-    altair_chart(get_earthquakes_over_time(filtered_data))
+    altair_chart(get_earthquakes_over_time_for_states(filtered_data))
+    altair_chart(get_earthquake_count_by_magnitude(filtered_data))
     col1, col2 = columns(2)
     with col1:
-        altair_chart(get_earthquake_count_by_magnitude(filtered_data))
-    with col2:
         metric(label="Total Number of Earthquakes",
                value=get_total_number_of_earthquakes(filtered_data))
+    with col2:
         metric(label="Average Earthquake Magnitude",
                value=get_average_mag(filtered_data))
 
