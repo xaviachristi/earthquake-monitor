@@ -7,7 +7,7 @@ from notification_maker import make_message
 
 def write_to_html(message: str) -> None:
     """Creates a html file with sample data."""
-    with open("fake_alert.html", "w", encoding="utf-8") as f:
+    with open("fake_alert.txt", "w", encoding="utf-8") as f:
         f.write(message)
 
 
