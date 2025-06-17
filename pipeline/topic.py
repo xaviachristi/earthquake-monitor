@@ -98,7 +98,7 @@ def get_topics(sns_client: client) -> list[dict]:
         arns.extend(response.get('Topics'))
     for topic in arns:
         topic_name = search(
-            r'c17-quake-\d{1,2}-(m|p)\d{1,2}-(m|p)\d{1,2}-\d+', topic.get('TopicArn'))
+            r'c17-quake-\d+-(m|p)\d+-(m|p)\d+-\d+', topic.get('TopicArn'))
         if topic_name:
             topics.append(get_dict_from_topic(
                 topic_name.group(0), topic.get('TopicArn')))
@@ -113,9 +113,9 @@ def get_dict_from_topic(name: str, arn: str) -> list[dict]:
     lon = parts[4]
     return {
         "topic_arn": arn,
-        "magnitude": float(parts[2]),
-        "latitude": float(lat[1:]) if lat[0] == "p" else float(-lat[1:]),
-        "longitude": float(lon[1:]) if lon[0] == "p" else float(-lon[1:]),
+        "magnitude": float(parts[2])/10,
+        "latitude": float(lat[1:])/10000 if lat[0] == "p" else -float(lat[1:])/10000,
+        "longitude": float(lon[1:])/10000 if lon[0] == "p" else -float(lon[1:])/10000,
         "radius": int(parts[5])
     }
 
@@ -139,9 +139,9 @@ if __name__ == "__main__":
     sample_df = DataFrame([
         {
             "earthquake_id": 1,
-            "magnitude": 2.5,
-            "latitude": 12.0,
-            "longitude": 20.0,
+            "magnitude": 5.7,
+            "latitude": 12.45,
+            "longitude": -47.15,
             "time": london_tz.localize(datetime.strptime("2024-02-01", "%Y-%m-%d")),
             "updated": london_tz.localize(datetime.strptime("2024-02-02", "%Y-%m-%d")),
             "depth": 5.0,
