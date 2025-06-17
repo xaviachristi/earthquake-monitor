@@ -24,10 +24,12 @@ def get_sns_client() -> client:
 
 def delete_subscription():
     """Remove subscription to topic from SNS."""
+    ...
 
 
 def view_subscription():
     """Display information about subscribed topic."""
+    ...
 
 
 def create_topic_name(topic_name: str, latitude: float, longitude: float,
