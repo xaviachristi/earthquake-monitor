@@ -61,17 +61,16 @@ def get_location_message(data: dict) -> str:
 
 def make_message(data: dict) -> str:
     """Turns a dictionary of values into a string 
-    of HTML that makes up the alert message."""
+    that makes up the alert message."""
     logger.info("Starting message creation for topic %s.", data["topic_arn"])
-    heading = """------Earthquake Alert!------"""
-    body = f"""\nThere was an earthquake of magnitude {data["magnitude"]} in
-     {get_location_message(data)} at {datetime.strftime(data["time"], "%d/%m/%Y, %H:%M:%S")}.\n
-    """
+    time = datetime.strftime(data["time"], "%d/%m/%Y, %H:%M:%S")
+    heading = "------ Earthquake Alert! ------\n"
+    body = f"\nThere was an earthquake of magnitude {data["magnitude"]} in"
+    body += f" {get_location_message(data)} at {time}.\n"
     if data["tsunami"]:
-        body += """There is potential for a tsunami.\n"""
-    body += f"""Precise latitude and longitude location of earthquake:
-      ({data["latitude"]}, {data["longitude"]}).
-      """
+        body += "There is potential for a tsunami.\n"
+    body += f"Precise latitude and longitude location of earthquake:\n"
+    body += f"  ({data["latitude"]}, {data["longitude"]})."
     return heading+body
 
 
