@@ -55,27 +55,16 @@ def get_region_treemap(data: DataFrame) -> treemap:
 
 
 def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Chart:
-    """
-    Return chart of earthquake counts over time grouped by state or region.
-
-    Parameters:
-        data (DataFrame): The earthquake data.
-        group_by (str): Either 'state' or 'region' to determine grouping.
-
-    Returns:
-        altair.Chart: The combined line and point chart.
-    """
+    """Return chart of earthquake counts over time grouped by state or region."""
     group_field = f"{group_by}_name:N"
     group_title = group_by.capitalize()
 
-    # Line chart
     line = Chart(data).mark_line().encode(
         x=X("yearmonthdate(time):T", title="Date"),
         y=Y("count():Q", title="Number of Earthquakes"),
         color=Color(group_field, title=group_title)
     )
 
-    # Points with tooltips
     points = Chart(data).mark_circle(size=30).encode(
         x="yearmonthdate(time):T",
         y="count():Q",
@@ -112,11 +101,13 @@ def get_average_mag(data: DataFrame) -> float:
 
 
 def get_total_number_of_earthquakes(data: DataFrame) -> int:
+    """Return total number of earthquakes."""
     return len(data)
 
 
-def get_american_map_of_events(data: DataFrame) -> Chart:
+def get_map_of_events(data: DataFrame, scope: str = "global") -> Chart:
     """Return a geographical map of earthquake events over the U.S."""
+    data = data.copy()
     data['latitude'] = data['latitude'].astype(float)
     data['longitude'] = data['longitude'].astype(float)
     data['magnitude'] = data['magnitude'].astype(float)
@@ -124,16 +115,25 @@ def get_american_map_of_events(data: DataFrame) -> Chart:
     world_map = topo_feature(
         'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json', 'countries')
 
-    # Base map of world
+    if scope == "us":
+        projection = 'mercator'
+        center = [-100, 40]
+        scale = 200
+    else:
+        projection = 'naturalEarth1'
+        center = [0, 0]
+        scale = 100
+
+    # Base map
     base = Chart(world_map).mark_geoshape(
         fill='lightgray',
         stroke='white'
     ).project(
-        type='mercator',
-        center=[-100, 40],
-        scale=200
+        type=projection,
+        center=center,
+        scale=scale
     ).properties(
-        width=900,
+        width=1000,
         height=600
     )
 
@@ -145,51 +145,12 @@ def get_american_map_of_events(data: DataFrame) -> Chart:
             scheme='yelloworangered'), title="Magnitude"),
         tooltip=['time:T', 'latitude:Q', 'longitude:Q', 'magnitude:Q']
     ).project(
-        type='mercator',
-        center=[-100, 40],
-        scale=200
+        type=projection,
+        center=center,
+        scale=scale
     ).properties(
-        width=900,
+        width=1000,
         height=600
     )
 
-    # Combine layers
-    return base + points
-
-
-def get_global_map_of_events(data: DataFrame) -> Chart:
-    """Return a geographical map of earthquake events over the U.S."""
-    data['latitude'] = data['latitude'].astype(float)
-    data['longitude'] = data['longitude'].astype(float)
-    data['magnitude'] = data['magnitude'].astype(float)
-
-    world_map = topo_feature(
-        'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json', 'countries')
-
-    # Base map of world
-    base = Chart(world_map).mark_geoshape(
-        fill='lightgray',
-        stroke='white'
-    ).project(
-        type='naturalEarth1'
-    ).properties(
-        width=900,
-        height=600
-    )
-
-    # Earthquake points
-    points = Chart(data).mark_circle(size=30).encode(
-        longitude='longitude:Q',
-        latitude='latitude:Q',
-        color=Color('magnitude:Q', scale=Scale(
-            scheme='yelloworangered'), title="Magnitude"),
-        tooltip=['time:T', 'latitude:Q', 'longitude:Q', 'magnitude:Q']
-    ).project(
-        type='naturalEarth1'
-    ).properties(
-        width=900,
-        height=600
-    )
-
-    # Combine layers
     return base + points

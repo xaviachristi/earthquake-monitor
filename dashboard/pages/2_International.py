@@ -14,7 +14,7 @@ from data import (get_data, get_international_data,
 from charts import (get_earthquakes_over_time,
                     get_average_mag,
                     get_earthquake_count_by_magnitude,
-                    get_global_map_of_events,
+                    get_map_of_events,
                     get_total_number_of_earthquakes)
 
 
@@ -33,8 +33,8 @@ def filter_data(data: DataFrame,
 
 def display_charts(filtered_data: DataFrame):
     """Display to dashboard charts from filtered data."""
-    altair_chart(get_global_map_of_events(filtered_data))
-    altair_chart(get_earthquakes_over_time(filtered_data))
+    altair_chart(get_map_of_events(filtered_data, "global"))
+    altair_chart(get_earthquakes_over_time(filtered_data, "region"))
     altair_chart(get_earthquake_count_by_magnitude(filtered_data))
     col1, col2 = columns(2)
     with col1:
