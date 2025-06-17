@@ -167,9 +167,7 @@ def query_database(connection: Connection, query: str, parameters: dict) -> pd.D
     logger.debug("Data from database:\n%s",quakes)
     return format_sql_response_as_json(
         quakes.drop(columns=["state_id", "region_id", "state_region_interaction_id"]
-            ).fillna(0))
-    # fillna being depreciated - easiest way to replace it?
-    # Will it require specifying for each column? I should probably be doing this anyway.
+            ))
 
 
 def format_sql_response_as_json(sql_response: pd.DataFrame) -> str:
