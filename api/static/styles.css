@@ -1,0 +1,48 @@
+body {
+    background-color: #efeae1;
+    font-family: 'Trebuchet MS', 'Lucida Sans', Arial, sans-serif;
+    align-items: center;
+    padding-left: 10%;
+    max-width: 40rem;
+}
+
+.header-bar {
+    color: #425953;
+}
+
+.title {
+    color:#583b3d;
+    font-family: 'Georgia', Times, serif;
+    font-size: 44pt;
+    padding-bottom: 0%;
+    margin-bottom: 1%;
+}
+
+.subtitle {
+    color:#945349;
+    font-size: 24pt;
+}
+
+.example-query {
+    font-family: monospace;
+}
+
+.page-title {
+    font-size: 36pt;
+}
+
+.main-body {
+    color:#425953;
+}
+
+.header {
+    color:#583b3d;
+}
+
+.content-block {
+    color:#945349
+}
+
+.example-response {
+    font-family: monospace;
+}

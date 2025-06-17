@@ -23,7 +23,7 @@ def can_be_converted_to_float(string: str) -> bool:
     try:
         float(string)
         return True
-    except ValueError:
+    except (ValueError, TypeError):
         return False
 
 
@@ -31,13 +31,14 @@ def can_be_converted_to_float(string: str) -> bool:
 def validate_magnitude(magnitude: float) -> bool:
     """Checks if something is a valid magnitude."""
     logger.debug("Validating magnitude: %s", magnitude)
-    if not isinstance(magnitude, (float, int)):
+
+    if not isinstance(magnitude, (float, int)) or isinstance(magnitude, bool):
         raise TypeError(
             f"Magnitude requires a float or int. Received type {type(magnitude)}.")
 
-    if not -2 < magnitude < 11:
+    if not 0 < magnitude < 11:
         raise ValueError(
-            f"Magnitude outside of range (-2 to 11). Received {magnitude}.")
+            f"Magnitude outside of range (0 to 11). Received {magnitude}.")
     return True
 
 
@@ -166,8 +167,7 @@ def query_database(connection: Connection, query: str, parameters: dict) -> pd.D
 
     logger.debug("Data from database:\n%s",quakes)
     return format_sql_response_as_json(
-        quakes.drop(columns=["state_id", "region_id", "state_region_interaction_id"]
-            ))
+        quakes.drop(columns=["state_id", "region_id", "state_region_interaction_id"]))
 
 
 def format_sql_response_as_json(sql_response: pd.DataFrame) -> str:

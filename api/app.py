@@ -46,9 +46,8 @@ from logging import getLogger, basicConfig
 from dotenv import load_dotenv
 from flask import Flask, current_app, request
 
-from api_functions import (validate_api_query_argument_names, prepare_query_arguments,
-                           get_connection, get_query_template, format_sql_response_as_json,
-                           query_database)
+from app_functions import (validate_api_query_argument_names, prepare_query_arguments,
+                           get_connection, get_query_template, query_database)
 
 
 logger = getLogger(__name__)
@@ -59,20 +58,17 @@ basicConfig(
 )
 
 
-APP = Flask(__name__)
+app = Flask(__name__)
 
-CONN = get_connection()
-
-
-@APP.get("/")
-@APP.get("/home")
+@app.get("/")
+@app.get("/index")
 def index():
     """Returns documentation for the API."""
     logger.debug("Index accessed.")
     return current_app.send_static_file("documentation.html")
 
 
-@APP.get("/earthquakes")
+@app.get("/earthquakes")
 def get_earthquakes():
     """
     Main endpoint for the API.
@@ -109,7 +105,9 @@ def get_earthquakes():
 
 
 if __name__ == "__main__":
-    load_dotenv()
-    APP.config['TESTING'] = True
-    APP.config['DEBUG'] = True
-    APP.run(debug=True, host="0.0.0.0", port=80)
+    # Testing/dev environment.
+    load_dotenv("env_test")
+    app.config['TESTING'] = True
+    app.config['DEBUG'] = True
+    CONN = get_connection()
+    app.run(debug=True, host="0.0.0.0", port=80)

@@ -3,45 +3,53 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/styles.css" />
     <title>EqM API Docs</title>
   </head>
   <body>
     <div class="header-bar">
-      <h3>Earthquake Monitor</h3>
-      <h1>API Documentation</h1>
+      <img src="logo.png" width="25%">
+      <h3 class="title">EqM</h3>
+      <span class="subtitle">Earthquake Monitor</span>
+      <h1 class="page-title">API Documentation</h1>
     </div>
     <div class="main-body">
-    <h3>Explanation</h3>
-    <h3>Example Query</h3>
-    <p>/earthquakes?mag=5.5&start_time=2025-06-12T00:00:00&end_time=2025-06-17T00:00:00</p>
-    <h3>Parameters</h3>
-    <div class="parameter-list"></div>
-    <ul>
-      <li>mag
-        <ul>
-        <li>Magnitude</li>
-        <li>Specify a minimum magnitude to filter results.</li>
-        <li>Default = 4.0</li>
-        </ul>
-      <li>start_time</li>
-        <ul>
-          <li>Start Time</li>
-          <li>Specify a window of time to filter results.</li>
-          <li>Default = 7 days ago</li>
-          <li>Format = "YYYY-MM-DDTHH:MM:SS" UTC</li>
-        </ul>
-      <li>end_time</li>
-        <ul>
-          <li>End Time</li>
-          <li>Specify a window of time to filter results.</li>
-          <li>Default = now</li>
-          <li>Format = "YYYY-MM-DDTHH:MM:SS" UTC</li>
-        </ul>
-    </ul>
-    <h3>Example Response</h3>
-    <div class="example-response"></div>
-    <pre>
-<code>{"index":68,
+      <h3>Explanation</h3>
+      <p>This is the API for the Earthquake Monitor - a project which aims to
+        be an easily accessible long-term store for earthquake information.
+      </p><p>
+        Data courtesy of the USGS.
+      </p>
+      <h3>Example Query</h3>
+      <p class="example-query">/earthquakes?mag=5.5&start_time=2025-06-12T00:00:00&end_time=2025-06-17T00:00:00</p>
+      <h3>Parameters</h3>
+      <div></div>
+      <ul class="parameter-list">
+        <li>mag
+          <ul>
+          <li>Magnitude</li>
+          <li>Specify a minimum magnitude to filter results.</li>
+          <li>Default = 4.0</li>
+          </ul>
+        <li>start_time</li>
+          <ul>
+            <li>Start Time</li>
+            <li>Specify a window of time to filter results.</li>
+            <li>Default = 7 days ago</li>
+            <li>Format = "YYYY-MM-DDTHH:MM:SS" UTC</li>
+          </ul>
+        <li>end_time</li>
+          <ul>
+            <li>End Time</li>
+            <li>Specify a window of time to filter results.</li>
+            <li>Default = now</li>
+            <li>Format = "YYYY-MM-DDTHH:MM:SS" UTC</li>
+          </ul>
+      </ul>
+      <h3>Example Response</h3>
+      <div></div>
+      <pre>
+<code class="example-response">{"index":68,
 "earthquake_id":455,
 "magnitude":4.9,
 "latitude":-49.8483,
@@ -87,8 +95,8 @@
 "state_name":"Not in the USA",
 "region_name":"Afghanistan"
 }
-      </code>
-  </pre>
-  </div>
+        </code>
+    </pre>
+    </div>
   </body>
 </html>
