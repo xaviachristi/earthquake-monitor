@@ -18,25 +18,40 @@ basicConfig(
 )
 
 
+def can_be_converted_to_float(string: str) -> bool:
+    """Checks if a string can be converted to a float."""
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+
 def validate_magnitude(magnitude: float) -> bool:
     """Checks if something is a valid magnitude."""
+    logger.debug("Validating magnitude: %s", magnitude)
     if not isinstance(magnitude, (float, int)):
-        raise TypeError("Magnitude requires a float or int. Received type %s.", type(magnitude))
+        raise TypeError(
+            f"Magnitude requires a float or int. Received type {type(magnitude)}.")
+
     if not -2 < magnitude < 11:
-        raise ValueError("Magnitude outside of range (-2 to 11). Received %s.", magnitude)
+        raise ValueError(
+            f"Magnitude outside of range (-2 to 11). Received {magnitude}.")
     return True
 
 
 def validate_time(time: str) -> bool:
     """Checks if something is a valid magnitude."""
+    logger.debug("Validating time: %s", time)
     if not isinstance(time, str):
         raise TypeError(
-            "Expected a string formatted as 'YYYY-MM-DDThh-mm-ss'. Received type %s.", type(time))
+            f"Time expected a string. Received type {type(time)}.", )
     try:
-        datetime.strptime(time, "YYYY-MM-DDThh-mm-ss")
+        datetime.fromisoformat(time)
     except:
         raise ValueError(
-            "Expected a string formatted as 'YYYY-MM-DDThh-mm-ss'. Received %s", time)
+            f"Time should be given in ISO format. E.g. 2025-06-12T00:00:00. Received {time}")
     return True
 
 
@@ -49,15 +64,24 @@ def validate_api_query_argument_names(arguments: dict) -> bool:
     Are the values for all the arguments valid?
         Separate functions per argument
     """
+    logger.info("Validating arguments: %s", arguments)
     provided_arguments = set(arguments.keys())
     acceptable_arguments = {"lat", "long",
                             "dist", "mag", "start_time", "end_time"}
+
     if not provided_arguments.issubset(acceptable_arguments):
+        logger.error("Unexpected argument. Provided arguments: %s", provided_arguments)
         return False
     if any(provided_arguments) in {"lat", "long", "dist"}:
+        logger.error(
+            "Searching by lat/long/dist not implemented. Provided arguments: %s",
+            provided_arguments)
         raise NotImplementedError("Searching by lat/long/dist not implemented.")
 
     if "mag" in provided_arguments:
+        if isinstance(arguments["mag"], str) \
+        and can_be_converted_to_float(arguments["mag"]):
+            arguments["mag"] = float(arguments["mag"])
         validate_magnitude(arguments["mag"])
 
     if "start_time" in provided_arguments:
@@ -72,21 +96,6 @@ def validate_api_query_argument_names(arguments: dict) -> bool:
                              arguments["start_time"], arguments["end_time"])
 
     return True
-
-
-def get_haversine_distance_formula_in_sql():
-    """
-    Copy over from pipeline.py
-    Will I have to implement this in SQL?
-    """
-    # SELECT id, (3959 * acos(cos(radians(Lat1)) * cos(radians(Lat2))
-    # * cos(radians(Lng2) - radians(Lng1)) + sin(radians(Lat1))
-    # * sin(radians(Lat2)))) AS distance
-    # FROM     markers
-    # HAVING distance < 25
-    # ORDER BY distance
-    # LIMIT 0, 20
-    pass
 
 
 def get_query_template() -> str:
@@ -106,11 +115,7 @@ def prepare_query_arguments(arguments: dict) -> str:
     Creates a dictionary of arguments for querying the database.
     Provides defaults and the correct formatting.
     """
-
-    # lat/long/dist can raise a not-implemented error for now
-    # as they might need haversine distance
-    # I'll do the easier API bits then circle back depending on time.
-
+    logger.info("Preparing query arguments.")
     provided_arguments = arguments.keys()
     prepared_arguments = {}
 
@@ -120,15 +125,18 @@ def prepare_query_arguments(arguments: dict) -> str:
         prepared_arguments["magnitude"] = 4.0
 
     if "start_time" in provided_arguments:
-        prepared_arguments["start_time"] = datetime.strptime(
-            arguments["time"], "YYYY-MM-DDThh-mm-ss")
+        try:
+            prepared_arguments["start_time"] = datetime.fromisoformat(
+                arguments["start_time"])
+        except Exception as e:
+            print(e)
     else:
         prepared_arguments["start_time"] = datetime.now(
         ) - timedelta(days=7)
 
     if "end_time" in provided_arguments:
-        prepared_arguments["end_time"] = datetime.strptime(
-            arguments["end_time"], "YYYY-MM-DDThh-mm-ss")
+        prepared_arguments["end_time"] = datetime.fromisoformat(
+            arguments["end_time"])
     else:
         prepared_arguments["end_time"] = datetime.now()
 
@@ -154,19 +162,17 @@ def query_database(connection: Connection, query: str, parameters: dict) -> pd.D
         curs.execute(query, parameters)
         quakes = pd.DataFrame(curs.fetchall())
     if quakes.empty:
-        quake_cols = [
-            "earthquake_id", "magnitude", "latitude", "longitude", "time", "updated",
-            "depth", "url", "felt", "tsunami", "cdi", "mmi", "nst", "sig", "net", "dmin",
-            "alert", "location_source", "magnitude_type", "state_name", "region_name",
-            "state_id", "region_id"
-        ]
-        return pd.DataFrame(columns=quake_cols)
-    return quakes.drop(columns=["state_id", "region_id", "state_region_interaction_id"])
+        return None
+    # fillna being depreciated - easiest way to replace it?
+    return format_sql_response_as_json(
+        quakes.drop(columns=["state_id", "region_id", "state_region_interaction_id"]
+            ).fillna(0))
 
 
 def format_sql_response_as_json(sql_response: pd.DataFrame) -> str:
     """Format the SQL response as the desired JSON."""
     return sql_response.to_json(orient="table")
+    # TODO Change this orient
 
 
 if __name__ == "__main__":
@@ -175,5 +181,4 @@ if __name__ == "__main__":
     received_args = {}
     q = get_query_template()
     sql_args = prepare_query_arguments(received_args)
-    # fillna being depreciated - easiest way to replace it?
-    print(format_sql_response_as_json(query_database(conn, q, sql_args).fillna(0)))
+    print(query_database(conn, q, sql_args))

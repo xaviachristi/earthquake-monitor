@@ -13,7 +13,7 @@
     <div class="main-body">
     <h3>Explanation</h3>
     <h3>Example Query</h3>
-    <p>earthquakes?region=____&lat=___&long=___&date=____&mag=___</p>
+    <p>/earthquakes?mag=5.5&start_time=2025-06-12T00:00:00&end_time=2025-06-17T00:00:00</p>
     <h3>Parameters</h3>
     <div class="parameter-list"></div>
     <ul>
@@ -28,46 +28,14 @@
           <li>Start Time</li>
           <li>Specify a window of time to filter results.</li>
           <li>Default = 7 days ago</li>
-          <li>Format = "YYYY-MM-DDThh-mm-ss" UTC</li>
+          <li>Format = "YYYY-MM-DDTHH:MM:SS" UTC</li>
         </ul>
       <li>end_time</li>
         <ul>
           <li>End Time</li>
           <li>Specify a window of time to filter results.</li>
           <li>Default = now</li>
-          <li>Format = "YYYY-MM-DDThh-mm-ss" UTC</li>
-        </ul>
-      <li>region</li>
-        <ul>
-          <li>Region</li>
-          <li><b>Not implemented.</b></li>
-          <li>Specify a region to filter results.</li>
-          <li>Default = none</li>
-          <li>Possible Values = ...</li>
-        </ul>
-      <li>lat</li>
-        <ul>
-          <li>Latitude</li>
-          <li><b>Not implemented.</b></li>
-          <li>Requires longitude.</li>
-          <li>Specify a location to filter results.</li>
-          <li>Default = none</li>
-        </ul>
-      <li>long</li>
-        <ul>
-          <li>Longitude</li>
-          <li><b>Not implemented.</b></li>
-          <li>Requires latitude.</li>
-          <li>Specify a location to filter results.</li>
-          <li>Default = none</li>
-        </ul>
-      <li>dist</li>
-        <ul>
-          <li>Distance</li>
-          <li><b>Not implemented.</b></li>
-          <li>Requires latitude and longitude.</li>
-          <li>Specify a distance from the point to filter results.</li>
-          <li>Default = 5km</li>
+          <li>Format = "YYYY-MM-DDTHH:MM:SS" UTC</li>
         </ul>
     </ul>
     <h3>Example Response</h3>

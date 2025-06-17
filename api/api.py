@@ -75,32 +75,37 @@ def index():
 @APP.get("/earthquakes")
 def get_earthquakes():
     """
-    Returns earthquake information.
-    Possible filters:
-    - region
-    - lat & long & distance (all three required)
-    - date_start
-    - date_end
-    - magnitude
-    Example request:
-    earthquakes?region=____&lat=___&long=___&date=____&mag=___
+    Main endpoint for the API.
+    Currently allows for filtering by magnitude and time.
+    See documentation.html for more information.
     """
+    logger.info("Request received.")
     args = request.args.to_dict()
 
     try:
         validate_api_query_argument_names(args)
+
     except ValueError as e:
-        logger.info("Value error: %s", e)
-        return ... # Send appropriate error JSON.
+        logger.error("Value error: %s", str(e))
+        return {"error": True,
+                "content": str(e)}, 400
+
     except TypeError as e:
-        logger.info("Type error: %s", e)
-        return ...  # Send appropriate error JSON.
+        logger.error("Type error: %s", str(e))
+        return {"error": True,
+                "content": str(e)}, 400
 
     q = get_query_template()
     sql_args = prepare_query_arguments(args)
     # fillna being depreciated - easiest way to replace it?
-    return format_sql_response_as_json(
-        query_database(CONN, q, sql_args).fillna(0))
+    res = query_database(CONN, q, sql_args)
+
+    if res:
+        return {"error": False,
+            "content": res}, 200
+    else:
+        return {"error": False,
+            "content": res}, 204
 
 
 if __name__ == "__main__":

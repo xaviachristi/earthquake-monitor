@@ -17,3 +17,4 @@ DB_NAME=earthquake_db
 DB_PORT=5432
 DB_PASSWORD= # Left blank as no pw
 ```
+`flask -A api run`
