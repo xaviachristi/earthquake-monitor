@@ -54,21 +54,35 @@ def get_region_treemap(data: DataFrame) -> treemap:
     return fig
 
 
-def get_earthquakes_over_time_for_states(data: DataFrame) -> Chart:
-    """Return chart of earthquake counts over time using Altair's internal aggregation."""
+def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Chart:
+    """
+    Return chart of earthquake counts over time grouped by state or region.
+
+    Parameters:
+        data (DataFrame): The earthquake data.
+        group_by (str): Either 'state' or 'region' to determine grouping.
+
+    Returns:
+        altair.Chart: The combined line and point chart.
+    """
+    group_field = f"{group_by}_name:N"
+    group_title = group_by.capitalize()
+
+    # Line chart
     line = Chart(data).mark_line().encode(
         x=X("yearmonthdate(time):T", title="Date"),
         y=Y("count():Q", title="Number of Earthquakes"),
-        color=Color("state_name:N", title="State")
+        color=Color(group_field, title=group_title)
     )
 
+    # Points with tooltips
     points = Chart(data).mark_circle(size=30).encode(
         x="yearmonthdate(time):T",
         y="count():Q",
-        color="state_name:N",
+        color=group_field,
         tooltip=[
             Tooltip("yearmonthdate(time):T", title="Date"),
-            Tooltip("state_name:N", title="State"),
+            Tooltip(group_field, title=group_title),
             Tooltip("count():Q", title="Number of Earthquakes")
         ]
     )
@@ -76,33 +90,7 @@ def get_earthquakes_over_time_for_states(data: DataFrame) -> Chart:
     return (line + points).properties(
         title="Earthquakes Over Time",
         width=800,
-        height=400
-    )
-
-
-def get_earthquakes_over_time_for_regions(data: DataFrame) -> Chart:
-    """Return chart of earthquake counts over time using Altair's internal aggregation."""
-    line = Chart(data).mark_line().encode(
-        x=X("yearmonthdate(time):T", title="Date"),
-        y=Y("count():Q", title="Number of Earthquakes"),
-        color=Color("region_name:N", title="Country")
-    )
-
-    points = Chart(data).mark_circle(size=30).encode(
-        x="yearmonthdate(time):T",
-        y="count():Q",
-        color="region_name:N",
-        tooltip=[
-            Tooltip("yearmonthdate(time):T", title="Date"),
-            Tooltip("region_name:N", title="Region"),
-            Tooltip("count():Q", title="Number of Earthquakes")
-        ]
-    )
-
-    return (line + points).properties(
-        title="Earthquakes Over Time",
-        width=800,
-        height=500
+        height=600 if group_by == "region" else 500
     )
 
 
