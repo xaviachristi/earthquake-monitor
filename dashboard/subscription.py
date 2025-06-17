@@ -36,14 +36,10 @@ def create_topic_name(topic_name: str, latitude: float, longitude: float,
                       radius: int, magnitude: float) -> str:
     """Creates a topic name based on the provided information."""
     logger.info("Starting topic name creation...")
-    if magnitude:
-        magnitude = round(magnitude, 1)
-        topic_name += f"-{magnitude}"
-    if latitude and longitude and radius:
-        latitude = format_coordinate(latitude)
-        longitude = format_coordinate(longitude)
-        topic_name += f"-{latitude}-{longitude}-{radius}"
-    logger.info("Topic name has been created.")
+    magnitude = round(magnitude, 1)
+    latitude = format_coordinate(latitude)
+    longitude = format_coordinate(longitude)
+    topic_name += f"-{magnitude}-{latitude}-{longitude}-{radius}"
     return topic_name
 
 
