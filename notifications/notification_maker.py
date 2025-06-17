@@ -54,8 +54,10 @@ def get_location_message(data: dict) -> str:
     """Returns a string for the location depending on if
     it is within the USA or not."""
     if data["state_name"] == "Not in the USA":
-        return data["region_name"]
-    return f"the area of {data["state_name"]}, {data["region_name"]}"
+        if data["region_name"] == "No Country":
+            return "outside sovereign territory"
+        return f"in {data["region_name"]}"
+    return f"in the area of {data["state_name"]}, {data["region_name"]}"
 
 
 def make_message(data: dict) -> str:
@@ -64,7 +66,7 @@ def make_message(data: dict) -> str:
     logger.info("Starting message creation for topic %s.", data["topic_arn"])
     time = data["time"]
     heading = "------ Earthquake Alert! ------\n"
-    body = f"\nThere was an earthquake of magnitude {data["magnitude"]} in"
+    body = f"\nThere was an earthquake of magnitude {data["magnitude"]} "
     body += f" {get_location_message(data)} at {time}.\n"
     if data["tsunami"]:
         body += "There is potential for a tsunami.\n"
