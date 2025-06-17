@@ -14,6 +14,8 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
 
+# TODO: Add logging
+
 
 def get_sns_client() -> client:
     """Return a SNS client."""
@@ -28,18 +30,6 @@ def delete_subscription():
 
 def view_subscription():
     """Display information about subscribed topic."""
-
-
-def make_subscription(email: str, latitude: float, longitude: float,
-                      radius: int, magnitude: float) -> None:
-    """Create a subscription to a topic for their preference.
-    format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
-    topic_name = "c17-quake"
-    topic_name = create_topic_name(
-        topic_name, latitude, longitude, radius, magnitude)
-    sns = get_sns_client()
-    topic_arn = create_topic(sns, topic_name)
-    sub_to_topic(sns, topic_arn, email)
 
 
 def create_topic_name(topic_name: str, latitude: float, longitude: float,
@@ -72,3 +62,15 @@ def sub_to_topic(sns: client, topic_arn: str, email: str) -> None:
     sns.subscribe(TopicArn=topic_arn,
                   Protocol="email",
                   Endpoint=email)
+
+
+def make_subscription(email: str, latitude: float, longitude: float,
+                      radius: int, magnitude: float) -> None:
+    """Create a subscription to a topic for their preference.
+    format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
+    topic_name = "c17-quake"
+    topic_name = create_topic_name(
+        topic_name, latitude, longitude, radius, magnitude)
+    sns = get_sns_client()
+    topic_arn = create_topic(sns, topic_name)
+    sub_to_topic(sns, topic_arn, email)
