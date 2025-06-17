@@ -6,6 +6,7 @@ from os import environ as ENV
 
 from dotenv import load_dotenv
 from boto3 import client
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +19,8 @@ logging.basicConfig(
 
 def get_sns_client() -> client:
     """Makes a SNS client."""
-    sns = client("sns", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                 aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+    sns = client("sns", aws_access_key_id=ENV["ACCESS_KEY"],
+                 aws_secret_access_key=ENV["SECRET_ACCESS_KEY"])
     return sns
 
 
@@ -38,7 +39,7 @@ def validate_keys(data: dict) -> bool:
 def validate_types(data: dict) -> bool:
     """Validates that the required information for a message is available."""
     expected_data = [("topic_arn", str), ("magnitude", float), ("state_name", str),
-                     ("region_name", str), ("time", datetime), ("tsunami", bool),
+                     ("region_name", str), ("time", str), ("tsunami", bool),
                      ("latitude", float), ("longitude", float)]
     logger.info("Starting datatype validation for topic %s.",
                 data["topic_arn"])
@@ -63,7 +64,7 @@ def make_message(data: dict) -> str:
     """Turns a dictionary of values into a string 
     that makes up the alert message."""
     logger.info("Starting message creation for topic %s.", data["topic_arn"])
-    time = datetime.strftime(data["time"], "%d/%m/%Y, %H:%M:%S")
+    time = data["time"]
     heading = "------ Earthquake Alert! ------\n"
     body = f"\nThere was an earthquake of magnitude {data["magnitude"]} in"
     body += f" {get_location_message(data)} at {time}.\n"
@@ -86,8 +87,9 @@ def publish_email(data: dict, sns: client) -> None:
         message_id = response["MessageId"]
         logger.info("Published message %s to topic %s.",
                     message_id, topic)
-    except sns.ClientError:
+    except ClientError:
         logger.exception("Couldn't publish message to topic %s.", topic)
+        raise
 
 
 def send_emails(passed_data: list[dict], sns: client) -> None:
