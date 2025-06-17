@@ -102,23 +102,3 @@ def send_emails(passed_data: list[dict], sns: client) -> None:
         if validate_keys(data) and validate_types(data):
             publish_email(data, sns)
     logger.info("Successfully sent all emails.")
-
-
-if __name__ == "__main__":
-
-    load_dotenv()
-    # Code to test alerts being sent
-    sns_client = get_sns_client()
-    res = sns_client.create_topic(Name="c17-quakes-example")
-    topic = res["TopicArn"]
-    email = "quakinginmanhattan@hotmail.com"
-    sub = sns_client.subscribe(TopicArn=topic,
-                               Protocol="email",
-                               Endpoint=email)
-    fake_data = [{"topic_arn": topic, "magnitude": 3.1, "state_name": "Not in the USA",
-                  "region_name": "Taiwan", "time": datetime.now(), "tsunami": False,
-                  "latitude": 30.101, "longitude": 50.123},
-                 {"topic_arn": topic, "magnitude": 3.1, "state_name": "state",
-                  "region_name": "region", "time": datetime.now(), "tsunami": True,
-                  "latitude": 30.101, "longitude": 50.123}]
-    send_emails(fake_data)
