@@ -9,7 +9,7 @@ DROP TYPE IF EXISTS magnitude_type;
 
 CREATE TYPE alert_level AS ENUM ('green', 'yellow', 'orange', 'red');
 CREATE TYPE location_source AS ENUM ('ak', 'at', 'ci', 'hv', 'ld', 'mb', 'nc', 'nm', 'nn', 'pr', 'pt', 'se', 'us', 'uu', 'uw');
-CREATE TYPE magnitude_type AS ENUM ('Md', 'Ml', 'Ms', 'Mw', 'Me', 'Mi', 'Mb', 'MLg');
+CREATE TYPE magnitude_type AS ENUM ('Md', 'Ml', 'Ms', 'Mw', 'Me', 'Mi', 'Mb', 'MLg', 'Mww');
 
 CREATE TABLE region (
     region_id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
