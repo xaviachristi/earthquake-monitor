@@ -8,4 +8,5 @@ altair[all]
 plotly
 streamlit-pdf-viewer
 nbformat
+numpy
 boto3

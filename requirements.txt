@@ -13,3 +13,4 @@ boto3
 aiohttp
 opencage
 nbformat
+numpy
