@@ -4,6 +4,7 @@ import logging
 from os import environ as ENV
 
 from boto3 import client
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -32,23 +33,22 @@ def view_subscription():
     ...
 
 
-def create_topic_name(topic_name: str, latitude: float, longitude: float,
+def create_topic_name(latitude: float, longitude: float,
                       radius: int, magnitude: float) -> str:
     """Creates a topic name based on the provided information."""
     logger.info("Starting topic name creation...")
-    magnitude = round(magnitude, 1)
+    magnitude = int(round(magnitude, 1)*10)
     latitude = format_coordinate(latitude)
     longitude = format_coordinate(longitude)
-    topic_name += f"-{magnitude}-{latitude}-{longitude}-{radius}"
-    return topic_name
+    return f"c17-quake-{magnitude}-{latitude}-{longitude}-{radius}"
 
 
 def format_coordinate(coordinate: float) -> str:
     """Returns a formatted string of the latitude / longitude coordinate."""
     logger.info("Formatting coordinate...")
     if coordinate < 0:
-        return f"m{round(coordinate * -1, 4)}"
-    return f"p{round(coordinate, 4)}"
+        return f"m{int(round(coordinate * -1, 4)*10000)}"
+    return f"p{int(round(coordinate, 4)*10000)}"
 
 
 def create_topic(sns: client, topic_name: str) -> str:
@@ -70,10 +70,14 @@ def make_subscription(email: str, latitude: float, longitude: float,
     """Create a subscription to a topic for their preference.
     format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
     logger.info("Starting subscription creation...")
-    topic_name = "c17-quake"
-    topic_name = create_topic_name(
-        topic_name, latitude, longitude, radius, magnitude)
+    topic_name = create_topic_name(latitude, longitude, radius, magnitude)
     sns = get_sns_client()
     topic_arn = create_topic(sns, topic_name)
     sub_to_topic(sns, topic_arn, email)
     logger.info("Subscription has been completed.")
+
+
+if __name__ == "__main__":
+    load_dotenv()
+    make_subscription("quakinginmanhattan@hotmail.com",
+                      12.41415, -47.14481, 770, 5.7)
