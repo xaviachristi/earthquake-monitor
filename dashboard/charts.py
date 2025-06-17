@@ -1,12 +1,10 @@
 """Module for serving visualisations needed for dashboard pages."""
 
-import json
 from logging import getLogger, basicConfig
 
-from streamlit import cache_resource
 from pandas import DataFrame
 from plotly.express import treemap
-from altair import (Chart, X, Y, Color, Scale, topo_feature)
+from altair import (Chart, X, Y, Color, Scale, topo_feature, Tooltip)
 
 
 logger = getLogger(__name__)
@@ -58,11 +56,24 @@ def get_region_treemap(data: DataFrame) -> treemap:
 
 def get_earthquakes_over_time_for_states(data: DataFrame) -> Chart:
     """Return chart of earthquake counts over time using Altair's internal aggregation."""
-    return Chart(data).mark_line().encode(
+    line = Chart(data).mark_line().encode(
         x=X("yearmonthdate(time):T", title="Date"),
         y=Y("count():Q", title="Number of Earthquakes"),
         color=Color("state_name:N", title="State")
-    ).properties(
+    )
+
+    points = Chart(data).mark_circle(size=30).encode(
+        x="yearmonthdate(time):T",
+        y="count():Q",
+        color="state_name:N",
+        tooltip=[
+            Tooltip("yearmonthdate(time):T", title="Date"),
+            Tooltip("state_name:N", title="State"),
+            Tooltip("count():Q", title="Number of Earthquakes")
+        ]
+    )
+
+    return (line + points).properties(
         title="Earthquakes Over Time",
         width=800,
         height=400
@@ -71,11 +82,24 @@ def get_earthquakes_over_time_for_states(data: DataFrame) -> Chart:
 
 def get_earthquakes_over_time_for_regions(data: DataFrame) -> Chart:
     """Return chart of earthquake counts over time using Altair's internal aggregation."""
-    return Chart(data).mark_line().encode(
+    line = Chart(data).mark_line().encode(
         x=X("yearmonthdate(time):T", title="Date"),
         y=Y("count():Q", title="Number of Earthquakes"),
         color=Color("region_name:N", title="Country")
-    ).properties(
+    )
+
+    points = Chart(data).mark_circle(size=30).encode(
+        x="yearmonthdate(time):T",
+        y="count():Q",
+        color="region_name:N",
+        tooltip=[
+            Tooltip("yearmonthdate(time):T", title="Date"),
+            Tooltip("region_name:N", title="Region"),
+            Tooltip("count():Q", title="Number of Earthquakes")
+        ]
+    )
+
+    return (line + points).properties(
         title="Earthquakes Over Time",
         width=800,
         height=500
