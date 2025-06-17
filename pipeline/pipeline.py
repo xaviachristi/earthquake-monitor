@@ -1,6 +1,7 @@
 """Script for running full ETL pipeline as AWS lambda."""
 
-from argparse import ArgumentParser, Namespace
+from json import dumps
+from argparse import ArgumentParser
 from datetime import datetime, timedelta
 from logging import getLogger, basicConfig
 from os import environ as ENV
@@ -63,22 +64,29 @@ def lambda_handler(event, context):
     """
     try:
         logger.info("Getting time window from event...")
-        start_time, end_time = get_time_window_from_cli(event)
+        start_time, end_time = get_time_window_from_event(event)
 
         logger.info("Running ETL pipeline...")
         data = run_pipeline(start_time,
                             end_time)
 
         topics = None
+        output = None
 
         if data is not None:
             if not data.empty:
                 logger.info("Creating alert dictionary...")
                 topics = get_topic_dictionaries(data)
+                output_df = data.copy()
+                output_df['time'] = output_df['time'].dt.strftime(
+                    r"%Y-%m-%d %H:%M")
+                output_df['updated'] = output_df['updated'].dt.strftime(
+                    r"%Y-%m-%d %H:%M")
+                output = output_df["url"].to_list()
 
         return {
             "statusCode": 200,
-            "earthquakes": data,
+            "earthquakes": output,
             "message": topics
         }
     except Exception as e:
