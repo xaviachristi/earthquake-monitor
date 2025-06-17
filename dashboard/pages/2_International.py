@@ -33,6 +33,7 @@ def filter_data(data: DataFrame,
 
 def display_charts(filtered_data: DataFrame):
     """Display to dashboard charts from filtered data."""
+    altair_chart(get_global_map_of_events(filtered_data))
     altair_chart(get_earthquakes_over_time_for_regions(filtered_data))
     col1, col2 = columns(2)
     with col1:
@@ -42,7 +43,6 @@ def display_charts(filtered_data: DataFrame):
                value=get_total_number_of_earthquakes(filtered_data))
         metric(label="Average Earthquake Magnitude",
                value=get_average_mag(filtered_data))
-    altair_chart(get_global_map_of_events(filtered_data))
 
 
 def serve_page():
