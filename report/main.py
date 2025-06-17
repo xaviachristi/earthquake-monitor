@@ -1,17 +1,16 @@
 """Script for generating data report."""
 from datetime import datetime
 from os import environ as ENV
-from logging import getLogger
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 from os.path import basename
-import psycopg2
+import os
+import psycopg
 import pandas as pd
 from dotenv import load_dotenv
 from pandas import DataFrame
 import boto3
 from xhtml2pdf import pisa
+
+load_dotenv()
 
 
 DB_HOST = os.getenv("DB_HOST")
@@ -19,11 +18,12 @@ DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+S3_BUCKET = os.getenv("S3_BUCKET")
 
 
 def get_db_connection():
-    """Get connection."""
-    conn = psycopg2.connect(
+    """Get connection to database."""
+    conn = psycopg.connect(
         host=DB_HOST,
         port=DB_PORT,
         dbname=DB_NAME,
@@ -116,44 +116,39 @@ def generate_html(df: DataFrame) -> str:
 
 
 def get_pdf(html: str) -> str:
-    path = "/tmp/earthquake_report.pdf"
+    filename = f"earthquake_report_{datetime.now().strftime('%Y%m%d')}.pdf"
+    path = f"/tmp/{filename}"
     with open(path, "wb") as output:
         pisa.CreatePDF(html, dest=output)
-        return path
+    return path, filename
 
 
-def get_email_with_attachment(pdf_path: str) -> str:
-    msg = MIMEMultipart('mixed')
-    msg['Subject'] = "Daily Earthquake PDF Report"
-    msg['From'] = "quakinginmanhattan@hotmail.com"
-    msg['To'] = "quakinginmanhattan@hotmail.com"
+def upload_to_s3(pdf_path: str) -> str:
+    """Upload PDF to S3 and return its URL."""
+    s3 = boto3.client('s3',
+                      aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                      aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+                      region_name=os.getenv("AWS_REGION"))
 
-    body = MIMEText("Attached is your daily earthquake report.", 'plain')
-    msg.attach(body)
-
-    with open(pdf_path, 'rb') as f:
-        part = MIMEApplication(f.read(), Name=basename(pdf_path))
-        part['Content-Disposition'] = f'attachment; filename="{basename(pdf_path)}"'
-        msg.attach(part)
-
-    return msg.as_string()
+    object_name = f"reports/earthquake_report_{datetime.now().strftime('%Y-%m-%d')}.pdf"
+    s3.upload_file(pdf_path, S3_BUCKET, object_name, ExtraArgs={
+                   'ContentType': 'application/pdf'})
+    url = f"https://{S3_BUCKET}.s3.amazonaws.com/{object_name}"
+    return url
 
 
 def lambda_handler(event, context):
     """Main lambda handler function."""
     df = fetch_earthquake_data()
     html = generate_html(df)
-    pdf_path = get_pdf(html)
-    email_string = get_email_with_attachment(pdf_path)
-    ses = boto3.client("ses", region_name=os.getenv("AWS_REGION"))
-    response = ses.send_raw_email(RawMessage={"Data": email_string})
-    return {"status_code": 200,
-            "message": "PDF generated and email formatted.",
-            "pdf_path": pdf_path,
-            "ses_message_id": response.get("MessageId")
-            }
+    pdf_path, filename = get_pdf(html)
+    download_url = upload_to_s3(pdf_path)
+    return {
+        "statusCode": 200,
+        "message": "PDF generated and uploaded to S3.",
+        "download_url": download_url
+    }
 
 
 if __name__ == "__main__":
-    load_dotenv()
     lambda_handler("", "")
