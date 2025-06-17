@@ -89,7 +89,8 @@ def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
     return Chart(data).mark_bar().encode(
         x=X("rounded_mag:Q", title="Magnitude").scale(domain=[0, 10]),
         y=Y("count():Q", title="Number of Earthquakes"),
-        tooltip=["rounded_mag", "count()"]
+        tooltip=[Tooltip("rounded_mag", title="Magnitude"),
+                 Tooltip("count()", title="Number of Earthquakes")]
     ).properties(
         title="Earthquake Count by Magnitude"
     )
