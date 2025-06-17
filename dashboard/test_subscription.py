@@ -3,7 +3,9 @@
 
 from subscription import (delete_subscription,
                           make_subscription,
-                          view_subscription)
+                          view_subscription,
+                          create_topic_name,
+                          format_coordinate)
 
 
 class TestDeleteSubscription:
@@ -16,3 +18,11 @@ class TestMakeSubscription:
 
 class TestViewSubscription:
     """Class that groups tests for view_subscription."""
+
+
+class TestCreateTopicName:
+    """Class that groups tests for create_topic_name."""
+
+
+class TestFormatCoordinate:
+    """Class that groups tests for format_coordinate."""
