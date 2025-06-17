@@ -1,4 +1,4 @@
-"""Module for displaying USA data page."""
+"""Module for displaying international data page."""
 
 from datetime import date
 
