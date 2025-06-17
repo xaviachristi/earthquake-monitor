@@ -105,7 +105,7 @@ def get_total_number_of_earthquakes(data: DataFrame) -> int:
     return len(data)
 
 
-def get_map_of_events(data: DataFrame, scope: str = "global") -> Chart:
+def get_map_of_events(data: DataFrame, zoom: int, scope: str = "global") -> Chart:
     """Return a geographical map of earthquake events over the U.S."""
     data = data.copy()
     data['latitude'] = data['latitude'].astype(float)
@@ -118,11 +118,11 @@ def get_map_of_events(data: DataFrame, scope: str = "global") -> Chart:
     if scope == "us":
         projection = 'mercator'
         center = [-100, 40]
-        scale = 200
+        scale = 200*zoom
     else:
         projection = 'naturalEarth1'
         center = [0, 0]
-        scale = 100
+        scale = 200*zoom
 
     # Base map
     base = Chart(world_map).mark_geoshape(
@@ -133,7 +133,7 @@ def get_map_of_events(data: DataFrame, scope: str = "global") -> Chart:
         center=center,
         scale=scale
     ).properties(
-        width=1000,
+        width=900,
         height=600
     )
 
@@ -149,7 +149,7 @@ def get_map_of_events(data: DataFrame, scope: str = "global") -> Chart:
         center=center,
         scale=scale
     ).properties(
-        width=1000,
+        width=900,
         height=600
     )
 

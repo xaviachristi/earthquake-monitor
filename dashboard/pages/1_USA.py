@@ -5,7 +5,8 @@ from datetime import date
 from pandas import DataFrame
 from streamlit import (metric, title, multiselect,
                        columns, number_input,
-                       date_input, altair_chart)
+                       date_input, altair_chart,
+                       slider)
 
 from data import (get_data, get_american_data,
                   get_mag_filtered_data,
@@ -31,9 +32,9 @@ def filter_data(data: DataFrame,
     return data
 
 
-def display_charts(filtered_data: DataFrame):
+def display_charts(filtered_data: DataFrame, zoom: int):
     """Display to dashboard charts from filtered data."""
-    altair_chart(get_map_of_events(filtered_data, "us"))
+    altair_chart(get_map_of_events(filtered_data, zoom, "us"))
     altair_chart(get_earthquakes_over_time(filtered_data, "state"))
     altair_chart(get_earthquake_count_by_magnitude(filtered_data))
     col1, col2 = columns(2)
@@ -61,9 +62,10 @@ def serve_page():
     with col1:
         state = multiselect(label="Filter by State.",
                             options=states)
+        zoom = slider("Map Zoom.", min_value=0, value=1, max_value=10)
     with col2:
         magnitude = number_input(
-            "Minimum Magnitude", min_value=0.0, max_value=10.0,
+            "Minimum Magnitude.", min_value=0.0, max_value=10.0,
             value="min", format="%0.1f", step=0.1)
         col3, col4 = columns(2)
         with col3:
@@ -75,7 +77,7 @@ def serve_page():
                               value="today",
                               max_value=date.today())
     filtered_data = filter_data(us_data, state, magnitude, start, stop)
-    display_charts(filtered_data)
+    display_charts(filtered_data, zoom)
 
 
 if __name__ == "__main__":
