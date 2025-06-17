@@ -75,9 +75,3 @@ def make_subscription(email: str, latitude: float, longitude: float,
     topic_arn = create_topic(sns, topic_name)
     sub_to_topic(sns, topic_arn, email)
     logger.info("Subscription has been completed.")
-
-
-if __name__ == "__main__":
-    load_dotenv()
-    make_subscription("quakinginmanhattan@hotmail.com",
-                      12.41415, -47.14481, 770, 5.7)
