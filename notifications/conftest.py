@@ -1,7 +1,5 @@
 # pylint: skip-file
 
-from datetime import datetime
-
 from pytest import fixture
 
 

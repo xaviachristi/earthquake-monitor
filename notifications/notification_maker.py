@@ -1,10 +1,8 @@
 """Module that creates and formats the notification messages."""
 
 import logging
-from datetime import datetime
 from os import environ as ENV
 
-from dotenv import load_dotenv
 from boto3 import client
 from botocore.exceptions import ClientError
 
@@ -70,7 +68,7 @@ def make_message(data: dict) -> str:
     body += f" {get_location_message(data)} at {time}.\n"
     if data["tsunami"]:
         body += "There is potential for a tsunami.\n"
-    body += f"Precise latitude and longitude location of earthquake:\n"
+    body += "Precise latitude and longitude location of earthquake:\n"
     body += f"  ({data["latitude"]}, {data["longitude"]})."
     return heading+body
 
