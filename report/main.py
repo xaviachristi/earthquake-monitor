@@ -80,7 +80,54 @@ def generate_html(df: DataFrame) -> str:
 
     html = f"""
     <html>
-    <head><style>body {{ font-family: sans-serif; }}</style></head>
+    <head><style>html, body {{
+                margin: 0;
+                padding: 0;
+                background-color: #efeae1;
+                font-family: Georgia, serif;
+                color: #6f2022;
+            }}
+            .container {{
+                padding: 30px;
+                background-color: #efeae1;
+            }}
+            h1 {{
+                text-align: center;
+                margin-bottom: 20px;
+                color: #6f2022;
+            }}
+            h2, h3 {{
+                margin-top: 30px;
+                color: #6f2022;
+            }}
+            ul {{
+                padding-left: 20px;
+                line-height: 1.6;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }}
+            th {{
+                background-color: #425953;
+                color: white;
+                padding: 8px;
+                border: 1px solid #583b3d;
+            }}
+            td {{
+                background-color: #ffffff;
+                color: #000000;
+                padding: 6px;
+                border: 1px solid #cccccc;
+                text-align: center;
+            }}
+            a {{
+                color: #6f2022;
+                text-decoration: none;
+                font-weight: bold;
+            }}
+    </style></head>
     <body>
         <h1>[{datetime.now().strftime('%Y-%m-%d')}] Earthquake Report</h1>
 
@@ -102,8 +149,7 @@ def generate_html(df: DataFrame) -> str:
         html += f"""
         <tr>
             <td>{row['time'].strftime('%H:%M')}</td>
-            <td>{row['state_name']}</td>
-            <td>{row['region_name']}</td>
+            <td>{row['state_name']}, {row['region_name']}</td>
             <td>{row['magnitude']}</td>
             <td>{row['depth']}</td>
             <td>{'Yes' if row['felt'] and row['felt'] > 0 else 'No'}</td>
