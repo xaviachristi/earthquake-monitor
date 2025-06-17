@@ -22,7 +22,7 @@ basicConfig(
 )
 
 
-def run_pipeline(start: datetime = datetime.now() - timedelta(minutes=1),
+def run_pipeline(start: datetime = datetime.now() - timedelta(hours=4),
                  end: datetime = datetime.now()) -> DataFrame:
     """Run ETL pipeline."""
     logger.info(
@@ -58,11 +58,13 @@ def lambda_handler(event, context):
         event: Dict containing the lambda function event data
         context: lAMBDA RUNTIME CONTEXT
     Returns:
-        Dict containing status message
+        Dict containing status message and topics with earthquake values
     """
     try:
+        logger.info("Getting time window from event...")
+
         logger.info("Running ETL pipeline...")
-        data = run_pipeline(datetime.now() - timedelta(hours=24),
+        data = run_pipeline(datetime.now() - timedelta(hours=12),
                             datetime.now())
 
         topics = None
@@ -74,6 +76,7 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
+            "earthquakes": data,
             "message": topics
         }
     except Exception as e:
@@ -83,5 +86,5 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     load_dotenv()
-    run_pipeline(datetime.now() - timedelta(hours=24),
+    run_pipeline(datetime.now() - timedelta(hours=12),
                  datetime.now())
