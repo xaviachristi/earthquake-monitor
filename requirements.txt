@@ -13,3 +13,6 @@ boto3
 aiohttp
 opencage
 nbformat
+dotenv
+awswrangler
+xhtml2pdf
