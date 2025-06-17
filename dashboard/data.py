@@ -32,7 +32,6 @@ def get_connection() -> Connection:
     )
 
 
-@cache_data(ttl=600)
 def get_data() -> DataFrame:
     """Return all data for dashboard from the RDS."""
     logger.info("Getting results from DB...")
