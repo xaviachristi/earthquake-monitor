@@ -18,3 +18,12 @@ def get_sample_non_usa_data():
     data = {"topic_arn": "a", "magnitude": 3.1, "state_name": "Not in the USA", "region_name": "Taiwan",
             "time": "2025/12/13 13:40", "tsunami": False, "latitude": 30.101, "longitude": 50.123}
     return data
+
+
+@fixture(name="sample_non_country_data")
+def get_sample_non_country_data():
+    """Expected data passed to notification maker
+    when an earthquake outside of sovereign territory is detected."""
+    data = {"topic_arn": "a", "magnitude": 3.1, "state_name": "Not in the USA", "region_name": "No Country",
+            "time": "2025/12/13 13:40", "tsunami": False, "latitude": 30.101, "longitude": 50.123}
+    return data
