@@ -26,7 +26,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - Both take minute differences as integers
 - End is not required and if it is not given the current time is used
 - `python3 pipeline --start 2 --end 1`
-- This example command would run the pipeline and upload data from the api that occured between one and two hors ago
+- This example command would run the pipeline and upload data from the api that occurred between one and two minutes ago
 
 ## Docker
 
