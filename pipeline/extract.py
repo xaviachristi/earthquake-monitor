@@ -26,7 +26,6 @@ def access_api(start: datetime, end: datetime) -> dict:
         "format": "geojson",
         "starttime": start.strftime("%Y-%m-%dT%H:%M:%S"),
         "endtime": end.strftime("%Y-%m-%dT%H:%M:%S"),
-        "reviewstatus": "reviewed",
         "eventtype": "earthquake"
     }
 
