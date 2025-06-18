@@ -23,10 +23,10 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - The `pipeline` is ran with python and the `pipeline` script
 - The `pipeline` script takes two arguments start and end
 - These arguments define the time window that the `pipeline` will query the api over
-- Both take dates in the format "YYYY-MM-DD HH:MM"
+- Both take hour differences as integers
 - End is not required and if it is not given the current time is used
-- `python3 pipeline --start "2025-06-12 00:00" --end "2025-06-12 01:00"`
-- This example command would run the pipeline and upload data from the api that occured on the 12th June 2025 from midnight to 1 am
+- `python3 pipeline --start 2 --end 1`
+- This example command would run the pipeline and upload data from the api that occured between one and two hors ago
 
 ## Docker
 
@@ -48,20 +48,33 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - The payload should take this form:
 ```json
 {
-    "start": <time-before-end-in-hours>,
-    "end": <date-string-in-form-"YYYY-MM-DD HH:MM">
+    "start": <time-diff-to-add-to-start-of-window>,
+    "end": <time-diff-to-add-to-end-of-window>
 }
 ```
-- Example payload for a one hour window from current time backwards:
+- Example payload for a one hour window that runs one hour behind current time:
 ```json
 {
-    "start": 1
+    "start": 2,
+    "end": 1
 }
 ```
 
 ## Other Scripts
 
 ### `docker_build`
+
+- This script connects to AWS, builds the defined image and pushes it to an ECR
+- The script has been left as an example and utilises credentials that are personal
+- The script is actually derived from the AWS ECR push commands
+- You can find your version of these commands by creating and ECR and selecting push commmands in the console
+- If you want to use the example script you will need to replace as follows:
+```sh
+aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <aws-account-uri>
+docker build --provenance=false --platform=linux/amd64  -t <ecr-name>:latest .
+docker tag <ecr-name>:latest <aws-account-uri>/<ecr-name>:latest
+docker push <aws-account-uri>/<ecr-name>:latest
+```
 
 ## Modules
 
