@@ -3,8 +3,10 @@ Transforms a dataframe into a format appropriate for loading into the database.
 """
 import logging
 from datetime import datetime, timedelta
+from os import environ as ENV
 
 import pandas as pd
+from dotenv import load_dotenv
 from opencage.geocoder import OpenCageGeocode
 
 from extract import extract
@@ -51,7 +53,7 @@ def get_address(latitude: float, longitude: float) -> list[str]:
     logger.info("Finding address for %s, %s using OpenCage.",
                 latitude, longitude)
     try:
-        geocoder = OpenCageGeocode(key="62bd7d167134455e9393faca73d7e1e4")
+        geocoder = OpenCageGeocode(key=ENV["GEO_API_KEY"])
         results = geocoder.reverse_geocode(
             latitude, longitude, no_annotations=1, limit=1)
         if results and len(results):
@@ -237,8 +239,9 @@ def transform(data_from_extract: list[dict]) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    load_dotenv()
     events = extract("USGS", "temp_earthquake_data.json",
-                     datetime.now() - timedelta(days=1), datetime.now())
+                     datetime.now() - timedelta(hours=4), datetime.now())
     events_dataframe = transform(events)
     print(events_dataframe)
     print(events_dataframe.info())
