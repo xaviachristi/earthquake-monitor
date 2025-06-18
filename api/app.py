@@ -18,7 +18,7 @@ basicConfig(
 
 load_dotenv()
 app = Flask(__name__)
-CONN = get_connection()
+
 
 
 @app.get("/")
@@ -67,5 +67,5 @@ def get_earthquakes():
 
 
 if __name__ == "__main__":
-
+    CONN = get_connection()
     app.run(debug=True, host="0.0.0.0", port=80)
