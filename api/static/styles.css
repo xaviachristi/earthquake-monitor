@@ -25,7 +25,7 @@ body {
 }
 
 .subtitle {
-    color:#945349;
+    color:#924547;
     font-size: 24pt;
 }
 
@@ -38,7 +38,7 @@ body {
 }
 
 .main-body {
-    color:#425953;
+    color:#924547;
 }
 
 .header {
@@ -51,4 +51,5 @@ body {
 
 .example-response {
     font-family: monospace;
+    color:#425953;
 }
