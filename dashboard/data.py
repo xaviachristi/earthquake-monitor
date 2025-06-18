@@ -56,7 +56,9 @@ def get_counts_by_region(data: DataFrame) -> DataFrame:
     """Return dataframes of value counts for each region."""
     data = data.copy()
     logger.info("Grouping DataFrame by region...")
-    return data["region_name"].value_counts().rename_axis("Region Name").reset_index(name="Earthquake Count")
+    return (data[["region_name", "state_name"]].value_counts()
+            .rename_axis(["Region Name", "State Name"])
+            .reset_index(name="Earthquake Count"))
 
 
 def get_american_data(data: DataFrame) -> DataFrame:

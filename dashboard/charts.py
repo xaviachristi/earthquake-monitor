@@ -97,16 +97,19 @@ def get_state_choropleth(data: DataFrame) -> treemap:
 def get_region_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per region."""
     logger.info("Creating treemap...")
+    data["region_state_combo"] = data["Region Name"] + \
+        " - " + data["State Name"]
     fig = treemap(
         data_frame=data,
-        path=['Region Name'],
+        path=['Region Name', 'State Name'],
         values="Earthquake Count",
-        custom_data=['Region Name', 'Earthquake Count'])
+        color="region_state_combo"
+    )
     fig.update_traces(
         root_color="lightgrey",
         hovertemplate=(
-            "<b>%{customdata[0]}</b><br>" +
-            "Earthquake Count: %{customdata[1]}<extra></extra>"
+            "<b>%{label}</b><br>" +
+            "Earthquake Count: %{value}<extra></extra>"
         )
     )
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})

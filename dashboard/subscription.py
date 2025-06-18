@@ -1,10 +1,9 @@
 """Module for handling user subscriptions."""
 
 import logging
-from os import environ as ENV
 
 from boto3 import client
-from dotenv import load_dotenv
+from streamlit import toast
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +73,4 @@ def make_subscription(email: str, latitude: float, longitude: float,
     topic_arn = create_topic(sns, topic_name)
     sub_to_topic(sns, topic_arn, email)
     logger.info("Subscription has been completed.")
+    toast("Subscription has been made!")
