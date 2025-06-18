@@ -15,11 +15,8 @@ basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S"
 )
 
-
 load_dotenv()
 app = Flask(__name__)
-
-
 
 @app.get("/")
 @app.get("/index")
@@ -36,6 +33,7 @@ def get_earthquakes():
     Currently allows for filtering by magnitude and time.
     See documentation.html for more information.
     """
+
     logger.info("Request received.")
     args = request.args.to_dict()
 
@@ -54,18 +52,24 @@ def get_earthquakes():
 
     q = get_query_template()
     sql_args = prepare_query_arguments(args)
-    res = query_database(CONN, q, sql_args)
+
+    # Connection made here so that it does not stay open for an
+    # obscenely long time / when not in use.
+    conn = get_connection()
+    res = query_database(conn, q, sql_args)
+    conn.close()
 
     if res:
         return {"error": False,
             "content": res}, 200
 
-    return {"error": False,
-        "content": []}, 204
     # 204 could do with better user feedback.
     # Can it redirect to a page describing what has happened?
+    return {"error": False,
+        "content": []}, 204
+
 
 
 if __name__ == "__main__":
-    CONN = get_connection()
+
     app.run(debug=True, host="0.0.0.0", port=80)
