@@ -1,12 +1,83 @@
 # Pipeline
 
-## Extract
+This directory contains all the neccessary files to run and deploy the extract, transform, load pipeline fro this project. This pipeline targets a United States Geological Survey Application Programming Interface that feeds live earthquake data as they recieve it. It transforms this data into a suitable pandas DataFrame and loads it into a deployed postgres database instance. The pipeline can be run locally or be deployed to AWS Lambda using the docker configuration.
+
+## Configuration
+
+- This pipeline depends upon configuration defined in z `.env` file
+- The file should contain the following variables:
+```sh
+DB_HOST=<host-address>
+DB_PORT=<accessible-port>
+DB_NAME=<name>
+DB_PASSWORD=<password>
+DB_USER=<username>
+
+AWS_DEFAULT_REGION=<region-resources-are-in>
+AWS_ACCESS_KEY_ID=<personal-aws-key>
+AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
+```
+
+## Running the pipeline locally
+
+- The `pipeline` is ran with python and the `pipeline` script
+- The `pipeline` script takes two arguments start and end
+- These arguments define the time window that the `pipeline` will query the api over
+- Both take dates in the format "YYYY-MM-DD HH:MM"
+- End is not required and if it is not given the current time is used
+- `python3 pipeline --start "2025-06-12 00:00" --end "2025-06-12 01:00"`
+- This example command would run the pipeline and upload data from the api that occured on the 12th June 2025 from midnight to 1 am
+
+## Docker
+
+- The Dockerfile defines the image for this pipeline
+- This allows the pipeline to b eran as a container
+- To build the image
+- `docker build --provenance=false --platform=linux/amd64  -t <image-name>:latest .`
+- To run the container locally
+- `docker run --platform=linux/amd64 --env-file .env`
+
+## Running the pipeline in the cloud
+
+- The pipeline can be run in AWS cloud as well as locally
+- To do this it is built as a lambda image and uploaded to an elastic container registry in AWS
+- Run the `docker_build` script detailed below with your details to upload the pipeline
+- After ECR deployment you will need to create a lambda function that uses your image
+- That lambda function can now be triggered and targetted by other AWS services
+- Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start paramter and can optionally be given an end parameter
+- The payload should take this form:
+```json
+{
+    "start": <time-before-end-in-hours>,
+    "end": <date-string-in-form-"YYYY-MM-DD HH:MM">
+}
+```
+- Example payload for a one hour window from current time backwards:
+```json
+{
+    "start": 1
+}
+```
+
+## Other Scripts
+
+### `docker_build`
+
+## Modules
+
+### `Extract`
 
 - Reads from https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson .
 
 - This updates every minute but stores an hours worth of data.
 
     - How to avoid repeated data?
+
+### `Transform`
+
+### `Load`
+
+### `Topic`
 
 
 ### Thought Process (to be removed/tidied when pipeline is complete)
