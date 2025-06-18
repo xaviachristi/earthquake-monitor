@@ -8,14 +8,6 @@ from app_functions import (validate_api_query_argument_names, prepare_query_argu
                            get_connection, get_query_template, query_database)
 
 
-# load_dotenv("env_test") # Testing/dev environment.
-# app.config['TESTING'] = True
-# app.config['DEBUG'] = True
-
-load_dotenv()
-CONN = get_connection()
-
-
 logger = getLogger(__name__)
 basicConfig(
     level="DEBUG",
@@ -24,7 +16,10 @@ basicConfig(
 )
 
 
+load_dotenv()
 app = Flask(__name__)
+CONN = get_connection()
+
 
 @app.get("/")
 @app.get("/index")
@@ -59,7 +54,6 @@ def get_earthquakes():
 
     q = get_query_template()
     sql_args = prepare_query_arguments(args)
-    # fillna being depreciated - easiest way to replace it?
     res = query_database(CONN, q, sql_args)
 
     if res:
@@ -73,4 +67,5 @@ def get_earthquakes():
 
 
 if __name__ == "__main__":
+
     app.run(debug=True, host="0.0.0.0", port=80)
