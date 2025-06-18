@@ -34,6 +34,7 @@ def get_db_connection():
 
 
 def fetch_earthquake_data():
+    "Retrieve earthquake data from external USGS API."
     conn = get_db_connection()
     query = """SELECT
                     e.*,
@@ -75,6 +76,7 @@ def generate_summary(df: DataFrame):
 
 
 def generate_html(df: DataFrame) -> str:
+    "Put retrieved data values into formatted pdf report."
     total, most_significant, max_mag, active_region, tsunamis = generate_summary(
         df)
 
@@ -162,6 +164,7 @@ def generate_html(df: DataFrame) -> str:
 
 
 def get_pdf(html: str) -> str:
+    "Names pdf file with datetime."
     filename = f"earthquake_report_{datetime.now().strftime('%Y%m%d')}.pdf"
     path = f"/tmp/{filename}"
     with open(path, "wb") as output:
