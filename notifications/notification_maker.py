@@ -1,7 +1,6 @@
 """Module that creates and formats the notification messages."""
 
 import logging
-from os import environ as ENV
 
 from boto3 import client
 from botocore.exceptions import ClientError

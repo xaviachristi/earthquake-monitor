@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 """File that tests the notification-making functions."""
 
 
