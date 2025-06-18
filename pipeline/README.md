@@ -44,7 +44,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - Run the `docker_build` script detailed below with your details to upload the pipeline
 - After ECR deployment you will need to create a lambda function that uses your image
 - That lambda function can now be triggered and targeted by other AWS services
-- Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start paramter and can optionally be given an end parameter
+- Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start parameter and can optionally be given an end parameter
 - The payload should take this form:
 ```json
 {
