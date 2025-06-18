@@ -3,7 +3,7 @@ from datetime import datetime
 from os import environ as ENV
 from os.path import basename
 import os
-import psycopg2[binary]
+import psycopg2
 import pandas as pd
 from dotenv import load_dotenv
 from pandas import DataFrame
