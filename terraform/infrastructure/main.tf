@@ -4,46 +4,25 @@ provider "aws" {
     secret_key = var.AWS_SECRET_KEY
 }
 
-data "aws_ecr_image" "pipeline_image" {
+# Images
+data "aws_ecr_image" "pipeline-image" {
     repository_name = "c17-quake-pipeline-ecr-tf"
     image_tag = "latest"
 }
 
-data "aws_ecr_image" "notification_image" {
+data "aws_ecr_image" "notification-image" {
     repository_name = "c17-quake-notification-ecr-tf"
     image_tag = "latest"
 }
 
-data "aws_ecr_image" "report_image" {
+data "aws_ecr_image" "report-image" {
     repository_name = "c17-quake-report-ecr-tf"
     image_tag = "latest"
 }
 
-data "aws_iam_policy" "cloudwatch_full_access" {
-    arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
-data "aws_iam_policy_document" "sns_list_topics" {
-    statement {
-        effect = "Allow"
-        actions = "sns:ListTopics"
-        }
-}
-
-data "aws_iam_policy_document" "sns_notifications" {
-    statement {
-        effect = "Allow"
-        actions = [
-				"sns:Publish",
-				"sns:CreateTopic",
-				"sns:Subscribe"
-			]
-        }
-}
-
-
-data "aws_iam_policy_document" "lambda-role-permissions-policy-doc" {
-    statement {
+# Permissions Docs
+data "aws_iam_policy_document" "pipeline-lambda-permissions-doc" {
+     statement {
       effect = "Allow"
       actions = [
         "logs:CreateLogGroup",
@@ -52,4 +31,111 @@ data "aws_iam_policy_document" "lambda-role-permissions-policy-doc" {
       ]
       resources = [ "arn:aws:logs:eu-west-2:129033205317:*" ]
     }
+    statement {
+        effect = "Allow"
+        actions = ["sns:ListTopics"]
+        resources = ["*"]
+    }
 }
+
+data "aws_iam_policy_document" "notification-lambda-permissions-doc" {
+     statement {
+      effect = "Allow"
+      actions = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources = [ "arn:aws:logs:eu-west-2:129033205317:*" ]
+    }
+    statement {
+        effect = "Allow"
+        actions = [
+				"sns:Publish",
+				"sns:CreateTopic",
+				"sns:Subscribe"
+			]
+        resources = ["*"]
+    }
+}
+
+data "aws_iam_policy_document" "report-lambda-permissions-doc" {
+     statement {
+      effect = "Allow"
+      actions = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources = [ "arn:aws:logs:eu-west-2:129033205317:*" ]
+    }
+    statement {
+        effect = "Allow"
+        actions = ["s3:*"]
+        resources = ["*"]
+    }
+}
+
+# Trust doc
+data "aws_iam_policy_document" "lambda-role-trust-policy-doc" {
+    statement {
+      effect = "Allow"
+      principals {
+        type = "Service"
+        identifiers = [ "lambda.amazonaws.com" ]
+      }
+      actions = [
+        "sts:AssumeRole"
+      ]
+    }
+}
+
+# Roles
+resource "aws_iam_role" "pipeline-lambda" {
+    name = "c17-quake-pipeline-lambda-terraform-role"
+    assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
+}
+
+resource "aws_iam_role" "notification-lambda" {
+    name = "c17-quake-notification-lambda-terraform-role"
+    assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
+}
+
+resource "aws_iam_role" "report-lambda" {
+    name = "c17-quake-report-lambda-terraform-role"
+    assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
+}
+
+# Permissions policies
+resource "aws_iam_policy" "pipeline-lambda-role-permissions-policy" {
+    name = "c17-quake-pipeline-lambda-terraform-permissions-policy"
+    policy = data.aws_iam_policy_document.pipeline-lambda-permissions-doc.json
+}
+
+resource "aws_iam_policy" "notification-lambda-role-permissions-policy" {
+    name = "c17-quake-notification-lambda-terraform-permissions-policy"
+    policy = data.aws_iam_policy_document.notification-lambda-permissions-doc.json
+}
+
+resource "aws_iam_policy" "report-lambda-role-permissions-policy" {
+    name = "c17-quake-report-lambda-terraform-permissions-policy"
+    policy = data.aws_iam_policy_document.report-lambda-permissions-doc.json
+}
+
+# Connect the policies to the role
+resource "aws_iam_role_policy_attachment" "pipeline-lambda-role-policy-connection" {
+  role = aws_iam_role.pipeline-lambda.name
+  policy_arn = aws_iam_policy.pipeline-lambda-role-permissions-policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "notification-lambda-role-policy-connection" {
+  role = aws_iam_role.notification-lambda.name
+  policy_arn = aws_iam_policy.notification-lambda-role-permissions-policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "report-lambda-role-policy-connection" {
+  role = aws_iam_role.report-lambda.name
+  policy_arn = aws_iam_policy.report-lambda-role-permissions-policy.arn
+}
+
+# Lambdas
