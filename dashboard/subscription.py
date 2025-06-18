@@ -18,8 +18,7 @@ logging.basicConfig(
 def get_sns_client() -> client:
     """Return a SNS client."""
     logger.info("Creating SNS client...")
-    sns = client("sns", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                 aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+    sns = client("sns")
     return sns
 
 
