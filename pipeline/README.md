@@ -116,5 +116,5 @@ The pipeline utilises several modules to perform key functions such as the steps
     <topic-arn-2>:[<earthquake-values>]
 }
 ```
-- The key function that performs every action in this module is `create_topic_dictionaries`
+- The key function that performs every action in this module is `create_topic_dictionaries`.
 
