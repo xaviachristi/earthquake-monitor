@@ -1,46 +1,4 @@
 """API for accessing earthquake data."""
-"""
-Planning:
-
-From Issue:
-    Multiple endpoints
-    Filters
-        region
-        lat/long
-        date
-        mag
-    Get requests only
-
-API Script:
-    Flask
-    Returns JSON
-    Port 80
-    Endpoints:
-        - URL/earthquakes?region=____&lat=___&long=___&date=____&mag=___
-          (THE MAIN ONE)
-        - Most recent earthquake
-        - Biggest earthquake in the past 24 hours
-    Might be nice to add a state filter as well
-    Remember logging!
-    Documentation important
-    SQL Queries should be easy -> look at dashboard script for reference
-    Should handle incorrect API queries gracefully
-    RESTful!
-    FastAPI vs Flask? -> Flask - more reliable, we don't need any of the features
-                         of FastAPI really.
-    Can start with the
-
-    General flow:
-    - One API endpoint with many filters
-    - Constructs SQL query
-    - Uses SQL query
-    - Formats data as an appropriate JSON
-    - returns this json
-
-    - Depending on the result of the SQL query, change status code
-    
-"""
-from os import environ as ENV
 from logging import getLogger, basicConfig
 
 from dotenv import load_dotenv
@@ -48,6 +6,14 @@ from flask import Flask, current_app, request
 
 from app_functions import (validate_api_query_argument_names, prepare_query_arguments,
                            get_connection, get_query_template, query_database)
+
+
+# load_dotenv("env_test") # Testing/dev environment.
+# app.config['TESTING'] = True
+# app.config['DEBUG'] = True
+
+load_dotenv()
+CONN = get_connection()
 
 
 logger = getLogger(__name__)
@@ -99,15 +65,12 @@ def get_earthquakes():
     if res:
         return {"error": False,
             "content": res}, 200
-    else:
-        return {"error": False,
-            "content": res}, 204
+
+    return {"error": False,
+        "content": []}, 204
+    # 204 could do with better user feedback.
+    # Can it redirect to a page describing what has happened?
 
 
 if __name__ == "__main__":
-    # Testing/dev environment.
-    load_dotenv("env_test")
-    app.config['TESTING'] = True
-    app.config['DEBUG'] = True
-    CONN = get_connection()
     app.run(debug=True, host="0.0.0.0", port=80)

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 from dotenv import load_dotenv
-from psycopg import Connection, connect, rows, DatabaseError
+from psycopg import Connection, connect, rows
 
 
 logger = getLogger(__name__)
@@ -93,8 +93,9 @@ def validate_api_query_argument_names(arguments: dict) -> bool:
 
     if "start_time" in provided_arguments and "end_time" in provided_arguments:
         if arguments["start_time"] > arguments["end_time"]:
-            raise ValueError("Start date cannot be after end date. ([%s], [%s]).", 
-                             arguments["start_time"], arguments["end_time"])
+            raise ValueError(
+                "Start date cannot be after end date."
+                f"{arguments["start_time"]}, {arguments["end_time"]}).",)
 
     return True
 
@@ -126,11 +127,8 @@ def prepare_query_arguments(arguments: dict) -> str:
         prepared_arguments["magnitude"] = 4.0
 
     if "start_time" in provided_arguments:
-        try:
-            prepared_arguments["start_time"] = datetime.fromisoformat(
-                arguments["start_time"])
-        except Exception as e:
-            print(e)
+        prepared_arguments["start_time"] = datetime.fromisoformat(
+            arguments["start_time"])
     else:
         prepared_arguments["start_time"] = datetime.now(
         ) - timedelta(days=7)
@@ -173,13 +171,12 @@ def query_database(connection: Connection, query: str, parameters: dict) -> pd.D
 def format_sql_response_as_json(sql_response: pd.DataFrame) -> str:
     """Format the SQL response as the desired JSON."""
     return sql_response.to_dict(orient="records")
-    # TODO Change this orient
 
 
 if __name__ == "__main__":
     load_dotenv()
     conn = get_connection()
-    received_args = {}
+    received_args = {"start_time": "2025-06-17T01:00:00","end_time":"2025-06-17T03:00:00"}
     q = get_query_template()
     sql_args = prepare_query_arguments(received_args)
     print(query_database(conn, q, sql_args))

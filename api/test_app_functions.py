@@ -3,7 +3,7 @@
 """Unit tests for app_functions.py."""
 
 from app_functions import (can_be_converted_to_float, validate_magnitude,
-                           validate_time, validate_api_query_argument_names)
+                           validate_time, prepare_query_arguments)
 from datetime import datetime
 
 from pytest import raises
@@ -102,10 +102,10 @@ class TestValidateMagnitude:
 
 
 class TestValidateTime:
-    
+
     def test_validate_time_pos_1(self):
         assert validate_time(datetime.now().isoformat())
-    
+
     def test_validate_time_pos_2(self):
         assert validate_time("2025-06-16T12:34:54.824Z")
 
@@ -114,17 +114,16 @@ class TestValidateTime:
 
     def test_validate_time_value_errors_1(self):
         with raises(ValueError):
-            validate_time("2025-06-16T12:34")
-    
+            validate_time("2025-06-16T12:74:00")
+
     def test_validate_time_type_errors_1(self):
         with raises(TypeError):
             validate_time(20120472161700)
 
+
 class TestValidateApiQueryArgumentNames:
-    
     # def test_validate_api_query_argument_names_1(self):
     pass
-
 
 
 class TestGetQueryTemplate:
@@ -132,10 +131,19 @@ class TestGetQueryTemplate:
 
 
 class TestPrepareQueryArguments:
-    pass
+
+    def test_prepare_query_arguments_adds_defaults(self):
+        assert {"magnitude", "start_time", "end_time"}.issubset(
+            prepare_query_arguments({}))
+
+    def test_prepare_query_arguments_magnitude(self):
+        prepared_arguments = prepare_query_arguments({"mag": "5.1"})
+        assert prepared_arguments["magnitude"] == "5.1"
+
 
 class TestQueryDatabase:
     pass
+
 
 class TestFormatSQLResponseAsJSON:
     pass
