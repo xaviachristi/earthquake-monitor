@@ -3,7 +3,7 @@ from datetime import datetime
 from os import environ as ENV
 from os.path import basename
 import os
-import psycopg
+import psycopg2
 import pandas as pd
 from dotenv import load_dotenv
 from pandas import DataFrame
@@ -23,7 +23,7 @@ S3_BUCKET = os.getenv("S3_BUCKET")
 
 def get_db_connection():
     """Get connection to database."""
-    conn = psycopg.connect(
+    conn = psycopg2.connect(
         host=DB_HOST,
         port=DB_PORT,
         dbname=DB_NAME,
@@ -171,10 +171,7 @@ def get_pdf(html: str) -> str:
 
 def upload_to_s3(pdf_path: str) -> str:
     """Upload PDF to S3 and return its URL."""
-    s3 = boto3.client('s3',
-                      aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-                      aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-                      region_name=os.getenv("AWS_REGION"))
+    s3 = boto3.client('s3')
 
     object_name = f"reports/earthquake_report_{datetime.now().strftime('%Y-%m-%d')}.pdf"
     s3.upload_file(pdf_path, S3_BUCKET, object_name, ExtraArgs={
