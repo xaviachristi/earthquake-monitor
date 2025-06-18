@@ -10,12 +10,18 @@ body {
     color: #425953;
 }
 
+.logo {
+    width: 25%;
+    padding: 3%;
+}
+
 .title {
     color:#583b3d;
     font-family: 'Georgia', Times, serif;
     font-size: 44pt;
     padding-bottom: 0%;
     margin-bottom: 1%;
+    margin-top: 0%;
 }
 
 .subtitle {
