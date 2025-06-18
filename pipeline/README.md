@@ -28,7 +28,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - `python3 pipeline --start 2 --end 1`
 - This example command would run the pipeline and upload data from the api that occured between one and two hors ago
 
-## Docker
+## Docker
 
 - The Dockerfile defines the image for this pipeline
 - This allows the pipeline to b eran as a container
@@ -78,6 +78,8 @@ docker push <aws-account-uri>/<ecr-name>:latest
 
 ## Modules
 
+The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. There exact function are detailed in this section. 
+
 ### `Extract`
 
 - Reads from https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson .
@@ -88,9 +90,33 @@ docker push <aws-account-uri>/<ecr-name>:latest
 
 ### `Transform`
 
+- This module transforms the data recieved from the api as a catalog into a pandas DataFrame
+- It also cleans and normalizes the data into datatypes that match the expectations of the deployed database
+- The key function that performs every action in this module is `transform`
+
 ### `Load`
 
+- This module loads the DataFrame into the deployed database
+- It will update the earthquake tables with the new earthquake events
+- It will also update the region, state and region_state_interaction table as neccessary for events that contain values for these fields that have not been populated before
+- It will also check for any duplicates in the earthquake table and prevent upload of duplicate events
+- This behaviour is useful when running the pipeline over the same time window or overlapping time windows
+- The key function that performs every action in this module is `load`
+
 ### `Topic`
+
+- This module creates dictionaries of topic arn keys with a list of values of the information for an earthquake that matches that topic
+- This is to integrate with the solution subscription feature
+- Some topic in this AWS account will be made by this subscription function and they are patterned to define a map region and magnitude of earthquake they are interested in
+- This module reads those topic names and check if any of the earthquakes defined in the passed DataFrame meet those requirements
+- The output takes the following form:
+```python
+{
+    <topic-arn-1>:[<earthquake-values>],
+    <topic-arn-2>:[<earthquake-values>]
+}
+```
+- The key function that performs every action in this module is `create_topic_dictionaries`
 
 
 ### Thought Process (to be removed/tidied when pipeline is complete)
