@@ -52,7 +52,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
     "end": <time-diff-to-add-to-end-of-window>
 }
 ```
-- Example payload for a one hour window that runs one hour behind current time:
+- Example payload for a one minute window that runs one minute behind current time:
 ```json
 {
     "start": 2,
