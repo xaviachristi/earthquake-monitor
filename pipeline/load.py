@@ -76,8 +76,7 @@ def preprocess_df(df: DataFrame) -> DataFrame:
     df['dmin'] = df['dmin']
     df["tsunami"] = df["tsunami"].apply(lambda x: bool(x))
     df["magnitude_type"] = df["magnitude_type"].str.title()
-    df['felt'] = df['felt'].fillna(0)
-    df['felt'] = df['felt'].apply(lambda x: int(x))
+    df['felt'] = to_numeric(df['felt'], errors='coerce').fillna(0).astype(int)
 
     return df
 
