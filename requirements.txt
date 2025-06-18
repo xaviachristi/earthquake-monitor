@@ -16,3 +16,4 @@ nbformat
 dotenv
 awswrangler
 xhtml2pdf
+numpy
