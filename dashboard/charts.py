@@ -3,9 +3,8 @@
 from logging import getLogger, basicConfig
 
 from pandas import DataFrame
-from plotly.express import treemap, choropleth, colors
+from plotly.express import treemap, choropleth
 from altair import (Chart, X, Y, Color, Scale, topo_feature, Tooltip)
-from pycountry import countries
 
 
 logger = getLogger(__name__)
@@ -17,7 +16,7 @@ basicConfig(
 )
 
 
-def get_state_treemap(data: DataFrame) -> treemap:
+def get_state_choropleth(data: DataFrame) -> treemap:
     """Return treemap of counts of events per state."""
     logger.info("Creating treemap...")
     us_state_to_abbrev = {
@@ -84,23 +83,32 @@ def get_state_treemap(data: DataFrame) -> treemap:
                      locations="State Name",
                      locationmode="USA-states",
                      color="Earthquake Count",
-                     scope="usa")
-    fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
+                     scope="usa",
+                     color_continuous_scale="Reds",
+                     )
+    fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25},
+                      paper_bgcolor="rgba(239, 234, 225, 0)",
+                      plot_bgcolor="rgba(239, 234, 225, 0)",
+                      geo=dict(bgcolor="rgba(0,0,0,0)")
+                      )
     return fig
 
 
 def get_region_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per region."""
     logger.info("Creating treemap...")
-    data = data.copy()
-    data = data[data["Region Name"] != "No Country"]
-    data["Region Name"] = data["Region Name"].replace("Turkey", "Turkiye")
-    data["Region Name"] = data["Region Name"].apply(
-        lambda x: countries.search_fuzzy(x)[0].alpha_3)
-    fig = choropleth(data, locations="Region Name",
-                     color="Earthquake Count",
-                     hover_name="Region Name",
-                     color_continuous_scale=colors.sequential.Plasma)
+    fig = treemap(
+        data_frame=data,
+        path=['Region Name'],
+        values="Earthquake Count",
+        custom_data=['Region Name', 'Earthquake Count'])
+    fig.update_traces(
+        root_color="lightgrey",
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>" +
+            "Earthquake Count: %{customdata[1]}<extra></extra>"
+        )
+    )
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
     return fig
 
