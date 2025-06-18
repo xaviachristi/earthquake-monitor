@@ -25,7 +25,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - These arguments define the time window that the `pipeline` will query the api over.
 - Both take hour differences as integers.
 - End is not required and if it is not given the current time is used.
-- `python3 pipeline --start 2 --end 1`.
+- `python3 pipeline --start 2 --end 1`
 - This example command would run the pipeline and upload data from the api that occured between one and two hors ago.
 
 ## Docker
@@ -33,9 +33,9 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - The Dockerfile defines the image for this pipeline.
 - This allows the pipeline to b eran as a container.
 - To build the image.
-- `docker build --provenance=false --platform=linux/amd64  -t <image-name>:latest .`.
+- `docker build --provenance=false --platform=linux/amd64  -t <image-name>:latest .`
 - To run the container locally.
-- `docker run --platform=linux/amd64 --env-file .env`.
+- `docker run --platform=linux/amd64 --env-file .env`
 
 ## Running the pipeline in the cloud
 
@@ -45,7 +45,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - After ECR deployment you will need to create a lambda function that uses your image
 - That lambda function can now be triggered and targetted by other AWS services.
 - Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start paramter and can optionally be given an end parameter.
-- The payload should take this form:.
+- The payload should take this form:
 ```json
 {
     "start": <time-diff-to-add-to-start-of-window>,
@@ -78,7 +78,7 @@ docker push <aws-account-uri>/<ecr-name>:latest
 
 ## Modules
 
-The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. There exact function are detailed in this section. .
+The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. There exact function are detailed in this section.
 
 ### `Extract`
 
@@ -116,5 +116,5 @@ The pipeline utilises several modules to perform key functions such as the steps
     <topic-arn-2>:[<earthquake-values>]
 }
 ```
-- The key function that performs every action in this module is `create_topic_dictionaries`.
+- The key function that performs every action in this module is `create_topic_dictionaries`
 
