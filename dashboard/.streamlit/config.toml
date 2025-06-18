@@ -1,0 +1,13 @@
+[theme]
+primaryColor="#6f2022ff"
+backgroundColor="#efeae1ff"
+secondaryBackgroundColor="#dcd6c8"
+textColor="#945349ff"
+linkColor="#583b3dff"
+
+[theme.sidebar]
+primaryColor="#6f2022ff"
+backgroundColor="#425953ff"
+secondaryBackgroundColor="#425953ff"
+textColor="#efeae1ff"
+linkColor="#efeae1ff"
