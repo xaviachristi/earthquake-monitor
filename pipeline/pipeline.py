@@ -128,9 +128,9 @@ def get_time_window_from_event(event) -> tuple[datetime, datetime]:
 def get_datetimes(start: int, end: int = None):
     """Return datetime tuple from strings."""
     logger.info("Getting datetime from strings...")
-    start_time = datetime.now() - timedelta(hours=start)
+    start_time = datetime.now() - timedelta(minutes=start)
     if end:
-        end_time = datetime.now() - timedelta(hours=end)
+        end_time = datetime.now() - timedelta(minutes=end)
     else:
         end_time = datetime.now()
 
