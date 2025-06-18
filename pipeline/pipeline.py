@@ -101,14 +101,14 @@ def get_time_window_from_cli() -> tuple[datetime, datetime]:
     parser.add_argument(
         '--start',
         required=True,
-        help="Start time in format YYYY-MM-DD HH:MM"
+        help="Hours to look back in time in format HH"
     )
 
     parser.add_argument(
         '--end',
         '-e',
         required=False,
-        help="End time in format YYYY-MM-DD HH:MM"
+        help="Hours to take off current time for end of window in format HH"
     )
 
     args = parser.parse_args()
