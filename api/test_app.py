@@ -18,10 +18,11 @@ def test_site_index_success(fake_query_database, fake_get_connection,
     assert b"Documentation" in response.data
 
 
+@patch("app.CONN", MagicMock())
 @patch("app.get_connection")
 @patch("app.query_database")
 def test_site_earthquake_blank(fake_query_database, fake_get_connection, 
-                               get_test_client):
+                                get_test_client):
     """Checks the earthquake endpoint returns 204 if data is empty."""
 
     fake_query_database.return_value = {}
@@ -33,10 +34,11 @@ def test_site_earthquake_blank(fake_query_database, fake_get_connection,
     assert response.status_code == 204
 
 
+@patch("app.CONN", MagicMock())
 @patch("app.get_connection")
 @patch("app.query_database")
 def test_site_earthquake_returns_json(fake_query_database, fake_get_connection,
-                               get_test_client, example_response):
+                                      get_test_client, example_response):
     """Checks the earthquake endpoint returns 200."""
 
     fake_query_database.return_value = example_response
@@ -46,4 +48,3 @@ def test_site_earthquake_returns_json(fake_query_database, fake_get_connection,
     response = testing_client.get('/earthquakes')
 
     assert response.status_code == 200
-    # assert b"Documentation" in response.data
