@@ -1,6 +1,6 @@
 # Pipeline
 
-This directory contains all the neccessary files to run and deploy the extract, transform, load pipeline fro this project. This pipeline targets a United States Geological Survey Application Programming Interface that feeds live earthquake data as they recieve it. It transforms this data into a suitable pandas DataFrame and loads it into a deployed postgres database instance. The pipeline can be run locally or be deployed to AWS Lambda using the docker configuration.
+This directory contains all the necessary files to run and deploy the extract, transform, load pipeline for this project. This pipeline targets a United States Geological Survey Application Programming Interface that feeds live earthquake data as they receive it. It transforms this data into a suitable pandas DataFrame and loads it into a deployed postgres database instance. The pipeline can be run locally or be deployed to AWS Lambda using the docker configuration.
 
 ## Configuration
 
