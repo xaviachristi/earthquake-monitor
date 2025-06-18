@@ -22,8 +22,7 @@ logging.basicConfig(
 def is_event_clean(event: dict) -> bool:
     """Checks if we want an entry in the database."""
     logger.info("Checking if event is clean.")
-    if event["properties"]["status"] != "reviewed" \
-            or event["properties"]["type"] != "earthquake":
+    if event["properties"]["type"] != "earthquake":
         logger.info("Unclean event found. ID: %s", event["properties"]["ids"])
         return False
 
