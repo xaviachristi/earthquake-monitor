@@ -10,3 +10,4 @@ streamlit-pdf-viewer
 nbformat
 numpy
 boto3
+pycountry

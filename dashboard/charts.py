@@ -3,8 +3,9 @@
 from logging import getLogger, basicConfig
 
 from pandas import DataFrame
-from plotly.express import treemap
+from plotly.express import treemap, choropleth, colors
 from altair import (Chart, X, Y, Color, Scale, topo_feature, Tooltip)
+from pycountry import countries
 
 
 logger = getLogger(__name__)
@@ -19,18 +20,71 @@ basicConfig(
 def get_state_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per state."""
     logger.info("Creating treemap...")
-    fig = treemap(
-        data_frame=data,
-        path=['State Name'],
-        values="Earthquake Count",
-        custom_data=['State Name', 'Earthquake Count'])
-    fig.update_traces(
-        root_color="lightgrey",
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>" +
-            "Earthquake Count: %{customdata[1]}<extra></extra>"
-        )
-    )
+    us_state_to_abbrev = {
+        "Alabama": "AL",
+        "Alaska": "AK",
+        "Arizona": "AZ",
+        "Arkansas": "AR",
+        "California": "CA",
+        "Colorado": "CO",
+        "Connecticut": "CT",
+        "Delaware": "DE",
+        "Florida": "FL",
+        "Georgia": "GA",
+        "Hawaii": "HI",
+        "Idaho": "ID",
+        "Illinois": "IL",
+        "Indiana": "IN",
+        "Iowa": "IA",
+        "Kansas": "KS",
+        "Kentucky": "KY",
+        "Louisiana": "LA",
+        "Maine": "ME",
+        "Maryland": "MD",
+        "Massachusetts": "MA",
+        "Michigan": "MI",
+        "Minnesota": "MN",
+        "Mississippi": "MS",
+        "Missouri": "MO",
+        "Montana": "MT",
+        "Nebraska": "NE",
+        "Nevada": "NV",
+        "New Hampshire": "NH",
+        "New Jersey": "NJ",
+        "New Mexico": "NM",
+        "New York": "NY",
+        "North Carolina": "NC",
+        "North Dakota": "ND",
+        "Ohio": "OH",
+        "Oklahoma": "OK",
+        "Oregon": "OR",
+        "Pennsylvania": "PA",
+        "Rhode Island": "RI",
+        "South Carolina": "SC",
+        "South Dakota": "SD",
+        "Tennessee": "TN",
+        "Texas": "TX",
+        "Utah": "UT",
+        "Vermont": "VT",
+        "Virginia": "VA",
+        "Washington": "WA",
+        "West Virginia": "WV",
+        "Wisconsin": "WI",
+        "Wyoming": "WY",
+        "District of Columbia": "DC",
+        "American Samoa": "AS",
+        "Guam": "GU",
+        "Northern Mariana Islands": "MP",
+        "Puerto Rico": "PR",
+        "United States Minor Outlying Islands": "UM",
+        "Virgin Islands, U.S.": "VI",
+    }
+    data["State Name"] = data["State Name"].map(us_state_to_abbrev)
+    fig = choropleth(data,
+                     locations="State Name",
+                     locationmode="USA-states",
+                     color="Earthquake Count",
+                     scope="usa")
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
     return fig
 
@@ -38,18 +92,15 @@ def get_state_treemap(data: DataFrame) -> treemap:
 def get_region_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per region."""
     logger.info("Creating treemap...")
-    fig = treemap(
-        data_frame=data,
-        path=['Region Name'],
-        values="Earthquake Count",
-        custom_data=['Region Name', 'Earthquake Count'])
-    fig.update_traces(
-        root_color="lightgrey",
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>" +
-            "Earthquake Count: %{customdata[1]}<extra></extra>"
-        )
-    )
+    data = data.copy()
+    data = data[data["Region Name"] != "No Country"]
+    data["Region Name"] = data["Region Name"].replace("Turkey", "Turkiye")
+    data["Region Name"] = data["Region Name"].apply(
+        lambda x: countries.search_fuzzy(x)[0].alpha_3)
+    fig = choropleth(data, locations="Region Name",
+                     color="Earthquake Count",
+                     hover_name="Region Name",
+                     color_continuous_scale=colors.sequential.Plasma)
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
     return fig
 
