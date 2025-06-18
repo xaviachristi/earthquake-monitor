@@ -3,7 +3,8 @@
 from dotenv import load_dotenv
 import streamlit as st
 
-from data import get_counts_by_region, get_data, get_counts_by_state
+from data import (get_counts_by_region, get_data, get_counts_by_state,
+                  get_international_data)
 from charts import get_state_treemap, get_region_treemap
 
 
@@ -49,8 +50,9 @@ def serve_dash():
             fig = get_state_treemap(state_counts)
             st.plotly_chart(fig)
 
-            st.markdown("# Earthquake Quantity by Region")
-            state_counts = get_counts_by_region(earthquakes)
+            st.markdown("# Earthquake Quantity by Country")
+            international_quakes = get_international_data(earthquakes)
+            state_counts = get_counts_by_region(international_quakes)
             fig = get_region_treemap(state_counts)
             st.plotly_chart(fig)
     except Exception as err:
