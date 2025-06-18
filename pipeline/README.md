@@ -31,7 +31,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 ## Docker
 
 - The Dockerfile defines the image for this pipeline
-- This allows the pipeline to b eran as a container
+- This allows the pipeline to be ran as a container
 - To build the image
 - `docker build --provenance=false --platform=linux/amd64  -t <image-name>:latest .`
 - To run the container locally
