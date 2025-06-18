@@ -98,7 +98,7 @@ The pipeline utilises several modules to perform key functions such as the steps
 
 - This module loads the DataFrame into the deployed database
 - It will update the earthquake tables with the new earthquake events
-- It will also update the region, state and region_state_interaction table as neccessary for events that contain values for these fields that have not been populated before
+- It will also update the region, state and region_state_interaction table as necessary for events that contain values for these fields that have not been populated before
 - It will also check for any duplicates in the earthquake table and prevent upload of duplicate events
 - This behaviour is useful when running the pipeline over the same time window or overlapping time windows
 - The key function that performs every action in this module is `load`
