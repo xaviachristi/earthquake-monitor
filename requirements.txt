@@ -13,3 +13,4 @@ altair[all]
 plotly
 streamlit-pdf-viewer
 boto3
+flask
