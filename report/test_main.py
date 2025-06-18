@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 import pandas as pd
+import psycopg2[binary]
 from main import generate_summary, generate_html, get_pdf
 
 
