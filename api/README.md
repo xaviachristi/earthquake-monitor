@@ -13,11 +13,11 @@
 - Create an environment file called `.env`.
     - Template `.env` file:
         ```
-        DB_HOST=[host address]
-        DB_USER=[username]
-        DB_NAME=[database name]
-        DB_PORT=[database port]
-        DB_PASSWORD=[password]
+        DB_HOST=<host address>
+        DB_USER=<username>
+        DB_NAME=<database name>
+        DB_PORT=<database port>
+        DB_PASSWORD=<password>
         ```
     - Example `.env` file:
         ```
