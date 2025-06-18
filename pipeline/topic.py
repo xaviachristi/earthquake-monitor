@@ -76,7 +76,7 @@ def get_applicable_topics(topics: list[dict], row: dict) -> list[dict]:
                     "magnitude": target_mag,
                     "state_name": row["state_name"],
                     "region_name": row["region_name"],
-                    "time": row["time"],
+                    "time": row['time'].strftime(r"%Y-%m-%d %H:%M"),
                     "tsunami": row["tsunami"],
                     "latitude": target_lat,
                     "longitude": target_long
