@@ -1,10 +1,10 @@
 # Pipeline
 
-This directory contains all the neccessary files to run and deploy the extract, transform, load pipeline fro this project. This pipeline targets a United States Geological Survey Application Programming Interface that feeds live earthquake data as they recieve it. It transforms this data into a suitable pandas DataFrame and loads it into a deployed postgres database instance. The pipeline can be run locally or be deployed to AWS Lambda using the docker configuration.
+This directory contains all the necessary files to run and deploy the extract, transform, load pipeline for this project. This pipeline targets a United States Geological Survey Application Programming Interface that feeds live earthquake data as they receive it. It transforms this data into a suitable pandas DataFrame and loads it into a deployed postgres database instance. The pipeline can be run locally or be deployed to AWS Lambda using the docker configuration.
 
 ## Configuration
 
-- This pipeline depends upon configuration defined in z `.env` file.
+- This pipeline depends upon configuration defined in a `.env` file.
 - The file should contain the following variables:
 ```sh
 DB_HOST=<host-address>
@@ -52,7 +52,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
     "end": <time-diff-to-add-to-end-of-window>
 }
 ```
-- Example payload for a one hour window that runs one hour behind current time:
+- Example payload for a one minute window that runs one minute behind current time:
 ```json
 {
     "start": 2,
