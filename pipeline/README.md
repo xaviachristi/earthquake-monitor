@@ -4,7 +4,7 @@ This directory contains all the necessary files to run and deploy the extract, t
 
 ## Configuration
 
-- This pipeline depends upon configuration defined in z `.env` file
+- This pipeline depends upon configuration defined in a `.env` file
 - The file should contain the following variables:
 ```sh
 DB_HOST=<host-address>
