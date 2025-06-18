@@ -112,7 +112,11 @@ def get_time_window_from_cli() -> tuple[datetime, datetime]:
     )
 
     args = parser.parse_args()
-    return get_datetimes(args.start, args.end)
+    if args.end:
+        end = int(args.end)
+    else:
+        end = 0
+    return get_datetimes(int(args.start), end)
 
 
 def get_time_window_from_event(event) -> tuple[datetime, datetime]:
@@ -121,11 +125,11 @@ def get_time_window_from_event(event) -> tuple[datetime, datetime]:
     from runtime event for lambda pipeline.
     """
     start_time = event.get("start")
-    end_time = event.get("end", None)
-    return get_datetimes(start_time, end_time)
+    end_time = event.get("end", 0)
+    return get_datetimes(int(start_time), int(end_time))
 
 
-def get_datetimes(start: int, end: int = None):
+def get_datetimes(start: int, end: int = 0):
     """Return datetime tuple from strings."""
     logger.info("Getting datetime from strings...")
     start_time = datetime.now() - timedelta(minutes=start)
