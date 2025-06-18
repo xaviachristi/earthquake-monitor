@@ -6,6 +6,7 @@ pandas
 streamlit
 python-dotenv
 psycopg[binary]
+psycopg2-binary
 altair[all]
 plotly
 streamlit-pdf-viewer
@@ -13,4 +14,7 @@ boto3
 aiohttp
 opencage
 nbformat
+dotenv
+awswrangler
+xhtml2pdf
 numpy

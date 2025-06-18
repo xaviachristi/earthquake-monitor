@@ -7,10 +7,7 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY extract.py .
-COPY transform.py .
-COPY load.py .
-COPY topic.py .
-COPY pipeline.py .
+COPY main.py .
 
-CMD [ "pipeline.lambda_handler" ]
+
+CMD [ "main.lambda_handler" ]
