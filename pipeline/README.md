@@ -23,7 +23,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - The `pipeline` is ran with python and the `pipeline` script
 - The `pipeline` script takes two arguments start and end
 - These arguments define the time window that the `pipeline` will query the api over
-- Both take hour differences as integers
+- Both take minute differences as integers
 - End is not required and if it is not given the current time is used
 - `python3 pipeline --start 2 --end 1`
 - This example command would run the pipeline and upload data from the api that occured between one and two hors ago
