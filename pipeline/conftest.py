@@ -1,18 +1,13 @@
 # pylint: skip-file
 
 """Fixtures for tests in this directory."""
+
 from json import loads
-from unittest.mock import MagicMock
-
-from pytest import fixture
 from pandas import DataFrame
-from obspy.core.event.catalog import _create_example_catalog
-
-
-@fixture
-def example_catalog():
-    """An example catalog for use with the ObsPy library."""
-    return _create_example_catalog()
+from pytest import fixture
+from datetime import datetime
+from pytz import timezone
+from unittest.mock import MagicMock
 
 
 @fixture
@@ -58,21 +53,19 @@ def example_df():
     return DataFrame([
         {
             "earthquake_id": 1, "magnitude": 2.5, "latitude": 10.0, "longitude": 20.0,
-            "time": "2024-01-01", "updated": "2024-01-02", "depth": 5.0, "url": "example.com",
+            "time": 1749753475, "updated": 1749753475, "depth": 5.0, "url": "example.com",
             "felt": 1, "tsunami": 0, "cdi": 3.1, "mmi": 2.3, "nst": 1,
             "sig": 1, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
-            "state_name": "California", "region_name": "West Coast",
-            "state_id": 12, "region_id": 4
+            "state_name": "California", "region_name": "West Coast"
         },
         {
             "earthquake_id": 2, "magnitude": 4.0, "latitude": 11.0, "longitude": 21.0,
-            "time": "2024-02-01", "updated": "2024-02-02", "depth": 10.0, "url": "another.com",
+            "time": 1749753475, "updated": 1749753475, "depth": 10.0, "url": "another.com",
             "felt": 2, "tsunami": 1, "cdi": 3.0, "mmi": 2.5, "nst": 5,
             "sig": 100, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
-            "state_name": "Nevada", "region_name": "West Coast",
-            "state_id": 13, "region_id": 4
+            "state_name": "Nevada", "region_name": "West Coast"
         }
     ])
 
@@ -80,14 +73,18 @@ def example_df():
 @fixture
 def example_df2():
     """Second example dataframe with one duplicate entry from example_df."""
+    london_tz = timezone("Europe/London")
     return DataFrame([
         {
             "earthquake_id": 1, "magnitude": 2.5, "latitude": 10.0, "longitude": 20.0,
-            "time": "2024-01-01", "updated": "2024-01-02", "depth": 5.0, "url": "example.com",
+            "time": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "updated": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "depth": 5.0, "url": "example.com",
             "felt": 1, "tsunami": 0, "cdi": 3.1, "mmi": 2.3, "nst": 1,
             "sig": 1, "net": "us", "dmin": 0.1, "alert": "green",
             "location_source": "us", "magnitude_type": "mb",
-            "state_name": "California", "region_name": "West Coast"
+            "state_name": "California", "region_name": "West Coast",
+            "state_id": 12, "region_id": 4
         }
     ])
 
@@ -95,13 +92,29 @@ def example_df2():
 @fixture
 def example_diff():
     """Expected difference between example_df and example_df2 (only the unique row)."""
+    london_tz = timezone("Europe/London")
     return DataFrame([
         {
             "magnitude": 4.0, "latitude": 11.0, "longitude": 21.0,
-            "time": "2024-02-01", "updated": "2024-02-02", "depth": 10.0, "url": "another.com",
-            "felt": 2, "tsunami": 1, "cdi": 3.0, "mmi": 2.5, "nst": 5,
+            "time": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "updated": london_tz.localize(datetime.fromtimestamp(1749753475/1000)),
+            "depth": 10.0, "url": "another.com",
+            "felt": 2, "tsunami": True, "cdi": 3.0, "mmi": 2.5, "nst": 5,
             "sig": 100, "net": "us", "dmin": 0.1, "alert": "green",
-            "location_source": "us", "magnitude_type": "mb",
+            "magnitude_type": "Mb", "state_name": "Nevada",
+            "region_name": "West Coast"
+        }
+    ])
+
+
+@fixture
+def example_topic():
+    """Expected topic arn containing dictionary."""
+    return DataFrame([
+        {
+            "topic_arn": "arn:aws:sns:eu-west-2:129033205317:c17-quake-4-12-22-100",
+            "magnitude": 4.0, "latitude": 11.0, "longitude": 21.0,
+            "time": "2024-02-01", "felt": 2, "tsunami": 1,
             "state_name": "Nevada", "region_name": "West Coast"
         }
     ])

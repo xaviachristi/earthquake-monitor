@@ -3,10 +3,11 @@ Transforms a dataframe into a format appropriate for loading into the database.
 """
 import logging
 from datetime import datetime, timedelta
+from os import environ as ENV
 
 import pandas as pd
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
+from dotenv import load_dotenv
+from opencage.geocoder import OpenCageGeocode
 
 from extract import extract
 
@@ -23,8 +24,7 @@ logging.basicConfig(
 def is_event_clean(event: dict) -> bool:
     """Checks if we want an entry in the database."""
     logger.info("Checking if event is clean.")
-    if event["properties"]["status"] != "reviewed" \
-    or event["properties"]["type"] != "earthquake":
+    if event["properties"]["type"] != "earthquake":
         logger.info("Unclean event found. ID: %s", event["properties"]["ids"])
         return False
 
@@ -47,21 +47,30 @@ def clean_earthquake_data(earthquake_data: list[dict]) -> list[dict]:
     return clean_events
 
 
-def get_address(latitude: float, longitude: float) -> str:
-    """Calls GeoPy to convert coords into an address."""
+def get_address(latitude: float, longitude: float) -> list[str]:
+    """Uses OpenCage to convert coordinates into an address."""
+    logger.info("Finding address for %s, %s using OpenCage.",
+                latitude, longitude)
+    try:
+        geocoder = OpenCageGeocode(key=ENV["GEO_API_KEY"])
+        results = geocoder.reverse_geocode(
+            latitude, longitude, no_annotations=1, limit=1)
+        if results and len(results):
+            components = results[0]["components"]
+            country = components.get("country", "No Country")
+            state = components.get("state", "Unknown State")
+            return [state, country]
+        else:
+            logger.warning("No results from OpenCage for %s, %s",
+                           latitude, longitude)
+            return ["Unknown", "No Country"]
+    except Exception as e:
+        logger.error("OpenCage error for coords (%s, %s): %s",
+                     latitude, longitude, e)
+        return ["Unknown", "No Country"]
 
-    logger.info("Finding address for %s, %s.", latitude, longitude)
-    geolocator = Nominatim(user_agent="earthquake_monitor")
-    geocode = RateLimiter(geolocator.reverse, min_delay_seconds=1)
-    address = geocode(f"{latitude}, {longitude}")
 
-    if address:
-        return geocode(f"{latitude}, {longitude}")[0].split(", ")
-
-    return ["No Country"]
-
-
-def grab_state(address: list[str])-> str:
+def grab_state(address: list[str]) -> str:
     """Finds a state in an address."""
     logger.debug("Finding state inside address.")
     if not address[-2].isnumeric():
@@ -129,9 +138,10 @@ def get_region_from_state(state_name: str) -> str:
 
             "alaska": "Alaska",
             "hawaii": "Hawaii",
-            "puerto rico": "Puerto Rico"
+            "puerto rico": "Puerto Rico",
+            "unknown state": "Unspecified United States"
 
-    }[state_name.lower()]
+            }[state_name.lower()]
 
 
 def make_row_for_dataframe(event: dict) -> list:
@@ -139,24 +149,29 @@ def make_row_for_dataframe(event: dict) -> list:
     Returns a list containing all the information needed for the dataframe
     which load requires.
     """
-    logger.info("Pulling relevant information out of the JSON data for one event.")
+    logger.info(
+        "Pulling relevant information out of the JSON data for one event.")
     df_row = []
 
     # earthquake_id - creates a list incase there are multiple IDs.
     df_row.append(list(filter(None, event["properties"]["ids"].split(","))))
-    logger.debug("Event ID: %s", df_row[0]) # Logged seperately to save repetition.
+    # Logged seperately to save repetition.
+    logger.debug("Event ID: %s", df_row[0])
     # magnitude.
     df_row.append(event["properties"]["mag"])
     # latitude - origin is a list, hence the [0].
-    df_row.append(event["properties"]["products"]["origin"][0]["properties"]["latitude"])
+    df_row.append(event["properties"]["products"]
+                  ["origin"][0]["properties"]["latitude"])
     # longitude.
-    df_row.append(event["properties"]["products"]["origin"][0]["properties"]["longitude"])
+    df_row.append(event["properties"]["products"]
+                  ["origin"][0]["properties"]["longitude"])
     # time.
     df_row.append(event["properties"]["time"])
     # updated.
     df_row.append(event["properties"]["updated"])
     # depth.
-    df_row.append(event["properties"]["products"]["origin"][0]["properties"]["depth"])
+    df_row.append(event["properties"]["products"]
+                  ["origin"][0]["properties"]["depth"])
     # url.
     df_row.append(event["properties"]["url"])
     # felt.
@@ -178,7 +193,8 @@ def make_row_for_dataframe(event: dict) -> list:
     # alert
     df_row.append(event["properties"]["alert"])
     # location_source
-    df_row.append(list(filter(None, event["properties"]["sources"].split(","))))
+    df_row.append(
+        list(filter(None, event["properties"]["sources"].split(","))))
     # magnitude_type
     df_row.append(event["properties"]["magType"])
     # state_name - default: "Not in the USA".
@@ -201,10 +217,10 @@ def create_dataframe_expected_for_load() -> pd.DataFrame:
     """
     return pd.DataFrame(columns=["earthquake_id", "magnitude", "latitude",
                         "longitude", "time", "updated", "depth", "url",
-                        "felt", "tsunami", "cdi", "mmi", "nst", "sig",
-                        "net", "dmin", "alert", "location_source", 
-                        "magnitude_type", "state_name", "region_name"
-                        ])
+                                 "felt", "tsunami", "cdi", "mmi", "nst", "sig",
+                                 "net", "dmin", "alert", "location_source",
+                                 "magnitude_type", "state_name", "region_name"
+                                 ])
 
 
 def transform(data_from_extract: list[dict]) -> pd.DataFrame:
@@ -222,8 +238,9 @@ def transform(data_from_extract: list[dict]) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    load_dotenv()
     events = extract("USGS", "temp_earthquake_data.json",
-                     datetime.now() - timedelta(days=1), datetime.now())
+                     datetime.now() - timedelta(hours=4), datetime.now())
     events_dataframe = transform(events)
     print(events_dataframe)
     print(events_dataframe.info())
