@@ -1,7 +1,8 @@
 """Module for displaying reports page."""
 
-from streamlit import (title, html, button,
-                       columns, download_button, date_input)
+from streamlit import (title, html, button, sidebar,
+                       columns, download_button, date_input,
+                       image)
 from streamlit_pdf_viewer import pdf_viewer
 
 from report import get_report
@@ -10,6 +11,8 @@ from report import get_report
 def serve_page():
     """Serve Reports page."""
     title("Reports")
+    with sidebar:
+        image("earthquake_monitor.png")
     col1, col2 = columns([0.3, 0.7])
     show_report = False
     pdf_bytes = b""

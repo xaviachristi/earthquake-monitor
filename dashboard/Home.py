@@ -11,7 +11,10 @@ from charts import get_state_choropleth, get_region_treemap
 def serve_dash():
     """Serve streamlit dashboard."""
     load_dotenv()
-    st.set_page_config(page_title="Earthquake Dashboard", layout="wide")
+    st.set_page_config(page_title="Earthquake Dashboard",
+                       layout="wide", page_icon="earthquake_monitor.ico")
+    with st.sidebar:
+        st.image("earthquake_monitor.png")
     st.title("Home")
     col1, col2 = st.columns(2)
     with col1:

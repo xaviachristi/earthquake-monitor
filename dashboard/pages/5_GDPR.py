@@ -1,7 +1,8 @@
 """Module for serving GDPR page."""
 
 from streamlit import (title, markdown,
-                       columns, button)
+                       columns, button,
+                       sidebar, image)
 
 from subscription import view_subscription, delete_subscription
 
@@ -9,6 +10,8 @@ from subscription import view_subscription, delete_subscription
 def serve_page():
     """Serve GDPR page."""
     title("GDPR")
+    with sidebar:
+        image("earthquake_monitor.png")
     markdown(
         """
         Our project team will collect your data through the subscription form.
