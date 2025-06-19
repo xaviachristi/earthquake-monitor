@@ -64,7 +64,7 @@ AWS_S3_BUCKET=<S3_BUCKET_NAME>
 
 ## `Subscription`
 
-- Provides methods for creating subscriptions
+- Provides methods for creating subscriptions.
 
 ## `Report`
 
