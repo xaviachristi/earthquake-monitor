@@ -64,7 +64,7 @@ def serve_page():
     with col1:
         region = multiselect(label="Filter by Country.",
                              options=regions)
-        zoom = slider("Map Zoom.", min_value=0.0, value=0.5,
+        zoom = slider("Map Zoom.", min_value=0.1, value=1.0,
                       max_value=1.0, step=0.1)
     with col2:
         magnitude = number_input(

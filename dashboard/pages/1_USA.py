@@ -64,7 +64,7 @@ def serve_page():
     with col1:
         state = multiselect(label="Filter by State.",
                             options=states)
-        zoom = slider("Map Zoom.", min_value=0, value=1, max_value=10)
+        zoom = slider("Map Zoom.", min_value=1, value=1, max_value=10)
     with col2:
         magnitude = number_input(
             "Minimum Magnitude.", min_value=0.0, max_value=10.0,
