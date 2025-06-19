@@ -91,17 +91,17 @@ data "aws_iam_policy_document" "lambda-role-trust-policy-doc" {
 }
 
 # Roles
-resource "aws_iam_role" "pipeline-lambda" {
+resource "aws_iam_role" "pipeline-lambda-role" {
     name = "c17-quake-pipeline-lambda-terraform-role"
     assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
 }
 
-resource "aws_iam_role" "notification-lambda" {
+resource "aws_iam_role" "notification-lambda-role" {
     name = "c17-quake-notification-lambda-terraform-role"
     assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
 }
 
-resource "aws_iam_role" "report-lambda" {
+resource "aws_iam_role" "report-lambda-role" {
     name = "c17-quake-report-lambda-terraform-role"
     assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
 }
@@ -124,18 +124,35 @@ resource "aws_iam_policy" "report-lambda-role-permissions-policy" {
 
 # Connect the policies to the role
 resource "aws_iam_role_policy_attachment" "pipeline-lambda-role-policy-connection" {
-  role = aws_iam_role.pipeline-lambda.name
+  role = aws_iam_role.pipeline-lambda-role.name
   policy_arn = aws_iam_policy.pipeline-lambda-role-permissions-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "notification-lambda-role-policy-connection" {
-  role = aws_iam_role.notification-lambda.name
+  role = aws_iam_role.notification-lambda-role.name
   policy_arn = aws_iam_policy.notification-lambda-role-permissions-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "report-lambda-role-policy-connection" {
-  role = aws_iam_role.report-lambda.name
+  role = aws_iam_role.report-lambda-role.name
   policy_arn = aws_iam_policy.report-lambda-role-permissions-policy.arn
 }
 
 # Lambdas
+resource "aws_lambda_function" "pipeline-lambda" {
+  function_name = "c17-quake-pipeline-lambda-tf"
+  role = aws_iam_role.pipeline-lambda-role.arn
+  package_type = "Image"
+  image_uri = data.aws_ecr_image.pipeline-image.image_uri
+  timeout = 60
+  environment {
+    variables = {
+        DB_USER = var.DB_USER,
+        DB_HOST = var.DB_HOST,
+        DB_NAME = var.DB_NAME,
+        DB_PASSWORD = var.DB_PASSWORD,
+        DB_PORT = var.DB_PORT,
+        GEO_API_KEY = var.GEO_API_KEY
+    }
+  }
+}
