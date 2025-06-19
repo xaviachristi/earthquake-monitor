@@ -1,57 +1,60 @@
+# pylint: skip-file
+
 """Unit tests for the functions in extract.py."""
 
-"""
-As extract.py has been modified extensively, the test ticket
-should be reopened and these tests either modified or removed.
-"""
-
-# class TestConvertCatalogToDataFrame:
-#     """A class that groups together tests for convert_catalog_to_dataframe()."""
-
-#     def test_convert_catalog_to_dataframe_returns_dataframe(self, example_catalog):
-#         """Checks the function returns a dataframe."""
-#         assert isinstance(convert_catalog_to_dataframe(
-#             example_catalog), pd.DataFrame)
-
-#     def test_convert_catalog_to_dataframe_has_magnitudes_column(self, example_catalog):
-#         """Checks the function has a 'magnitudes' column."""
-#         assert "magnitudes" in convert_catalog_to_dataframe(
-#             example_catalog).columns
-
-#     def test_convert_catalog_to_dataframe_has_event_type_column(self, example_catalog):
-#         """Checks the function has an 'event_type' column."""
-#         assert "event_type" in convert_catalog_to_dataframe(
-#             example_catalog).columns
-
-#     def test_convert_catalog_to_dataframe_has_origins_column(self, example_catalog):
-#         """Checks the function has an 'origins' column."""
-#         assert "origins" in convert_catalog_to_dataframe(
-#             example_catalog).columns
 from datetime import datetime, timedelta
+import asyncio
 
 from unittest.mock import patch
 
-from extract import extract
-
-
-class TestAccessAPI:
-    pass
+from extract import (get_event_ids_from_json_list, create_usgs_urls_from_event_ids,
+                     make_many_api_calls, extract)
 
 
 class TestGetEventIDsFromJSONList:
-    pass
+
+    def test_get_event_ids_from_json_list_two_items(self):
+        example_event_list = [{"id": "A1",}, {"id": "L2"}]
+        assert get_event_ids_from_json_list(example_event_list) == ["A1", "L2"]
+
+    def test_get_event_ids_from_json_list_three_items(self):
+        example_event_list = [{"id": "gv123 hb", "other cat.":"data"}, {"id": "L2"}, {"id":"id"}]
+        assert get_event_ids_from_json_list(example_event_list) == [
+            "gv123 hb", "L2", "id"]
+        
+    def test_get_event_ids_from_json_list_no_items(self):
+        example_event_list = []
+        assert get_event_ids_from_json_list(example_event_list) == []
 
 
 class TestCreateUSGSUrlsFromEventIDs:
-    pass
+
+    def test_create_usgs_urls_from_event_ids_one_id(self):
+        event_ids = ["test_id"]
+        assert create_usgs_urls_from_event_ids(
+            event_ids) == ["https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/test_id.geojson"]
+
+    def test_create_usgs_urls_from_event_ids_two_ids(self):
+        event_ids = ["tx2025lmnxxe", "us6000qjtq"]
+        assert create_usgs_urls_from_event_ids(
+            event_ids) == ["https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/tx2025lmnxxe.geojson", "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us6000qjtq.geojson"]
+    
+    def test_create_usgs_urls_from_event_ids_no_ids(self):
+        event_ids = []
+        assert create_usgs_urls_from_event_ids(
+            event_ids) == []
+
+    def test_create_usgs_urls_from_event_ids_many_ids(self, event_ids, event_urls):
+        assert create_usgs_urls_from_event_ids(
+            event_ids) == event_urls
 
 
-class TestMakeAPICall:
-    pass
-
-
+@patch("extract.make_api_call")
 class TestMakeManyAPICalls:
-    pass
+
+    def test_make_many_api_calls(self, make_api_call, example_earthquake_api_response, event_urls):
+        make_api_call.response_content = {"Api Call Made":True}
+        assert len(asyncio.run(make_many_api_calls(event_urls))) == len(event_urls)
 
 
 @patch("extract.access_api")

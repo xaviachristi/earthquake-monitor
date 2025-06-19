@@ -2,7 +2,6 @@
 Extracts earthquake data from the USGS API and returns detailed event information.
 """
 import logging
-import json
 from datetime import datetime, timedelta
 import asyncio
 
@@ -94,5 +93,4 @@ def extract(api: str, start_time: datetime, end_time: datetime) -> list[dict]:
 
 
 if __name__ == "__main__":
-    extract("USGS", "/tmp/temp_earthquake_data.json",
-            datetime.now() - timedelta(days=1), datetime.now())
+    print(extract("USGS", datetime.now() - timedelta(hours=2), datetime.now()))
