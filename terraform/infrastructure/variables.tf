@@ -34,3 +34,7 @@ variable DB_USER {
 variable GEO_API_KEY {
     type = string
 }
+
+variable S3_BUCKET_NAME {
+    type = string
+}

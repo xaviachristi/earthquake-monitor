@@ -156,3 +156,29 @@ resource "aws_lambda_function" "pipeline-lambda" {
     }
   }
 }
+
+resource "aws_lambda_function" "notification-lambda" {
+  function_name = "c17-quake-notification-lambda-tf"
+  role = aws_iam_role.notification-lambda-role.arn
+  package_type = "Image"
+  image_uri = data.aws_ecr_image.notification-image.image_uri
+  timeout = 60
+}
+
+resource "aws_lambda_function" "report-lambda" {
+  function_name = "c17-quake-report-lambda-tf"
+  role = aws_iam_role.report-lambda-role.arn
+  package_type = "Image"
+  image_uri = data.aws_ecr_image.report-image.image_uri
+  timeout = 60
+  environment {
+    variables = {
+        DB_USER = var.DB_USER,
+        DB_HOST = var.DB_HOST,
+        DB_NAME = var.DB_NAME,
+        DB_PASSWORD = var.DB_PASSWORD,
+        DB_PORT = var.DB_PORT,
+        S3_BUCKET = var.S3_BUCKET_NAME
+    }
+  }
+}
