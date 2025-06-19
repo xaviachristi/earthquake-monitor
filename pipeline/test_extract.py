@@ -27,3 +27,38 @@ should be reopened and these tests either modified or removed.
 #         """Checks the function has an 'origins' column."""
 #         assert "origins" in convert_catalog_to_dataframe(
 #             example_catalog).columns
+from datetime import datetime, timedelta
+
+from unittest.mock import patch
+
+from extract import extract
+
+
+class TestAccessAPI:
+    pass
+
+
+class TestGetEventIDsFromJSONList:
+    pass
+
+
+class TestCreateUSGSUrlsFromEventIDs:
+    pass
+
+
+class TestMakeAPICall:
+    pass
+
+
+class TestMakeManyAPICalls:
+    pass
+
+
+@patch("extract.access_api")
+class TestExtract:
+
+    def test_extract_1(self, access_api, example_earthquake_api_response):
+        access_api.response_content = example_earthquake_api_response
+        assert isinstance(extract("USGS",
+            datetime.now() - timedelta(days=1), datetime.now()
+            ), list)
