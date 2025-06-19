@@ -76,6 +76,18 @@ data "aws_iam_policy_document" "report-lambda-permissions-doc" {
     }
 }
 
+data "aws_iam_policy_document" "step-function-permissions-doc" {
+      
+    statement {
+        effect = "Allow"
+        actions = ["lambda:InvokeFunction"]
+        resources = [
+                "arn:aws:lambda:eu-west-2:129033205317:function:c17-quake-notification-lambda:$LATEST",
+                "arn:aws:lambda:eu-west-2:129033205317:function:c17-quake-pipeline-lambda:$LATEST"
+            ]
+    }
+}
+
 # Trust doc
 data "aws_iam_policy_document" "lambda-role-trust-policy-doc" {
     statement {
@@ -88,6 +100,19 @@ data "aws_iam_policy_document" "lambda-role-trust-policy-doc" {
         "sts:AssumeRole"
       ]
     }
+}
+
+data "aws_iam_policy_document" "step-function-role-trust-policy-doc" {
+    statement {
+      effect = "Allow"
+      principals {
+        type = "Service"
+        identifiers = [ "states.amazonaws.com" ]
+      }
+      actions = [
+        "sts:AssumeRole"
+      ]
+  }
 }
 
 # Roles
@@ -106,6 +131,11 @@ resource "aws_iam_role" "report-lambda-role" {
     assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
 }
 
+resource "aws_iam_role" "sfn_role" {
+    name = "c17-quake-pipeline-step-function-terraform-role"
+    assume_role_policy = data.aws_iam_policy_document.step-function-role-trust-policy-doc.json
+}
+
 # Permissions policies
 resource "aws_iam_policy" "pipeline-lambda-role-permissions-policy" {
     name = "c17-quake-pipeline-lambda-terraform-permissions-policy"
@@ -120,6 +150,11 @@ resource "aws_iam_policy" "notification-lambda-role-permissions-policy" {
 resource "aws_iam_policy" "report-lambda-role-permissions-policy" {
     name = "c17-quake-report-lambda-terraform-permissions-policy"
     policy = data.aws_iam_policy_document.report-lambda-permissions-doc.json
+}
+
+resource "aws_iam_policy" "step-function-role-permissions-policy" {
+    name = "c17-quake-pipeline-step-function-terraform-permissions-policy"
+    policy = data.aws_iam_policy_document.step-function-permissions-doc.json
 }
 
 # Connect the policies to the role
@@ -137,6 +172,12 @@ resource "aws_iam_role_policy_attachment" "report-lambda-role-policy-connection"
   role = aws_iam_role.report-lambda-role.name
   policy_arn = aws_iam_policy.report-lambda-role-permissions-policy.arn
 }
+
+resource "aws_iam_role_policy_attachment" "pipeline-step-function-role-policy-connection" {
+  role = aws_iam_role.sfn_role.name
+  policy_arn = aws_iam_policy.step-function-role-permissions-policy.arn
+}
+
 
 # Lambdas
 resource "aws_lambda_function" "pipeline-lambda" {
@@ -181,4 +222,68 @@ resource "aws_lambda_function" "report-lambda" {
         S3_BUCKET = var.S3_BUCKET_NAME
     }
   }
+}
+
+# Pipeline Step Function
+resource "aws_sfn_state_machine" "sfn_state_machine" {
+  name     = "c17-quake-pipeline-sf-tf"
+  role_arn = aws_iam_role.sfn_role.arn
+
+  definition = <<EOF
+{
+  "Comment": "Pipeline and alert state machine.",
+  "StartAt": "Pipeline Lambda",
+  "States": {
+    "Pipeline Lambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:eu-west-2:129033205317:function:c17-quake-pipeline-lambda:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Notification Lambda"
+    },
+    "Notification Lambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:eu-west-2:129033205317:function:c17-quake-notification-lambda:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "End": true
+    }
+  },
+  "QueryLanguage": "JSONata"
+}
+EOF
 }
