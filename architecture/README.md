@@ -3,7 +3,7 @@
 This directory contains the architecture and Entity-Relationship Diagram used for the Earthquake Monitoring System.
 
 
-# Schema Details
+## Schema Details
 - **earthquake**
   - Stores individual earthquake records with metadata like magnitude, time, location, and tsunami indicators.
 - **state**
