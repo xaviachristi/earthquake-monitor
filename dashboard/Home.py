@@ -3,14 +3,18 @@
 from dotenv import load_dotenv
 import streamlit as st
 
-from data import get_counts_by_region, get_data, get_counts_by_state
-from charts import get_state_treemap, get_region_treemap
+from data import (get_counts_by_region, get_data, get_counts_by_state,
+                  get_international_data)
+from charts import get_state_choropleth, get_region_treemap
 
 
 def serve_dash():
     """Serve streamlit dashboard."""
     load_dotenv()
-    st.set_page_config(page_title="Earthquake Dashboard", layout="wide")
+    st.set_page_config(page_title="Earthquake Dashboard",
+                       layout="wide", page_icon="earthquake_monitor.ico")
+    with st.sidebar:
+        st.image("earthquake_monitor.png")
     st.title("Home")
     col1, col2 = st.columns(2)
     with col1:
@@ -46,13 +50,14 @@ def serve_dash():
         if not earthquakes.empty:
             st.markdown("# Earthquake Quantity by State")
             state_counts = get_counts_by_state(earthquakes)
-            fig = get_state_treemap(state_counts)
+            fig = get_state_choropleth(state_counts)
             st.plotly_chart(fig)
 
-            st.markdown("# Earthquake Quantity by Region")
-            state_counts = get_counts_by_region(earthquakes)
+            st.markdown("# Earthquake Quantity by Country")
+            international_quakes = get_international_data(earthquakes)
+            state_counts = get_counts_by_region(international_quakes)
             fig = get_region_treemap(state_counts)
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, theme="streamlit")
     except Exception as err:
         st.error(f"Cannot return data from database: {err}")
 

@@ -1,10 +1,9 @@
 """Module for handling user subscriptions."""
 
 import logging
-from os import environ as ENV
 
 from boto3 import client
-from dotenv import load_dotenv
+from streamlit import toast, cache_data
 
 logger = logging.getLogger(__name__)
 
@@ -18,21 +17,11 @@ logging.basicConfig(
 def get_sns_client() -> client:
     """Return a SNS client."""
     logger.info("Creating SNS client...")
-    sns = client("sns", aws_access_key_id=ENV["AWS_ACCESS_KEY"],
-                 aws_secret_access_key=ENV["AWS_SECRET_ACCESS_KEY"])
+    sns = client("sns")
     return sns
 
 
-def delete_subscription():
-    """Remove subscription to topic from SNS."""
-    ...
-
-
-def view_subscription():
-    """Display information about subscribed topic."""
-    ...
-
-
+@cache_data
 def create_topic_name(latitude: float, longitude: float,
                       radius: int, magnitude: float) -> str:
     """Creates a topic name based on the provided information."""
@@ -43,6 +32,7 @@ def create_topic_name(latitude: float, longitude: float,
     return f"c17-quake-{magnitude}-{latitude}-{longitude}-{radius}"
 
 
+@cache_data
 def format_coordinate(coordinate: float) -> str:
     """Returns a formatted string of the latitude / longitude coordinate."""
     logger.info("Formatting coordinate...")
@@ -60,18 +50,25 @@ def create_topic(sns: client, topic_name: str) -> str:
 def sub_to_topic(sns: client, topic_arn: str, email: str) -> None:
     """Subscribes a user to a topic based on the TopicArn."""
     logger.info("Subscribing %s to topic %s.", email, topic_arn)
-    sns.subscribe(TopicArn=topic_arn,
-                  Protocol="email",
-                  Endpoint=email)
+    try:
+        sns.subscribe(TopicArn=topic_arn,
+                      Protocol="email",
+                      Endpoint=email)
+    except sns.exceptions.InvalidParameterException as err:
+        raise ValueError("Invalid parameters for subscribing.")
 
 
 def make_subscription(email: str, latitude: float, longitude: float,
                       radius: int, magnitude: float) -> None:
     """Create a subscription to a topic for their preference.
     format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
-    logger.info("Starting subscription creation...")
-    topic_name = create_topic_name(latitude, longitude, radius, magnitude)
-    sns = get_sns_client()
-    topic_arn = create_topic(sns, topic_name)
-    sub_to_topic(sns, topic_arn, email)
-    logger.info("Subscription has been completed.")
+    try:
+        logger.info("Starting subscription creation...")
+        topic_name = create_topic_name(latitude, longitude, radius, magnitude)
+        sns = get_sns_client()
+        topic_arn = create_topic(sns, topic_name)
+        sub_to_topic(sns, topic_arn, email)
+        logger.info("Subscription has been completed.")
+        toast("Subscription has been made!")
+    except ValueError:
+        toast("Please fill in all form information.")

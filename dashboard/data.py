@@ -4,6 +4,7 @@ from datetime import date
 from os import environ as ENV
 from logging import getLogger, basicConfig
 
+from streamlit import cache_data
 from dotenv import load_dotenv
 from pandas import DataFrame
 from psycopg import Connection, connect, rows
@@ -32,6 +33,7 @@ def get_connection() -> Connection:
     )
 
 
+@cache_data(ttl=1800)
 def get_data() -> DataFrame:
     """Return all data for dashboard from the RDS."""
     logger.info("Getting results from DB...")
@@ -56,7 +58,9 @@ def get_counts_by_region(data: DataFrame) -> DataFrame:
     """Return dataframes of value counts for each region."""
     data = data.copy()
     logger.info("Grouping DataFrame by region...")
-    return data["region_name"].value_counts().rename_axis("Region Name").reset_index(name="Earthquake Count")
+    return (data[["region_name", "state_name"]].value_counts()
+            .rename_axis(["Region Name", "State Name"])
+            .reset_index(name="Earthquake Count"))
 
 
 def get_american_data(data: DataFrame) -> DataFrame:

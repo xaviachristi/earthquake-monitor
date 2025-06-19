@@ -3,8 +3,9 @@
 from logging import getLogger, basicConfig
 
 from pandas import DataFrame
-from plotly.express import treemap
+from plotly.express import treemap, choropleth
 from altair import (Chart, X, Y, Color, Scale, topo_feature, Tooltip)
+from streamlit import cache_resource
 
 
 logger = getLogger(__name__)
@@ -16,44 +17,109 @@ basicConfig(
 )
 
 
-def get_state_treemap(data: DataFrame) -> treemap:
+@cache_resource
+def get_state_choropleth(data: DataFrame) -> treemap:
     """Return treemap of counts of events per state."""
     logger.info("Creating treemap...")
-    fig = treemap(
-        data_frame=data,
-        path=['State Name'],
-        values="Earthquake Count",
-        custom_data=['State Name', 'Earthquake Count'])
-    fig.update_traces(
-        root_color="lightgrey",
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>" +
-            "Earthquake Count: %{customdata[1]}<extra></extra>"
-        )
-    )
-    fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
+    us_state_to_abbrev = {
+        "Alabama": "AL",
+        "Alaska": "AK",
+        "Arizona": "AZ",
+        "Arkansas": "AR",
+        "California": "CA",
+        "Colorado": "CO",
+        "Connecticut": "CT",
+        "Delaware": "DE",
+        "Florida": "FL",
+        "Georgia": "GA",
+        "Hawaii": "HI",
+        "Idaho": "ID",
+        "Illinois": "IL",
+        "Indiana": "IN",
+        "Iowa": "IA",
+        "Kansas": "KS",
+        "Kentucky": "KY",
+        "Louisiana": "LA",
+        "Maine": "ME",
+        "Maryland": "MD",
+        "Massachusetts": "MA",
+        "Michigan": "MI",
+        "Minnesota": "MN",
+        "Mississippi": "MS",
+        "Missouri": "MO",
+        "Montana": "MT",
+        "Nebraska": "NE",
+        "Nevada": "NV",
+        "New Hampshire": "NH",
+        "New Jersey": "NJ",
+        "New Mexico": "NM",
+        "New York": "NY",
+        "North Carolina": "NC",
+        "North Dakota": "ND",
+        "Ohio": "OH",
+        "Oklahoma": "OK",
+        "Oregon": "OR",
+        "Pennsylvania": "PA",
+        "Rhode Island": "RI",
+        "South Carolina": "SC",
+        "South Dakota": "SD",
+        "Tennessee": "TN",
+        "Texas": "TX",
+        "Utah": "UT",
+        "Vermont": "VT",
+        "Virginia": "VA",
+        "Washington": "WA",
+        "West Virginia": "WV",
+        "Wisconsin": "WI",
+        "Wyoming": "WY",
+        "District of Columbia": "DC",
+        "American Samoa": "AS",
+        "Guam": "GU",
+        "Northern Mariana Islands": "MP",
+        "Puerto Rico": "PR",
+        "United States Minor Outlying Islands": "UM",
+        "Virgin Islands, U.S.": "VI",
+    }
+    data["State Name"] = data["State Name"].map(us_state_to_abbrev)
+    fig = choropleth(data,
+                     locations="State Name",
+                     locationmode="USA-states",
+                     color="Earthquake Count",
+                     scope="usa",
+                     color_continuous_scale="Reds",
+                     )
+    fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25},
+                      paper_bgcolor="rgba(239, 234, 225, 0)",
+                      plot_bgcolor="rgba(239, 234, 225, 0)",
+                      geo=dict(bgcolor="rgba(0,0,0,0)")
+                      )
     return fig
 
 
+@cache_resource
 def get_region_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per region."""
     logger.info("Creating treemap...")
+    data["region_state_combo"] = data["Region Name"] + \
+        " - " + data["State Name"]
     fig = treemap(
         data_frame=data,
-        path=['Region Name'],
+        path=['Region Name', 'State Name'],
         values="Earthquake Count",
-        custom_data=['Region Name', 'Earthquake Count'])
+        color="region_state_combo"
+    )
     fig.update_traces(
         root_color="lightgrey",
         hovertemplate=(
-            "<b>%{customdata[0]}</b><br>" +
-            "Earthquake Count: %{customdata[1]}<extra></extra>"
+            "<b>%{label}</b><br>" +
+            "Earthquake Count: %{value}<extra></extra>"
         )
     )
     fig.update_layout(margin={"t": 50, "l": 25, "r": 25, "b": 25})
     return fig
 
 
+@cache_resource
 def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Chart:
     """Return chart of earthquake counts over time grouped by state or region."""
     group_field = f"{group_by}_name:N"
@@ -83,6 +149,7 @@ def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Char
     )
 
 
+@cache_resource
 def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
     """Return bar chart of earthquake counts per rounded magnitude."""
     data['rounded_mag'] = data['magnitude'].astype(float).round(1)
@@ -96,16 +163,19 @@ def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
     )
 
 
+@cache_resource
 def get_average_mag(data: DataFrame) -> float:
     """Return average magnitude of earthquakes."""
     return round(data['magnitude'].mean(), 2)
 
 
+@cache_resource
 def get_total_number_of_earthquakes(data: DataFrame) -> int:
     """Return total number of earthquakes."""
     return len(data)
 
 
+@cache_resource
 def get_map_of_events(data: DataFrame, zoom: int, scope: str = "global") -> Chart:
     """Return a geographical map of earthquake events over the U.S."""
     data = data.copy()

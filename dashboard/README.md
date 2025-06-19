@@ -5,7 +5,6 @@
 
 # Setup
 
-<!-- Example for python directories.-->
 - Create a venv
     - `python -m venv .venv`
 - Install dependencies
@@ -18,8 +17,11 @@ DB_PORT=<PORT>
 DB_NAME=<NAME_OF_DB>
 DB_PASSWORD=<PASS_FOR_DB>
 DB_USER=<USER_FOR_ACCESSING_DB>
+
+AWS_DEFAULT_REGION=<AWS_REGION>
 AWS_ACCESS_KEY=<AWS_ACCESS_KEY_ID>
 AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
+AWS_S3_BUCKET=<S3_BUCKET_NAME>
 ```
 
 # Serving
@@ -33,67 +35,55 @@ AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
 
 ## `Home`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Landing page for dashboard.
+- Contains basic visualisations and information for using the dashboard.
 
-## `Historic`
+## `USA`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Serves a USA data page.
+- Contains important visualisations and filters.
 
-## `Recent`
+## `International`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Serves an International data page.
+- Contains important visualisations and filters.
 
 ## `Subscribe`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Serves a page for making a subscription.
 
 ## `Reports`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Serves a page for viewing and downloading reports.
 
 ## `GDPR`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Serves a page of text containing GDPR information for the user.
 
 # Modules
 
 ## `Subscription`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Provides methods for creating subscriptions.
 
 ## `Report`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Provides methods for showing and downloading reports stored in S3.
 
 ## `Data`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Provides methods for pulling data from the database.
+- Provides methods for manipulating the data.
 
 ## `Charts`
 
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
-
-## `Subscription`
-
-- <!-- Module description. -->
-- <!-- Key function signiatures. -->
+- Provides chart creation methods that are served by dashboard pages.
 
 # Testing
 
-- All the python utilty modules have associated test files in the format `test_<module_name>.py`
-- <!-- Include the conftest line if it has been used. -->
-- `conftest.py` provides test fixtures for those tests
-- To run the test suite
+- All the python utilty modules have associated test files in the format `test_<module_name>.py`.
+- `conftest.py` provides test fixtures for those tests.
+- To run the test suite:
     - `pytest *.py`
     - OR
     - `pytes *.py -vvx` for more information.

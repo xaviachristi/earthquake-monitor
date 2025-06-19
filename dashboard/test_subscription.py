@@ -1,25 +1,13 @@
 # pylint: skip-file
 """Tests for subscription module."""
 
-from subscription import (delete_subscription,
-                          make_subscription,
-                          view_subscription,
+from subscription import (make_subscription,
                           create_topic_name,
                           format_coordinate)
 
 
-class TestDeleteSubscription:
-    """Class that groups tests for delete_subscription."""
-    pass
-
-
 class TestMakeSubscription:
     """Class that groups tests for make_subscription."""
-    pass
-
-
-class TestViewSubscription:
-    """Class that groups tests for view_subscription."""
     pass
 
 

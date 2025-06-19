@@ -6,7 +6,7 @@ from pandas import DataFrame
 from streamlit import (metric, title, multiselect,
                        columns, number_input,
                        date_input, altair_chart,
-                       slider)
+                       slider, sidebar, image)
 
 from data import (get_data, get_american_data,
                   get_mag_filtered_data,
@@ -49,6 +49,8 @@ def display_charts(filtered_data: DataFrame, zoom: int):
 def serve_page():
     """Serve USA data page."""
     title("USA")
+    with sidebar:
+        image("earthquake_monitor.png")
     data = get_data()
     us_data = get_american_data(data)
     states = us_data["state_name"].unique()
@@ -62,7 +64,7 @@ def serve_page():
     with col1:
         state = multiselect(label="Filter by State.",
                             options=states)
-        zoom = slider("Map Zoom.", min_value=0, value=1, max_value=10)
+        zoom = slider("Map Zoom.", min_value=1, value=1, max_value=10)
     with col2:
         magnitude = number_input(
             "Minimum Magnitude.", min_value=0.0, max_value=10.0,

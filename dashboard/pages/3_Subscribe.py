@@ -2,7 +2,7 @@
 
 from streamlit import (title, markdown, button,
                        columns, text_input, number_input,
-                       slider)
+                       slider, sidebar, image)
 
 from subscription import make_subscription
 
@@ -10,6 +10,8 @@ from subscription import make_subscription
 def serve_page():
     """Serve Subscribe page."""
     title("Subscribe")
+    with sidebar:
+        image("earthquake_monitor.png")
     col1, col2 = columns([0.43, 0.7])
     with col1:
         email = text_input(
@@ -25,7 +27,9 @@ def serve_page():
             value="min", format="%0.1f", step=0.1)
         subscribe = button("Subscribe to Alerts")
         if subscribe:
-            make_subscription(email, latitude, longitude, radius, magnitude)
+            make_subscription(email, latitude, longitude,
+                              radius, magnitude)
+
     with col2:
         markdown("""This is a subscription form for our alert service.
                  The form requires an email address to send alerts to.
