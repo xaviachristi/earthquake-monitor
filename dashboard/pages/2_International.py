@@ -50,7 +50,7 @@ def serve_page():
     """Serve International data page."""
     title("International")
     with sidebar:
-        image("earthquake_monitor.png")
+        image("./dashboard/earthquake_monitor.png")
     data = get_data()
     inter_data = get_international_data(data)
     regions = inter_data["region_name"].unique()

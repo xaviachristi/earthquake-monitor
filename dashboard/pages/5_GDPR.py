@@ -8,7 +8,7 @@ def serve_page():
     """Serve GDPR page."""
     title("GDPR")
     with sidebar:
-        image("earthquake_monitor.png")
+        image("./dashboard/earthquake_monitor.png")
     markdown(
         """
         Our project team will collect your data through the subscription form.

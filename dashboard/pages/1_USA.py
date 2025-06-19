@@ -50,7 +50,7 @@ def serve_page():
     """Serve USA data page."""
     title("USA")
     with sidebar:
-        image("earthquake_monitor.png")
+        image("./dashboard/earthquake_monitor.png")
     data = get_data()
     us_data = get_american_data(data)
     states = us_data["state_name"].unique()
