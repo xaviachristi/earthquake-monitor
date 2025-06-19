@@ -11,6 +11,7 @@ altair[all]
 plotly
 streamlit-pdf-viewer
 boto3
+flask
 aiohttp
 opencage
 nbformat
