@@ -20,7 +20,7 @@ def example_detailed_event():
 def expected_columns():
     """List of columns expected from sql query to database."""
     return [
-        "earthquake_id`", "magnitude", "time", "updated", "longitude", "latitude",
+        "earthquake_id", "magnitude", "time", "updated", "longitude", "latitude",
         "depth", "url", "tsunami", "felt", "cdi", "mmi", "nst",
         "sig", "net", "dmin", "alert", "location_source",
         "magnitude_type", "state_name", "region_name"
