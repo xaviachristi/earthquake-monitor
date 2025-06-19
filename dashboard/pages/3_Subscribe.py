@@ -3,6 +3,7 @@
 from streamlit import (title, markdown, button,
                        columns, text_input, number_input,
                        slider, sidebar, image)
+from botocore import errorfactory
 
 from subscription import make_subscription
 
@@ -27,7 +28,9 @@ def serve_page():
             value="min", format="%0.1f", step=0.1)
         subscribe = button("Subscribe to Alerts")
         if subscribe:
-            make_subscription(email, latitude, longitude, radius, magnitude)
+            make_subscription(email, latitude, longitude,
+                              radius, magnitude)
+
     with col2:
         markdown("""This is a subscription form for our alert service.
                  The form requires an email address to send alerts to.

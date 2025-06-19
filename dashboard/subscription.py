@@ -3,6 +3,7 @@
 import logging
 
 from boto3 import client
+from botocore import exceptions
 from streamlit import toast
 
 logger = logging.getLogger(__name__)
@@ -48,19 +49,25 @@ def create_topic(sns: client, topic_name: str) -> str:
 def sub_to_topic(sns: client, topic_arn: str, email: str) -> None:
     """Subscribes a user to a topic based on the TopicArn."""
     logger.info("Subscribing %s to topic %s.", email, topic_arn)
-    sns.subscribe(TopicArn=topic_arn,
-                  Protocol="email",
-                  Endpoint=email)
+    try:
+        sns.subscribe(TopicArn=topic_arn,
+                      Protocol="email",
+                      Endpoint=email)
+    except sns.exceptions.InvalidParameterException as err:
+        raise ValueError("Invalid parameters for subscribing.")
 
 
 def make_subscription(email: str, latitude: float, longitude: float,
                       radius: int, magnitude: float) -> None:
     """Create a subscription to a topic for their preference.
     format: c17-quake-<magnitude>-(p/m)<latitude>-(p/m)<longitude>-<radius>"""
-    logger.info("Starting subscription creation...")
-    topic_name = create_topic_name(latitude, longitude, radius, magnitude)
-    sns = get_sns_client()
-    topic_arn = create_topic(sns, topic_name)
-    sub_to_topic(sns, topic_arn, email)
-    logger.info("Subscription has been completed.")
-    toast("Subscription has been made!")
+    try:
+        logger.info("Starting subscription creation...")
+        topic_name = create_topic_name(latitude, longitude, radius, magnitude)
+        sns = get_sns_client()
+        topic_arn = create_topic(sns, topic_name)
+        sub_to_topic(sns, topic_arn, email)
+        logger.info("Subscription has been completed.")
+        toast("Subscription has been made!")
+    except ValueError:
+        toast("Please fill in all form information.")
