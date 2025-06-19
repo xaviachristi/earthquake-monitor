@@ -3,7 +3,6 @@
 from streamlit import (title, markdown, button,
                        columns, text_input, number_input,
                        slider, sidebar, image)
-from botocore import errorfactory
 
 from subscription import make_subscription
 

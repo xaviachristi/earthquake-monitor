@@ -4,7 +4,7 @@ from datetime import date, datetime
 from os import environ as ENV
 
 from boto3 import client
-from streamlit import markdown
+from streamlit import cache_resource
 
 
 def get_client() -> client:
@@ -12,6 +12,7 @@ def get_client() -> client:
     return client("s3")
 
 
+@cache_resource
 def get_report(target: date = None) -> bytes:
     """Return report from S3 for given date as bytes."""
     s3 = get_client()

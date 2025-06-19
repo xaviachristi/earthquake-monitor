@@ -1,4 +1,5 @@
 """Module for displaying reports page."""
+from datetime import date, timedelta
 
 from streamlit import (title, html, button, sidebar,
                        columns, download_button, date_input,
@@ -19,7 +20,7 @@ def serve_page():
 
     with col1:
         select_date = date_input(
-            label="Select report date.", value="today")
+            label="Select report date.", value="today", max_value=date.today() - timedelta(days=1))
         show_report = button("View Report")
         if show_report:
             pdf_bytes = get_report(select_date)

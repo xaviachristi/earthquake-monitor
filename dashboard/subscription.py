@@ -3,8 +3,7 @@
 import logging
 
 from boto3 import client
-from botocore import exceptions
-from streamlit import toast
+from streamlit import toast, cache_data
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +21,7 @@ def get_sns_client() -> client:
     return sns
 
 
+@cache_data
 def create_topic_name(latitude: float, longitude: float,
                       radius: int, magnitude: float) -> str:
     """Creates a topic name based on the provided information."""
@@ -32,6 +32,7 @@ def create_topic_name(latitude: float, longitude: float,
     return f"c17-quake-{magnitude}-{latitude}-{longitude}-{radius}"
 
 
+@cache_data
 def format_coordinate(coordinate: float) -> str:
     """Returns a formatted string of the latitude / longitude coordinate."""
     logger.info("Formatting coordinate...")

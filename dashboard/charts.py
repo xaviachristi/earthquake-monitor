@@ -5,6 +5,7 @@ from logging import getLogger, basicConfig
 from pandas import DataFrame
 from plotly.express import treemap, choropleth
 from altair import (Chart, X, Y, Color, Scale, topo_feature, Tooltip)
+from streamlit import cache_resource
 
 
 logger = getLogger(__name__)
@@ -16,6 +17,7 @@ basicConfig(
 )
 
 
+@cache_resource
 def get_state_choropleth(data: DataFrame) -> treemap:
     """Return treemap of counts of events per state."""
     logger.info("Creating treemap...")
@@ -94,6 +96,7 @@ def get_state_choropleth(data: DataFrame) -> treemap:
     return fig
 
 
+@cache_resource
 def get_region_treemap(data: DataFrame) -> treemap:
     """Return treemap of counts of events per region."""
     logger.info("Creating treemap...")
@@ -116,6 +119,7 @@ def get_region_treemap(data: DataFrame) -> treemap:
     return fig
 
 
+@cache_resource
 def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Chart:
     """Return chart of earthquake counts over time grouped by state or region."""
     group_field = f"{group_by}_name:N"
@@ -145,6 +149,7 @@ def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Char
     )
 
 
+@cache_resource
 def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
     """Return bar chart of earthquake counts per rounded magnitude."""
     data['rounded_mag'] = data['magnitude'].astype(float).round(1)
@@ -158,16 +163,19 @@ def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
     )
 
 
+@cache_resource
 def get_average_mag(data: DataFrame) -> float:
     """Return average magnitude of earthquakes."""
     return round(data['magnitude'].mean(), 2)
 
 
+@cache_resource
 def get_total_number_of_earthquakes(data: DataFrame) -> int:
     """Return total number of earthquakes."""
     return len(data)
 
 
+@cache_resource
 def get_map_of_events(data: DataFrame, zoom: int, scope: str = "global") -> Chart:
     """Return a geographical map of earthquake events over the U.S."""
     data = data.copy()
