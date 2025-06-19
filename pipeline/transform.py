@@ -21,9 +21,31 @@ logging.basicConfig(
 )
 
 
+def is_event_in_correct_format(potential_event: dict) -> bool:
+    """Checks that a potential event is a dictionary with the expected keys."""
+    logger.debug("Checking for event format.")
+
+    if not isinstance(potential_event, dict):
+        return False
+
+    try:
+        potential_event["properties"]["ids"]
+        potential_event["properties"]["type"]
+
+    except KeyError as e:
+        logger.error("Missing keys. Information: %s", str(e))
+        return False
+
+    return True
+
+
 def is_event_clean(event: dict) -> bool:
     """Checks if we want an entry in the database."""
     logger.info("Checking if event is clean.")
+
+    if not is_event_in_correct_format(event):
+        return False
+
     if event["properties"]["type"] != "earthquake":
         logger.info("Unclean event found. ID: %s", event["properties"]["ids"])
         return False

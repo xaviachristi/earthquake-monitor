@@ -31,7 +31,7 @@ def run_pipeline(start: datetime = datetime.now() - timedelta(hours=4),
         "Found environment: %s, %s, %s", ENV["DB_USER"], ENV["DB_HOST"], ENV["DB_NAME"])
 
     logger.info("Extracting data from API...")
-    raw = extract("USGS", "/tmp/temp_earthquake_data.json", start, end)
+    raw = extract("USGS", start, end)
     if raw is False or not raw or len(raw) == 0:
         logger.warning("No data returned from API.")
         return None

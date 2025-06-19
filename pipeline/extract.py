@@ -2,7 +2,6 @@
 Extracts earthquake data from the USGS API and returns detailed event information.
 """
 import logging
-import json
 from datetime import datetime, timedelta
 import asyncio
 
@@ -33,20 +32,6 @@ def access_api(start: datetime, end: datetime) -> dict:
     response = requests.get(base_url, params=params)
     response.raise_for_status()
     return response.json()
-
-
-def write_json(filename: str, data: dict) -> None:
-    """Writes JSON data to a file."""
-    logger.info("Writing earthquake summary JSON to %s", filename)
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(data, f)
-
-
-def read_json(filename: str) -> dict:
-    """Reads JSON data from a file."""
-    logger.info("Reading catalog JSON from %s", filename)
-    with open(filename, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def get_event_ids_from_json_list(event_features: list[dict]) -> list[str]:
@@ -89,8 +74,7 @@ async def make_many_api_calls(urls: list[str]) -> list[dict]:
         return await asyncio.gather(*tasks)
 
 
-def extract(api: str, temp_file_name: str,
-            start_time: datetime, end_time: datetime) -> list[dict]:
+def extract(api: str, start_time: datetime, end_time: datetime) -> list[dict]:
     """Main extract function to retrieve and return detailed earthquake data."""
     if api.upper() != "USGS":
         raise ValueError("Only 'USGS' API is supported currently.")
@@ -101,7 +85,6 @@ def extract(api: str, temp_file_name: str,
         logger.warning("No data returned or API error: %s", e)
         return []
 
-    write_json(temp_file_name, summary_json)
     ids = get_event_ids_from_json_list(summary_json["features"])
     urls = create_usgs_urls_from_event_ids(ids)
     responses = asyncio.run(make_many_api_calls(urls))
@@ -110,5 +93,4 @@ def extract(api: str, temp_file_name: str,
 
 
 if __name__ == "__main__":
-    extract("USGS", "/tmp/temp_earthquake_data.json",
-            datetime.now() - timedelta(days=1), datetime.now())
+    print(extract("USGS", datetime.now() - timedelta(hours=2), datetime.now()))
