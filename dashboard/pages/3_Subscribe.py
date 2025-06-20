@@ -11,7 +11,7 @@ def serve_page():
     """Serve Subscribe page."""
     title("Subscribe")
     with sidebar:
-        image("earthquake_monitor.png")
+        image("./dashboard/earthquake_monitor.png")
     col1, col2 = columns([0.43, 0.7])
     with col1:
         email = text_input(

@@ -1,5 +1,6 @@
 """Module for serving visualisations needed for dashboard pages."""
 
+from curses.panel import bottom_panel
 from logging import getLogger, basicConfig
 
 from pandas import DataFrame
@@ -153,8 +154,10 @@ def get_earthquakes_over_time(data: DataFrame, group_by: str = "region") -> Char
 def get_earthquake_count_by_magnitude(data: DataFrame) -> Chart:
     """Return bar chart of earthquake counts per rounded magnitude."""
     data['rounded_mag'] = data['magnitude'].astype(float).round(1)
+    bottom = data['rounded_mag'].min()
+    top = data['rounded_mag'].max()
     return Chart(data).mark_bar().encode(
-        x=X("rounded_mag:Q", title="Magnitude").scale(domain=[0, 10]),
+        x=X("rounded_mag:Q", title="Magnitude").scale(domain=[bottom, top]),
         y=Y("count():Q", title="Number of Earthquakes"),
         tooltip=[Tooltip("rounded_mag", title="Magnitude"),
                  Tooltip("count()", title="Number of Earthquakes")]

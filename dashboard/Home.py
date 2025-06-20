@@ -14,7 +14,7 @@ def serve_dash():
     st.set_page_config(page_title="Earthquake Dashboard",
                        layout="wide", page_icon="earthquake_monitor.ico")
     with st.sidebar:
-        st.image("earthquake_monitor.png")
+        st.image("./dashboard/earthquake_monitor.png")
     st.title("Home")
     col1, col2 = st.columns(2)
     with col1:

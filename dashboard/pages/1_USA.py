@@ -39,10 +39,10 @@ def display_charts(filtered_data: DataFrame, zoom: int):
     altair_chart(get_earthquake_count_by_magnitude(filtered_data))
     col1, col2 = columns(2)
     with col1:
-        metric(label="Total Number of Earthquakes",
+        metric(label="Total Number of Earthquakes for Filter Set",
                value=get_total_number_of_earthquakes(filtered_data))
     with col2:
-        metric(label="Average Earthquake Magnitude",
+        metric(label="Average Earthquake Magnitude for Filter Set",
                value=get_average_mag(filtered_data))
 
 
@@ -50,7 +50,7 @@ def serve_page():
     """Serve USA data page."""
     title("USA")
     with sidebar:
-        image("earthquake_monitor.png")
+        image("./dashboard/earthquake_monitor.png")
     data = get_data()
     us_data = get_american_data(data)
     states = us_data["state_name"].unique()
