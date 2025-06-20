@@ -9,12 +9,12 @@
 
 ## `infrastructure`
 - Creates the full cloud architecture
-- Includes lambda functions, S3 buckets, ECS services and Glue
-- Responsible for serving the dashboard, sending the message notifications and updating the data
+- Includes lambda functions, State Machines, and Schedulers
+- Responsible for sending the message notifications and updating the data
 
 ## `push_ecr` script
 - This should be ran after the setup stage
-- It should be ran 4 times once for each ECR repository
+- It should be ran 3 times once for each ECR repository
 - It will load a docker image into an ecr
 - Use the output from the setup stage
     - In format: `<ecr-address>/<image-name>`
