@@ -20,6 +20,9 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 
 ## Running the pipeline locally
 
+- Create a virtual environment using `python3 -m venv .venv`.
+- Activate the virtual environment using `source ./.venv/bin/activate`.
+- Install any requirements using `pip install -r requirements.txt`.
 - The `pipeline` is ran with python and the `pipeline` script.
 - The `pipeline` script takes two arguments start and end.
 - These arguments define the time window that the `pipeline` will query the api over.
