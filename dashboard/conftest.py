@@ -1,8 +1,23 @@
 # pylint: skip-file
 """Test fixtures for dashboard tests."""
 
+from datetime import datetime
+
 from pytest import fixture
 from pandas import DataFrame
+
+
+@fixture()
+def sample_data():
+    return DataFrame({
+        "magnitude": [4.5, 5.0, 6.1],
+        "State Name": ["California", "Nevada", "California"],
+        "Region Name": ["West", "West", "West"],
+        "Earthquake Count": [10, 5, 15],
+        "latitude": [36.77, 38.58, 34.05],
+        "longitude": [-119.42, -121.49, -118.24],
+        "time": [datetime(2022, 5, 1), datetime(2022, 6, 1), datetime(2022, 7, 1)]
+    })
 
 
 @fixture(name="db_return")

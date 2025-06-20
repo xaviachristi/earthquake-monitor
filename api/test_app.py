@@ -1,3 +1,4 @@
+# pylint: skip-file
 """Unit tests for app.py."""
 from unittest.mock import patch, MagicMock
 
@@ -19,8 +20,8 @@ def test_site_index_success(fake_query_database, fake_get_connection,
 
 @patch("app.get_connection")
 @patch("app.query_database")
-def test_site_earthquake_blank(fake_query_database, fake_get_connection, 
-                                get_test_client):
+def test_site_earthquake_blank(fake_query_database, fake_get_connection,
+                               get_test_client):
     """Checks the earthquake endpoint returns 204 if data is empty."""
 
     fake_query_database.return_value = {}

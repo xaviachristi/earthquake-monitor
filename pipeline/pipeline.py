@@ -1,6 +1,5 @@
 """Script for running full ETL pipeline as AWS lambda."""
 
-from json import dumps
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
 from logging import getLogger, basicConfig

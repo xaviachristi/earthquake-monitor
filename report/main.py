@@ -1,11 +1,10 @@
 """Script for generating data report."""
 from datetime import datetime
-from os import environ as ENV
-from os.path import basename
 import os
+from dotenv import load_dotenv
+
 import psycopg2
 import pandas as pd
-from dotenv import load_dotenv
 from pandas import DataFrame
 import boto3
 from xhtml2pdf import pisa
