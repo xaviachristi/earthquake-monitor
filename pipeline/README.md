@@ -34,7 +34,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 ## Docker
 
 - The Dockerfile defines the image for this pipeline.
-- This allows the pipeline to b eran as a container.
+- This allows the pipeline to be ran as a container.
 - To build the image.
 - `docker build --provenance=false --platform=linux/amd64  -t <image-name>:latest .`
 - To run the container locally.
@@ -45,7 +45,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - The pipeline can be run in AWS cloud as well as locally.
 - To do this it is built as a lambda image and uploaded to an elastic container registry in AWS.
 - Run the `docker_build` script detailed below with your details to upload the pipeline.
-- After ECR deployment you will need to create a lambda function that uses your image
+- After ECR deployment you will need to create a lambda function that uses your image.
 - That lambda function can now be triggered and targeted by other AWS services.
 - Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start parameter and can optionally be given an end parameter.
 - The payload should take this form:
@@ -70,7 +70,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - This script connects to AWS, builds the defined image and pushes it to an ECR.
 - The script has been left as an example and utilises credentials that are personal.
 - The script is actually derived from the AWS ECR push commands.
-- You can find your version of these commands by creating and ECR and selecting push commmands in the console.
+- You can find your version of these commands by creating and ECR and selecting push commands in the console.
 - If you want to use the example script you will need to replace as follows:
 ```sh
 aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <aws-account-uri>
@@ -81,7 +81,7 @@ docker push <aws-account-uri>/<ecr-name>:latest
 
 ## Modules
 
-The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. There exact function are detailed in this section.
+The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. Their exact function are detailed in this section.
 
 ### `Extract`
 
