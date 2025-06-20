@@ -1,7 +1,9 @@
 # Setup
 
 - These are Terraform deploy scripts for deploying data storage infrastructure to AWS:
-    - ECR repositories
+    - Lambda functions
+    - Step function
+    - Schedulers
 - It uses the variables defined in a `terraform.tfvars` file that are used by `variables.tf`
 
 ## Install dependencies

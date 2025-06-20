@@ -22,4 +22,3 @@
 - The script will ask for these two inputs for completion
 - The script will also ask for folder location of dockerfile
     - Give it the directory path in reference to the root repository
-    - E.g. for long-term pipeline the path is `pipelines/long-term`
