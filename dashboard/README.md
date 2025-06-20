@@ -67,8 +67,31 @@ AWS_S3_BUCKET=<S3_BUCKET_NAME>
 - Provides methods for creating subscriptions.
 
 ## `Report`
+Provides methods for showing and downloading reports stored in S3.
+Retrieves the PDF report for a given date from your configured S3 bucket.
+Parses and loads the file as raw bytes so it can be rendered or downloaded in the dashboard.
 
-- Provides methods for showing and downloading reports stored in S3.
+### 🔧 Functions
+
+#### `get_client() -> boto3.client`
+Returns an S3 client using environment variables configured in `.env` file:
+
+- `AWS_S3_BUCKET`
+- `AWS_ACCESS_KEY`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_DEFAULT_REGION`
+
+#### `get_report(target: date = None) -> bytes`
+Fetches the earthquake report (PDF) for the given date from your S3 bucket.
+
+**Parameters:**
+- `target` (`datetime.date`, optional): The date for which the report should be fetched. If not provided, returns an empty byte string.
+
+**Returns:**
+- `bytes`: The content of the report PDF file as a byte string, or `b""` if no matching report is found.
+
+- The function uses `@streamlit.cache_resource` to cache results and avoid redundant S3 calls.
+
 
 ## `Data`
 
