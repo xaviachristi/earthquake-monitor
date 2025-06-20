@@ -198,3 +198,11 @@ cython_debug/
 
 # Mac dependant files
 .DS_Store
+
+# Terraform
+.terraform
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.backup
+*.tfvars
