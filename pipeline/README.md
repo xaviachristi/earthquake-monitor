@@ -20,18 +20,21 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 
 ## Running the pipeline locally
 
+- Create a virtual environment using `python3 -m venv .venv`.
+- Activate the virtual environment using `source ./.venv/bin/activate`.
+- Install any requirements using `pip install -r requirements.txt`.
 - The `pipeline` is ran with python and the `pipeline` script.
 - The `pipeline` script takes two arguments start and end.
 - These arguments define the time window that the `pipeline` will query the api over.
 - Both take hour differences as integers.
 - End is not required and if it is not given the current time is used.
 - `python3 pipeline --start 2 --end 1`
-- This example command would run the pipeline and upload data from the api that occured between one and two hors ago.
+- This example command would run the pipeline and upload data from the api that occurred between one and two hors ago.
 
 ## Docker
 
 - The Dockerfile defines the image for this pipeline.
-- This allows the pipeline to b eran as a container.
+- This allows the pipeline to be ran as a container.
 - To build the image.
 - `docker build --provenance=false --platform=linux/amd64  -t <image-name>:latest .`
 - To run the container locally.
@@ -42,9 +45,9 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - The pipeline can be run in AWS cloud as well as locally.
 - To do this it is built as a lambda image and uploaded to an elastic container registry in AWS.
 - Run the `docker_build` script detailed below with your details to upload the pipeline.
-- After ECR deployment you will need to create a lambda function that uses your image
-- That lambda function can now be triggered and targetted by other AWS services.
-- Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start paramter and can optionally be given an end parameter.
+- After ECR deployment you will need to create a lambda function that uses your image.
+- That lambda function can now be triggered and targeted by other AWS services.
+- Services will need to provide the lambda with a payload to define the time window, that payload has to contain a start parameter and can optionally be given an end parameter.
 - The payload should take this form:
 ```json
 {
@@ -67,7 +70,7 @@ AWS_SECRET_ACCESS_KEY=<personal-aws-secret-key>
 - This script connects to AWS, builds the defined image and pushes it to an ECR.
 - The script has been left as an example and utilises credentials that are personal.
 - The script is actually derived from the AWS ECR push commands.
-- You can find your version of these commands by creating and ECR and selecting push commmands in the console.
+- You can find your version of these commands by creating and ECR and selecting push commands in the console.
 - If you want to use the example script you will need to replace as follows:
 ```sh
 aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <aws-account-uri>
@@ -78,7 +81,7 @@ docker push <aws-account-uri>/<ecr-name>:latest
 
 ## Modules
 
-The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. There exact function are detailed in this section.
+The pipeline utilises several modules to perform key functions such as the steps of extract, transform and load. Their exact function are detailed in this section.
 
 ### `Extract`
 
@@ -90,7 +93,7 @@ The pipeline utilises several modules to perform key functions such as the steps
 
 ### `Transform`
 
-- This module transforms the data recieved from the api as a catalog into a pandas DataFrame.
+- This module transforms the data received from the api as a catalog into a pandas DataFrame.
 - It also cleans and normalizes the data into datatypes that match the expectations of the deployed database.
 - The key function that performs every action in this module is `transform`.
 
@@ -98,7 +101,7 @@ The pipeline utilises several modules to perform key functions such as the steps
 
 - This module loads the DataFrame into the deployed database.
 - It will update the earthquake tables with the new earthquake events.
-- It will also update the region, state and region_state_interaction table as neccessary for events that contain values for these fields that have not been populated before.
+- It will also update the region, state and region_state_interaction table as necessary for events that contain values for these fields that have not been populated before.
 - It will also check for any duplicates in the earthquake table and prevent upload of duplicate events.
 - This behaviour is useful when running the pipeline over the same time window or overlapping time windows.
 - The key function that performs every action in this module is `load`.

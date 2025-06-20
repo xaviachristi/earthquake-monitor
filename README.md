@@ -14,7 +14,7 @@ Summary of directories (in the suggested order to visit them):
 1. [`planning/`](planning/) - Templates for documentation files and a description of the project's minimum viable product.
 1. [`terraform/`](terraform/) - Terraform files for creating a portion of the cloud services the project needs to run.
 1. [`architecture/`](architecture/) - A schema for the database, its ERD, and a diagram of the project's architecture.
-1. [`notifications/](notifications/) - Python files for the notification generation portion of the project.
+1. [`notifications/`](notifications/) - Python files for the notification generation portion of the project.
 1. [`pipeline/`](pipeline/) - Python files that run the data pipeline, this pulls data from the USGS API and inserts into the database.
 1. [`dashboard/`](dashboard/) - Python files for for running the project's dashboard.
 1. [`report/`](report/) - Python files for generating daily PDF reports.
